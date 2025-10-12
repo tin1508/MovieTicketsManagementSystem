@@ -1,0 +1,92 @@
+/* -- Cấu trúc layout chính -- */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-area {
+    padding: 2rem;
+    flex-grow: 1;
+}
+
+/* -- Sidebar -- */
+.sidebar {
+    width: 250px;
+    background-color: #16213e;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #0f3460;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #e94560;
+    border-bottom: 1px solid #0f3460;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.sidebar-nav li a {
+    display: block;
+    padding: 1rem 1.5rem;
+    color: #c4c3ca;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+    background-color: #0f3460;
+    color: #ffffff;
+}
+
+.sidebar-nav li.active a {
+    background-color: rgba(233, 69, 96, 0.1);
+    color: #e94560;
+    border-left: 3px solid #e94560;
+}
+
+/* -- Header -- */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #16213e;
+    border-bottom: 1px solid #0f3460;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logout-button {
+    background-color: #e94560;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+    background-color: #d43d51;
+}
