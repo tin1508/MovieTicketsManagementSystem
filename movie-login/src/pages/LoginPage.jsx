@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import '../styles/Login.css';
 import { useAuth } from '../context/AuthContext'; // ✅ thêm dòng này
@@ -78,7 +78,7 @@ const LoginPage = () => {
                     </button>
                 </form>
                 <div className="signup-link">
-                    <p>Chưa có tài khoản? <a href="#">Đăng ký ngay</a></p>
+                    <p>Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link></p>
                 </div>
             </div>
         </div>
