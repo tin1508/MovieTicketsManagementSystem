@@ -1,10 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import Dashboard from './pages/Dashboard';
+
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute'; // Import ProtectedRoute
+
 import DashboardOverview from './pages/DashboardOverview';
+import LoginPage from './pages/LoginPage';
+import Dashboard from './pages/Dashboard';
+import RegisterPage from './pages/RegisterPage';
 import MovieListPage from './pages/MovieListPage';
 
 function App() {
@@ -13,6 +16,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />}/>
 
           {/* Route Dashboard cha */}
           <Route 
