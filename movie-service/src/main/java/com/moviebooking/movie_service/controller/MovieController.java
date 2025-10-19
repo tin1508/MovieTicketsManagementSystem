@@ -43,7 +43,7 @@ public class MovieController {
                 .build();
     }
 
-    @GetMapping("/movies")
+    @GetMapping
     ApiResponse<List<MovieResponse>> getAllMovies(){
         return ApiResponse.<List<MovieResponse>>builder()
                 .result(movieService.getAllMovies())

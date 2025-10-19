@@ -3,6 +3,8 @@ package com.moviebooking.movie_service.dto.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -11,4 +13,5 @@ import lombok.experimental.FieldDefaults;
 public class GenreCreationRequest {
     String name;
     String description;
+    List<Long> genreIds;
 }

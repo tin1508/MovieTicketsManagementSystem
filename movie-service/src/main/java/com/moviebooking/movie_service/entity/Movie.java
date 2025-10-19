@@ -37,7 +37,12 @@ public class Movie {
     @Enumerated(EnumType.STRING)
     MovieStatus movieStatus;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(
+            name = "movie_genres",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
     Set<Genre> genres;
 
 }
