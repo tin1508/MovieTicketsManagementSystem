@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
@@ -23,4 +24,6 @@ public class MovieUpdateRequest {
     String trailerUrl;
     AgeRating ageRating;
     MovieStatus movieStatus;
+
+    List<Long> genreIds;
 }

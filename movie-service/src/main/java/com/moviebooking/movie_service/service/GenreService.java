@@ -23,7 +23,7 @@ public class GenreService {
     GenreMapper genreMapper;
 
     public GenreResponse createGenre(GenreCreationRequest request){
-        if(genreRepository.existsGenreByName((request.getName()))) throw new AppException(ErrorCode.GENRE_EXISTED);
+        if(genreRepository.existsByName((request.getName()))) throw new AppException(ErrorCode.GENRE_EXISTED);
 
         Genre genre = genreMapper.toGenre(request);
         return genreMapper.toGenreResponse(genreRepository.save(genre));

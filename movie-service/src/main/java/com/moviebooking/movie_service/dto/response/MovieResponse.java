@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @Builder
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MovieResponse {
+    String id;
     String title;
     String director;
     String description;
@@ -23,4 +25,6 @@ public class MovieResponse {
     String trailerUrl;
     AgeRating ageRating;
     MovieStatus movieStatus;
+
+    Set<GenreResponse>genres ;
 }

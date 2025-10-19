@@ -7,7 +7,6 @@ import com.moviebooking.movie_service.entity.Genre;
 import com.moviebooking.movie_service.entity.Movie;
 import com.moviebooking.movie_service.exception.AppException;
 import com.moviebooking.movie_service.exception.ErrorCode;
-import com.moviebooking.movie_service.mapper.GenreMapper;
 import com.moviebooking.movie_service.mapper.MovieMapper;
 import com.moviebooking.movie_service.repository.GenreRepository;
 import com.moviebooking.movie_service.repository.MovieRepository;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -28,15 +28,26 @@ public class MovieService {
     MovieRepository movieRepository;
     GenreRepository genreRepository;
     MovieMapper movieMapper;
-    GenreMapper genreMapper;
 
     public MovieResponse createMovie(MovieCreationRequest request){
         if(movieRepository.existsMovieByTitle(request.getTitle()))
             throw new AppException(ErrorCode.MOVIE_EXIST);
 
-        HashSet<Genre> genres = new HashSet<>();
-//        genreRepository.findGenreById(Predefined)
         Movie movie = movieMapper.toMovie(request);
+
+        log.info("Request genreIds nhận được: {}", request.getGenreIds());
+
+        if (request.getGenreIds() != null && !request.getGenreIds().isEmpty()){
+            log.info("ĐÃ ĐI VÀO KHỐI IF. Số lượng genreIds: {}", request.getGenreIds().size());
+
+            Set<Genre> genres = new HashSet<>();
+            for (Long genreId: request.getGenreIds()){
+                Genre genre = genreRepository.findById(genreId)
+                        .orElseThrow(() -> new AppException((ErrorCode.GENRE_NOT_FOUND)));
+                genres.add(genre);
+            }
+            movie.setGenres(genres);
+        }
 
         return movieMapper.toMovieResponse(movieRepository.save(movie));
     }
@@ -58,8 +69,23 @@ public class MovieService {
     }
 
     public MovieResponse updateMovie(String movieId, MovieUpdateRequest request){
-        Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+
+        if (request.getGenreIds() != null){
+            if (request.getGenreIds().isEmpty()){
+                movie.getGenres().clear();
+            } else {
+                List<Genre> genreList = genreRepository.findAllById(request.getGenreIds());
+
+                Set<Genre> genres = new HashSet<>(genreList);
+
+                movie.setGenres(genres);
+            }
+        }
+
         movieMapper.updateMovie(movie, request);
+
         return movieMapper.toMovieResponse(movieRepository.save(movie));
     }
 

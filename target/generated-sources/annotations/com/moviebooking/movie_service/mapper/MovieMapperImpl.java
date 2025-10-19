@@ -2,8 +2,12 @@ package com.moviebooking.movie_service.mapper;
 
 import com.moviebooking.movie_service.dto.request.MovieCreationRequest;
 import com.moviebooking.movie_service.dto.request.MovieUpdateRequest;
+import com.moviebooking.movie_service.dto.response.GenreResponse;
 import com.moviebooking.movie_service.dto.response.MovieResponse;
+import com.moviebooking.movie_service.entity.Genre;
 import com.moviebooking.movie_service.entity.Movie;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +48,7 @@ public class MovieMapperImpl implements MovieMapper {
 
         MovieResponse.MovieResponseBuilder movieResponse = MovieResponse.builder();
 
+        movieResponse.id( movie.getId() );
         movieResponse.title( movie.getTitle() );
         movieResponse.director( movie.getDirector() );
         movieResponse.description( movie.getDescription() );
@@ -54,8 +59,23 @@ public class MovieMapperImpl implements MovieMapper {
         movieResponse.trailerUrl( movie.getTrailerUrl() );
         movieResponse.ageRating( movie.getAgeRating() );
         movieResponse.movieStatus( movie.getMovieStatus() );
+        movieResponse.genres( genreSetToGenreResponseSet( movie.getGenres() ) );
 
         return movieResponse.build();
+    }
+
+    @Override
+    public GenreResponse toGenreResponse(Genre genre) {
+        if ( genre == null ) {
+            return null;
+        }
+
+        GenreResponse.GenreResponseBuilder genreResponse = GenreResponse.builder();
+
+        genreResponse.name( genre.getName() );
+        genreResponse.description( genre.getDescription() );
+
+        return genreResponse.build();
     }
 
     @Override
@@ -74,5 +94,18 @@ public class MovieMapperImpl implements MovieMapper {
         movie.setTrailerUrl( request.getTrailerUrl() );
         movie.setAgeRating( request.getAgeRating() );
         movie.setMovieStatus( request.getMovieStatus() );
+    }
+
+    protected Set<GenreResponse> genreSetToGenreResponseSet(Set<Genre> set) {
+        if ( set == null ) {
+            return null;
+        }
+
+        Set<GenreResponse> set1 = new LinkedHashSet<GenreResponse>( Math.max( (int) ( set.size() / .75f ) + 1, 16 ) );
+        for ( Genre genre : set ) {
+            set1.add( toGenreResponse( genre ) );
+        }
+
+        return set1;
     }
 }
