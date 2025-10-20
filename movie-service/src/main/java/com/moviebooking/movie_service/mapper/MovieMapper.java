@@ -6,9 +6,7 @@ import com.moviebooking.movie_service.dto.response.GenreResponse;
 import com.moviebooking.movie_service.dto.response.MovieResponse;
 import com.moviebooking.movie_service.entity.Genre;
 import com.moviebooking.movie_service.entity.Movie;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface MovieMapper {
@@ -16,6 +14,6 @@ public interface MovieMapper {
     MovieResponse toMovieResponse(Movie movie);
     GenreResponse toGenreResponse(Genre genre);
 
-    @Mapping(target = "id", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateMovie(@MappingTarget Movie movie, MovieUpdateRequest request);
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import '../../styles/MovieListPage.css'; // Sẽ tạo file này sau
 
-const MovieTable = ({ movies }) => {
+const MovieTable = ({ movies, onEditClick, onDeleteClick }) => {
     return (
         <div className="table-container">
             <table>
@@ -28,8 +28,8 @@ const MovieTable = ({ movies }) => {
                                 </span>
                             </td>
                             <td className="action-buttons">
-                                <button className="btn-edit">Sửa</button>
-                                <button className="btn-delete">Xóa</button>
+                                <button className="btn-edit" onClick={() => onEditClick(movie)}>Sửa</button>
+                                <button className="btn-delete" onClick={() => onDeleteClick(movie)}>Xóa</button>
                             </td>
                         </tr>
                     ))}
