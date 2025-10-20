@@ -1,5 +1,6 @@
 package com.moviebooking.movie_service.service;
 
+import com.moviebooking.movie_service.dto.request.ApiResponse;
 import com.moviebooking.movie_service.dto.request.MovieCreationRequest;
 import com.moviebooking.movie_service.dto.request.MovieUpdateRequest;
 import com.moviebooking.movie_service.dto.response.MovieResponse;
@@ -10,10 +11,12 @@ import com.moviebooking.movie_service.exception.ErrorCode;
 import com.moviebooking.movie_service.mapper.MovieMapper;
 import com.moviebooking.movie_service.repository.GenreRepository;
 import com.moviebooking.movie_service.repository.MovieRepository;
+import com.moviebooking.movie_service.repository.specification.MovieSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -78,6 +81,10 @@ public class MovieService {
             } else {
                 List<Genre> genreList = genreRepository.findAllById(request.getGenreIds());
 
+                if (genreList.size() != request.getGenreIds().size()){
+                    throw new AppException(ErrorCode.GENRE_NOT_FOUND);
+                }
+
                 Set<Genre> genres = new HashSet<>(genreList);
 
                 movie.setGenres(genres);
@@ -89,6 +96,24 @@ public class MovieService {
         return movieMapper.toMovieResponse(movieRepository.save(movie));
     }
 
+    public ApiResponse<List<MovieResponse>> searchMovie(String keyword, Integer year){
+        Specification<Movie> specification = Specification.unrestricted();
 
+        if (keyword != null && !keyword.isEmpty()){
+            specification = specification.and(MovieSpecification.titleContains(keyword));
+        }
+
+        if (year != null){
+            specification = specification.and(MovieSpecification.relaseAfterOn(year));
+        }
+
+        List<Movie> movies = movieRepository.findAll(specification);
+
+        List<MovieResponse> movieResponses = movies.stream().map(movieMapper::toMovieResponse).toList();
+
+        return ApiResponse.<List<MovieResponse>>builder()
+                .result(movieResponses)
+                .build();
+    }
 
 }

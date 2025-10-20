@@ -84,16 +84,36 @@ public class MovieMapperImpl implements MovieMapper {
             return;
         }
 
-        movie.setTitle( request.getTitle() );
-        movie.setDirector( request.getDirector() );
-        movie.setDescription( request.getDescription() );
-        movie.setDuration( request.getDuration() );
-        movie.setRating( request.getRating() );
-        movie.setReleaseDate( request.getReleaseDate() );
-        movie.setPosterUrl( request.getPosterUrl() );
-        movie.setTrailerUrl( request.getTrailerUrl() );
-        movie.setAgeRating( request.getAgeRating() );
-        movie.setMovieStatus( request.getMovieStatus() );
+        if ( request.getTitle() != null ) {
+            movie.setTitle( request.getTitle() );
+        }
+        if ( request.getDirector() != null ) {
+            movie.setDirector( request.getDirector() );
+        }
+        if ( request.getDescription() != null ) {
+            movie.setDescription( request.getDescription() );
+        }
+        if ( request.getDuration() != null ) {
+            movie.setDuration( request.getDuration() );
+        }
+        if ( request.getRating() != null ) {
+            movie.setRating( request.getRating() );
+        }
+        if ( request.getReleaseDate() != null ) {
+            movie.setReleaseDate( request.getReleaseDate() );
+        }
+        if ( request.getPosterUrl() != null ) {
+            movie.setPosterUrl( request.getPosterUrl() );
+        }
+        if ( request.getTrailerUrl() != null ) {
+            movie.setTrailerUrl( request.getTrailerUrl() );
+        }
+        if ( request.getAgeRating() != null ) {
+            movie.setAgeRating( request.getAgeRating() );
+        }
+        if ( request.getMovieStatus() != null ) {
+            movie.setMovieStatus( request.getMovieStatus() );
+        }
     }
 
     protected Set<GenreResponse> genreSetToGenreResponseSet(Set<Genre> set) {
