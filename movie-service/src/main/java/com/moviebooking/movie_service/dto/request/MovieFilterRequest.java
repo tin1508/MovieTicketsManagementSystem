@@ -17,4 +17,5 @@ public class MovieFilterRequest {
     AgeRating ageRating;
     Double minRating;
     Double maxRating;
+    Integer year;
 }

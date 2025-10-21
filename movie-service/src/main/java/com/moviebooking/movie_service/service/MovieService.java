@@ -2,6 +2,7 @@ package com.moviebooking.movie_service.service;
 
 import com.moviebooking.movie_service.dto.request.ApiResponse;
 import com.moviebooking.movie_service.dto.request.MovieCreationRequest;
+import com.moviebooking.movie_service.dto.request.MovieFilterRequest;
 import com.moviebooking.movie_service.dto.request.MovieUpdateRequest;
 import com.moviebooking.movie_service.dto.response.MovieResponse;
 import com.moviebooking.movie_service.entity.Genre;
@@ -16,6 +17,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -116,4 +119,44 @@ public class MovieService {
                 .build();
     }
 
+
+    public Page<MovieResponse> searchAndFilterMovies(MovieFilterRequest request, Pageable pageable){
+        Specification<Movie> specification = buildSpecification(request);
+        Page<Movie> movies = movieRepository.findAll(specification, pageable);
+
+        return movies.map(movieMapper::toMovieResponse);
+    }
+
+    public Specification<Movie> buildSpecification(MovieFilterRequest request){
+        Specification<Movie> specification = Specification.unrestricted();
+
+        specification = specification.and(MovieSpecification.isActive());
+
+        if (request.getKeyword() != null && !request.getKeyword().isEmpty()){
+            specification = specification.and(MovieSpecification.hasKeyword(request.getKeyword()));
+        }
+
+        if (request.getAgeRating() != null){
+            specification = specification.and(MovieSpecification.hasAgeRating(request.getAgeRating()));
+        }
+
+        if (request.getMovieStatus() != null){
+            specification = specification.and(MovieSpecification.hasStatus(request.getMovieStatus()));
+        }
+
+        if (request.getGenreId() != null){
+            specification = specification.and(MovieSpecification.hasGenre(request.getGenreId()));
+        }
+
+        if (request.getMinRating() != null || request.getMaxRating() != null){
+            specification = specification.and(MovieSpecification.ratingBetween(
+                    request.getMinRating(), request.getMinRating()));
+        }
+
+        if (request.getYear() != null){
+            specification = specification.and(MovieSpecification.relaseAfterOn(request.getYear()));
+        }
+
+        return specification;
+    }
 }
