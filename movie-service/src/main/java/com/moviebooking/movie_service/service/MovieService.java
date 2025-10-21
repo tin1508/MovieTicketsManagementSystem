@@ -11,7 +11,7 @@ import com.moviebooking.movie_service.exception.ErrorCode;
 import com.moviebooking.movie_service.mapper.MovieMapper;
 import com.moviebooking.movie_service.repository.GenreRepository;
 import com.moviebooking.movie_service.repository.MovieRepository;
-import com.moviebooking.movie_service.repository.specification.MovieSpecification;
+import com.moviebooking.movie_service.specification.MovieSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
