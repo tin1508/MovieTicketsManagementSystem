@@ -2,6 +2,8 @@ package com.moviebooking.movie_service.specification;
 
 import com.moviebooking.movie_service.entity.Genre;
 import com.moviebooking.movie_service.entity.Movie;
+import com.moviebooking.movie_service.enums.AgeRating;
+import com.moviebooking.movie_service.enums.MovieStatus;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -37,7 +39,7 @@ public class MovieSpecification {
         };
     }
 
-    public static Specification<Movie> hasStatus (String status){
+    public static Specification<Movie> hasStatus (MovieStatus status){
         return (root, query, criteriaBuilder) -> {
             if(status == null) return criteriaBuilder.disjunction();
 
@@ -67,7 +69,7 @@ public class MovieSpecification {
         };
     }
 
-    public static Specification<Movie> hasAgeRating(Double ageRating){
+    public static Specification<Movie> hasAgeRating(AgeRating ageRating){
         return (root, query, criteriaBuilder) -> {
             if (ageRating == null) return criteriaBuilder.disjunction();
 
