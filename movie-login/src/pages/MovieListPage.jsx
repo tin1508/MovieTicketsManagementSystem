@@ -1,47 +1,85 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MovieTable from '../components/movies/MovieTable';
 import AddMovieForm from '../components/movies/AddMovieForm';
 import Modal from '../components/common/Modal';
 import { useState } from 'react';
 import EditMovieForm from '../components/movies/EditMovieForm';
 import { mockMovies } from '../data/mockMovies';
+import * as movieService from '../services/movieService';
 
 const MovieListPage = () => {
-    const [movies, setMovies] = useState(mockMovies);
-
-    // State cho modal "Thêm"
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-    // -- . Thêm state mới cho modal "Sửa" --
+    const [movies, setMovies] = useState([]);
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    
+    const [isAddModalOpen, setIsAddModalOpen] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [currentMovieToEdit, setCurrentMovieToEdit] = useState(null);
-
-    // -- . Thêm state mới cho modal "Xóa" --
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [movieToDelete, setMovieToDelete] = useState(null);
 
-    // Hàm xử lý "Thêm" (giữ nguyên)
-    const handleAddMovie = (newMovie) => {
-        setMovies([newMovie, ...movies]);
-        setIsAddModalOpen(false);
+    useEffect(() => {
+        const fetchMovies = async () => {
+            console.log('useEffect trong MovieListPage đang chạy!');
+            try {
+                setIsLoading(true);
+                setError(null);
+                const data = await movieService.getAllMovies();
+                setMovies(data.result);
+            } catch (err) {
+                setError('Lỗi khi tải danh sách phim.');
+                console.error(err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchMovies();
+    }, []);
+
+    const handleAddMovie = async (newMovieData) => {
+        try {
+            const newMovie = await movieService.createMovie(newMovieData);
+            setMovies([newMovie, ...movies]);
+            setIsAddModalOpen(false);
+        } catch (err) {
+            alert('Lỗi khi thêm phim mới.');
+        }
+    };
+
+    const handleUpdateMovie = async (updatedMovie) => {
+        try {
+            const savedMovie = await movieService.updateMovie(updatedMovie.id, updatedMovie);
+            setMovies(movies.map(movie =>
+                movie.id === savedMovie.id ? savedMovie : movie
+            ));
+            setIsEditModalOpen(false);
+            setCurrentMovieToEdit(null);
+        } catch (err) {
+            alert('Lỗi khi cập nhật phim.');
+        }
+    };
+
+    const handleConfirmDelete = async () => {
+        if(!movieToDelete) return;
+        try {
+            await movieService.deleteMovie(movieToDelete.id);
+            setMovies(movies.filter(movie => movie.id !== movieToDelete.id));
+            setIsDeleteModalOpen(false); 
+            setMovieToDelete(null);      
+        } catch (err) {
+            alert('Lỗi khi xóa phim.');
+        }
     };
 
     const handleDeleteClick = (movie) => {
-        setMovieToDelete(movie);      // Lưu lại phim nào sắp bị xóa
-        setIsDeleteModalOpen(true); // Mở modal xác nhận
+        setMovieToDelete(movie);    
+        setIsDeleteModalOpen(true); 
     };
 
-    // -- 3. Hàm xử lý khi nhấn nút "Sửa" --
     const handleEditClick = (movie) => {
-        setCurrentMovieToEdit(movie); // Lưu phim đang được chọn
-        setIsEditModalOpen(true);     // Mở modal Sửa
-    };
-
-    const handleConfirmDelete = () => {
-        // Dùng .filter() để tạo ra một mảng mới không chứa phim bị xóa
-        setMovies(movies.filter(movie => movie.id !== movieToDelete.id));
-        setIsDeleteModalOpen(false); // Đóng modal
-        setMovieToDelete(null);      // Reset state
+        setCurrentMovieToEdit(movie); 
+        setIsEditModalOpen(true);   
     };
 
     const handleCancelDelete = () => {
@@ -49,18 +87,21 @@ const MovieListPage = () => {
         setMovieToDelete(null);
     };
 
-    // -- 4. Hàm xử lý khi submit form "Sửa" --
-    const handleUpdateMovie = (updatedMovie) => {
-        // Dùng .map() để tạo một mảng mới
-        // Nếu tìm thấy phim có id khớp, thay thế nó bằng `updatedMovie`
-        // Nếu không, giữ nguyên phim cũ
-        setMovies(movies.map(movie => 
-            movie.id === updatedMovie.id ? updatedMovie : movie
-        ));
-        setIsEditModalOpen(false); // Đóng modal Sửa
-        setCurrentMovieToEdit(null); // Xóa phim đang chọn
+    const renderLoading = () => {
+        if (isLoading) {
+            return <p>Đang tải danh sách phim...</p>;
+        }
+        if (error) {
+            return <p className="page-error-message">{error}</p>;   
+        }
+        return (
+            <MovieTable 
+                movies={movies} 
+                onEditClick={handleEditClick} 
+                onDeleteClick={handleDeleteClick}
+            />
+        );
     };
-
 
     return (
         <div>
@@ -71,10 +112,8 @@ const MovieListPage = () => {
                 </button>
             </div>
 
-            {/* 5. Truyền hàm handleEditClick vào bảng */}
             <MovieTable movies={movies} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick}/>
 
-            {/* Modal Thêm Phim (giữ nguyên) */}
             <Modal 
                 isOpen={isAddModalOpen} 
                 onClose={() => setIsAddModalOpen(false)} 
@@ -86,7 +125,6 @@ const MovieListPage = () => {
                 />
             </Modal>
 
-            {/* -- 6. Thêm Modal Sửa Phim -- */}
             <Modal
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}

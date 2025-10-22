@@ -39,11 +39,11 @@ public class MovieSpecification {
         };
     }
 
-    public static Specification<Movie> hasStatus (MovieStatus status){
+    public static Specification<Movie> hasStatus (MovieStatus movieStatus){
         return (root, query, criteriaBuilder) -> {
-            if(status == null) return criteriaBuilder.disjunction();
+            if(movieStatus == null) return criteriaBuilder.disjunction();
 
-            return criteriaBuilder.equal(root.get("movieStatus"), status);
+            return criteriaBuilder.equal(root.get("movieStatus"), movieStatus);
         };
     }
 

@@ -19,5 +19,5 @@ public interface MovieRepository extends JpaRepository<Movie, String>, JpaSpecif
 
     Page<Movie> findByIsActiveTrue(Pageable pageable);
 
-    List<Movie> findByStatusAndIsActiveTrue(MovieStatus movieStatus);
+    List<Movie> findByMovieStatusAndIsActiveTrue(MovieStatus movieStatus);
 }

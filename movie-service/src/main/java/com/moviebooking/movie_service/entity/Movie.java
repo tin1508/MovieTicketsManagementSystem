@@ -30,6 +30,7 @@ public class Movie {
     String posterUrl;
     String trailerUrl;
     Long viewCount;
+    boolean isActive;
 
     @Enumerated(EnumType.STRING)
     AgeRating ageRating;

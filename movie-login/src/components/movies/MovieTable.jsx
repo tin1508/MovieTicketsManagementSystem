@@ -21,10 +21,10 @@ const MovieTable = ({ movies, onEditClick, onDeleteClick }) => {
                             <td>{movie.id}</td>
                             <td>{movie.title}</td>
                             <td>{movie.director}</td>
-                            <td>{movie.genre}</td>
+                            <td>{Array.isArray(movie.genres) ? movie.genres.map(g => g.name).join(', ') : ''}</td>
                             <td>
-                                <span className={`status ${movie.status.replace(/\s+/g, '-').toLowerCase()}`}>
-                                    {movie.status}
+                                <span className={`status ${movie.movieStatus.replace(/\s+/g, '-').toLowerCase()}`}>
+                                    {movie.movieStatus}
                                 </span>
                             </td>
                             <td className="action-buttons">
