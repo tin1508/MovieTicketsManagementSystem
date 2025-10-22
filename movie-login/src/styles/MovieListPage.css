@@ -123,3 +123,12 @@ tbody tr:hover {
     background-color: #6c757d;
     color: white;
 }
+
+.page-error-message {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 1rem;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.1rem;
+}
