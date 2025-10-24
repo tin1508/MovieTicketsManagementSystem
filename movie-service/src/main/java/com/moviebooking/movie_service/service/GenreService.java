@@ -8,6 +8,7 @@ import com.moviebooking.movie_service.exception.AppException;
 import com.moviebooking.movie_service.exception.ErrorCode;
 import com.moviebooking.movie_service.mapper.GenreMapper;
 import com.moviebooking.movie_service.repository.GenreRepository;
+import com.moviebooking.movie_service.repository.MovieRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,6 +22,7 @@ import java.util.List;
 public class GenreService {
     GenreRepository genreRepository;
     GenreMapper genreMapper;
+    MovieRepository movieRepository;
 
     public GenreResponse createGenre(GenreCreationRequest request){
         if(genreRepository.existsByName((request.getName()))) throw new AppException(ErrorCode.GENRE_EXISTED);
@@ -30,6 +32,13 @@ public class GenreService {
     }
 
     public void deleteGenre(Long genreId){
+        Genre genre =genreRepository.findById(genreId)
+                .orElseThrow(() -> new AppException(ErrorCode.GENRE_NOT_FOUND));
+
+        if (movieRepository.existsByGenres_Id(genreId)){
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
+
         genreRepository.deleteById(genreId);
     }
 
@@ -47,7 +56,12 @@ public class GenreService {
     }
 
     public GenreResponse updateGenre(Long genreId, GenreUpdateRequest request){
-        Genre genre = genreRepository.findById(genreId).orElseThrow(() -> new AppException(ErrorCode.GENRE_NOT_FOUND));
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new AppException(ErrorCode.GENRE_NOT_FOUND));
+        if (!genre.getName().equals(request.getName()) && genreRepository.existsByName(request.getName())){
+            throw new AppException(ErrorCode.GENRE_EXISTED);
+        }
+
         genreMapper.updateGenre(genre, request);
         return genreMapper.toGenreResponse(genreRepository.save(genre));
     }

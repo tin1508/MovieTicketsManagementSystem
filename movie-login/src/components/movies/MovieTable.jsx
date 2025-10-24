@@ -2,6 +2,11 @@ import React from 'react';
 import '../../styles/MovieListPage.css'; // Sẽ tạo file này sau
 
 const MovieTable = ({ movies, onEditClick, onDeleteClick }) => {
+    const statusTranslations = {
+        'COMING_SOON': 'Sắp chiếu',
+        'NOW_SHOWING': 'Đang chiếu',
+        'ENED': 'Đã kết thúc'
+    };
     return (
         <div className="table-container">
             <table>
@@ -21,10 +26,10 @@ const MovieTable = ({ movies, onEditClick, onDeleteClick }) => {
                             <td>{movie.id}</td>
                             <td>{movie.title}</td>
                             <td>{movie.director}</td>
-                            <td>{movie.genre}</td>
+                            <td>{Array.isArray(movie.genres) ? movie.genres.map(g => g.name).join(', ') : ''}</td>
                             <td>
-                                <span className={`status ${movie.status.replace(/\s+/g, '-').toLowerCase()}`}>
-                                    {movie.status}
+                                <span className={`status ${movie.movieStatus.toLowerCase()}`}>
+                                    {statusTranslations[movie.movieStatus] || movie.movieStatus}
                                 </span>
                             </td>
                             <td className="action-buttons">
