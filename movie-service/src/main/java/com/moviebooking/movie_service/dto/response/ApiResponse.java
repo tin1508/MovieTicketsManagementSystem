@@ -1,4 +1,4 @@
-package com.moviebooking.movie_service.dto.request;
+package com.moviebooking.movie_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

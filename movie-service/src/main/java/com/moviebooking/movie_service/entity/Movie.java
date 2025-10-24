@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -21,29 +22,44 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
+    @Column(nullable = false)
     String title;
+
+    @Column(nullable = false)
     String director;
+
+    @Column(columnDefinition = "TEXT")
     String description;
+
+    @Column(nullable = false)
     Integer duration;
-    Double rating;
+
+    Double rating = 0.0;
+
+    @Column(nullable = false)
     LocalDate releaseDate;
+
     String posterUrl;
     String trailerUrl;
-    Long viewCount;
-    boolean isActive;
+
+
+    Long viewCount = 0L;
+    boolean isActive = true;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     AgeRating ageRating;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     MovieStatus movieStatus;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "movie_genres",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    Set<Genre> genres;
+    Set<Genre> genres = new HashSet<>();
 
 }

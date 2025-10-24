@@ -59,9 +59,9 @@ tbody tr:hover {
     font-weight: bold;
 }
 
-.status.dang-chieu { background-color: #28a745; color: white; }
-.status.sap-chieu { background-color: #ffc107; color: black; }
-.status.da-chieu { background-color: #6c757d; color: white; }
+.status.now_showing { background-color: #28a745; color: white; }
+.status.coming_soon { background-color: #ffc107; color: black; }
+.status.ended { background-color: #6c757d; color: white; }
 
 .action-buttons button {
     margin-right: 0.5rem;

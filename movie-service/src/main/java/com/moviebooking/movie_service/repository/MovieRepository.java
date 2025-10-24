@@ -1,23 +1,12 @@
 package com.moviebooking.movie_service.repository;
 
 import com.moviebooking.movie_service.entity.Movie;
-import com.moviebooking.movie_service.enums.MovieStatus;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, String>, JpaSpecificationExecutor<Movie> {
     boolean existsMovieByTitle(String title);
-
-    Optional<Movie> findById(String movieId);
-
-    Page<Movie> findByIsActiveTrue(Pageable pageable);
-
-    List<Movie> findByMovieStatusAndIsActiveTrue(MovieStatus movieStatus);
+    boolean existsByGenres_Id(Long genreId);
 }
