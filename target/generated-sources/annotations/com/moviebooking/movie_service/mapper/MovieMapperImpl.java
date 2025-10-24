@@ -30,12 +30,10 @@ public class MovieMapperImpl implements MovieMapper {
         movie.setDirector( request.getDirector() );
         movie.setDescription( request.getDescription() );
         movie.setDuration( request.getDuration() );
-        movie.setRating( request.getRating() );
         movie.setReleaseDate( request.getReleaseDate() );
         movie.setPosterUrl( request.getPosterUrl() );
         movie.setTrailerUrl( request.getTrailerUrl() );
         movie.setAgeRating( request.getAgeRating() );
-        movie.setMovieStatus( request.getMovieStatus() );
 
         return movie;
     }
@@ -72,6 +70,7 @@ public class MovieMapperImpl implements MovieMapper {
 
         GenreResponse.GenreResponseBuilder genreResponse = GenreResponse.builder();
 
+        genreResponse.id( genre.getId() );
         genreResponse.name( genre.getName() );
         genreResponse.description( genre.getDescription() );
 
@@ -96,9 +95,6 @@ public class MovieMapperImpl implements MovieMapper {
         if ( request.getDuration() != null ) {
             movie.setDuration( request.getDuration() );
         }
-        if ( request.getRating() != null ) {
-            movie.setRating( request.getRating() );
-        }
         if ( request.getReleaseDate() != null ) {
             movie.setReleaseDate( request.getReleaseDate() );
         }
@@ -110,9 +106,6 @@ public class MovieMapperImpl implements MovieMapper {
         }
         if ( request.getAgeRating() != null ) {
             movie.setAgeRating( request.getAgeRating() );
-        }
-        if ( request.getMovieStatus() != null ) {
-            movie.setMovieStatus( request.getMovieStatus() );
         }
     }
 
