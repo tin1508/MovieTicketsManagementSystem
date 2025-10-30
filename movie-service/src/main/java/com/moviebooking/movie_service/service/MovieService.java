@@ -91,6 +91,14 @@ public class MovieService {
             }
         }
 
+        if (request.getTrailerUrl() != null){
+            if (request.getTrailerUrl().isEmpty()){
+                movie.setTrailerUrl(null);
+            } else {
+                movie.setTrailerUrl(request.getTrailerUrl());
+            }
+        }
+
         movieMapper.updateMovie(movie, request);
 
         return movieMapper.toMovieResponse(movieRepository.save(movie));

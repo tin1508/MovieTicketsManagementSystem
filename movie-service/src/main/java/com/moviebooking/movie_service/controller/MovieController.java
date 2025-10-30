@@ -5,7 +5,12 @@ import com.moviebooking.movie_service.dto.request.MovieCreationRequest;
 import com.moviebooking.movie_service.dto.request.MovieFilterRequest;
 import com.moviebooking.movie_service.dto.request.MovieUpdateRequest;
 import com.moviebooking.movie_service.dto.response.MovieResponse;
+import com.moviebooking.movie_service.entity.Movie;
 import com.moviebooking.movie_service.enums.MovieStatus;
+import com.moviebooking.movie_service.exception.AppException;
+import com.moviebooking.movie_service.exception.ErrorCode;
+import com.moviebooking.movie_service.repository.MovieRepository;
+import com.moviebooking.movie_service.service.FileStorageService;
 import com.moviebooking.movie_service.service.MovieService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -17,8 +22,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/movies")
@@ -26,6 +33,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MovieController {
     MovieService movieService;
+    FileStorageService fileStorageService;
+    MovieRepository movieRepository;
 
     @PostMapping
     ApiResponse<MovieResponse> createMovie(@RequestBody @Valid MovieCreationRequest request){
@@ -56,7 +65,7 @@ public class MovieController {
                 .build();
     }
 
-    @GetMapping("/filter")
+    @GetMapping
     public ResponseEntity<Page<MovieResponse>> filterMovies(
             @ModelAttribute MovieFilterRequest movieFilterRequest,
             @RequestParam(defaultValue = "0") int page,
@@ -131,4 +140,70 @@ public class MovieController {
         return  ResponseEntity.ok(movieService.searchAndFilterMovies(movieFilterRequest, pageable));
     }
 
+    @PostMapping("/{id}/poster")
+    public ResponseEntity<ApiResponse<Map<String, String>>> uploadPoster(
+            @PathVariable String id,
+            @RequestParam("file") MultipartFile file
+            ) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+
+        if (movie.getPosterUrl() != null){
+            fileStorageService.deleteFile(movie.getPosterUrl());
+        }
+
+        // Upload file mới
+        String fileUrl = fileStorageService.uploadFile(file, "posters");
+
+        // Update movie
+        movie.setPosterUrl(fileUrl);
+        movieRepository.save(movie);
+
+        // Build response
+        Map<String, String> data = new HashMap<>();
+        data.put("url", fileUrl);
+
+        ApiResponse<Map<String, String>> response = ApiResponse.<Map<String, String>>builder()
+                .message("Poster uploaded successfully")
+                .result(data)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("{id}/poster")
+    public ResponseEntity<ApiResponse<Void>> deletePoster(@PathVariable String id){
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+
+        if (movie.getPosterUrl() != null){
+            fileStorageService.deleteFile(movie.getPosterUrl());
+            movie.setPosterUrl(null);
+            movieRepository.save(movie);
+        }
+
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .message("Poster deleted successfully")
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("{id}/trailer")
+    public ResponseEntity<ApiResponse<Void>> deleteTrailer(@PathVariable String id){
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+
+        if (movie.getTrailerUrl() != null){
+            movie.setTrailerUrl(null);
+            movieRepository.save(movie);
+        }
+
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .message("Trailer deleted successfully")
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
 }
+

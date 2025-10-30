@@ -17,6 +17,7 @@ const MovieListPage = () => {
     const [currentMovieToEdit, setCurrentMovieToEdit] = useState(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [movieToDelete, setMovieToDelete] = useState(null);
+    
 
     useEffect(() => {
         const fetchMovies = async () => {
@@ -25,7 +26,7 @@ const MovieListPage = () => {
                 setIsLoading(true);
                 setError(null);
                 const data = await movieService.getAllMovies();
-                setMovies(data.result);
+                setMovies(data.content);
             } catch (err) {
                 setError('Lỗi khi tải danh sách phim.');
                 console.error(err);
