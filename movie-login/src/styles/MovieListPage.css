@@ -87,7 +87,8 @@ tbody tr:hover {
 }
 
 .add-movie-form input,
-.add-movie-form select {
+.add-movie-form select,
+.add-movie-form textarea {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #0f3460;
@@ -96,6 +97,7 @@ tbody tr:hover {
     color: #e0e0e0;
     font-size: 1rem;
     box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
 }
 
 .add-movie-form .form-actions {
@@ -103,6 +105,11 @@ tbody tr:hover {
     justify-content: flex-end;
     gap: 1rem;
     margin-top: 2rem;
+}
+
+.add-movie-form textarea {
+    min-height: 100px; /* Đặt chiều cao tối thiểu */
+    resize: vertical; /* Chỉ cho phép người dùng kéo dãn theo chiều dọc */
 }
 
 .add-movie-form .btn-submit,
@@ -131,4 +138,47 @@ tbody tr:hover {
     border-radius: 5px;
     text-align: center;
     font-size: 1.1rem;
+}
+
+.form-error-message {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.genre-checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    /* ----- 2 DÒNG QUAN TRỌNG NHẤT LÀ ĐÂY ----- */
+    max-height: 150px;
+    overflow-y: auto;
+    /* ------------------------------------- */
+
+    background-color: #1a1a2e;
+    border: 1px solid #0f3460;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.genre-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-basis: 30%; /* Mỗi hàng 3 mục */
+}
+
+.genre-checkbox-item input[type="checkbox"] {
+    width: auto;
+    margin-right: 5px;
+}
+
+.genre-checkbox-item label {
+    margin: 0;
+    font-weight: normal;
 }
