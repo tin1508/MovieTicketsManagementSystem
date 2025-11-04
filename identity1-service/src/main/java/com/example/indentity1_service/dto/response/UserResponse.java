@@ -1,20 +1,21 @@
-package com.example.indentity1_service.dto.request;
+package com.example.indentity1_service.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserUpdateRequest {
-    String password;
+public class UserResponse {
+    String id;
+    String username;
     String firstName;
     String lastName;
     LocalDate dob;
-
-
+    Set<String> roles;
 }
