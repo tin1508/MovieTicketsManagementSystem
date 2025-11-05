@@ -1,17 +1,14 @@
 package com.groupfour.movietickets.dto.request;
 
-import com.groupfour.movietickets.enums.BookingStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BookingUpdateRequest {
-    Integer ticketQuantity;
-    double totalPrice;
-    BookingStatus status;
+public class BookingDetailUpdateRequest {
+    String id;
+    double price;
 }

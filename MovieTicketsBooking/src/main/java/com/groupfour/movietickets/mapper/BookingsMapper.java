@@ -9,7 +9,8 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface BookingsMapper {
 
-    @Mapping(source = "orgPrice", target = "totalPrice")
+    @Mapping(target = "expiresAt", expression = "java(java.time.LocalDateTime.now(java.time.ZoneId.of(\"Asia/Ho_Chi_Minh\")).plusMinutes(10))")
+    @Mapping(target = "bookingDate", expression = "java(java.time.LocalDate.now())")
     Booking toBooking(BookingCreationRequest request);
 
 

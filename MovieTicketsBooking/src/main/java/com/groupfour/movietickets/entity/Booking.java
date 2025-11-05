@@ -4,8 +4,10 @@ import com.groupfour.movietickets.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import java.util.List;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -24,8 +26,17 @@ public class Booking {
     String showtimeId;
     String bookingCode;
     LocalDate bookingDate;
-    double orgPrice;
+    int ticketQuantity;
     double totalPrice;
+
+    @Column(name = "expire_at")
+    LocalDateTime expiresAt;
+
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    Payment payment;
+
+//    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+//    List<BookingDetail> bookingDetails;
 
     @Enumerated(EnumType.STRING)
     BookingStatus status;

@@ -6,12 +6,15 @@ import com.groupfour.movietickets.dto.request.BookingCreationRequest;
 import com.groupfour.movietickets.dto.request.BookingUpdateRequest;
 import com.groupfour.movietickets.dto.response.BookingsResponse;
 import com.groupfour.movietickets.entity.Booking;
+import com.groupfour.movietickets.enums.BookingStatus;
 import com.groupfour.movietickets.mapper.BookingsMapper;
 import com.groupfour.movietickets.repository.BookingRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +26,7 @@ public class BookingService {
     BookingRepository bookingRepository;
     BookingsMapper bookingsMapper;
 
-    public Booking createBookings(BookingCreationRequest request){
+    public BookingsResponse createBookings(BookingCreationRequest request){
 
         Booking bookings = bookingsMapper.toBooking(request);
 
@@ -37,12 +40,20 @@ public class BookingService {
 
         bookings.setBookingCode(uniqueBookingCode);
 
-        return bookingRepository.save(bookings);
+        //set bookingDate as soon as having finished payment
+        if(request.getStatus() == BookingStatus.CONFIRMED) bookings.setBookingDate(LocalDate.now());
+        else bookings.setBookingDate(null);
+
+        //set default value for status
+        if(request.getStatus() == null)  bookings.setStatus(BookingStatus.PENDING);
+
+        return bookingsMapper.toBookingResponse(bookingRepository.save(bookings));
     }
 
     public BookingsResponse updateBooking(String id, BookingUpdateRequest request){
         Booking bookings = bookingRepository.findById(id)
                         .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOTFOUND));
+        if(request.getStatus() == BookingStatus.CONFIRMED) bookings.setBookingDate(LocalDate.now());
         bookingsMapper.updateBooking(bookings, request);
         return bookingsMapper.toBookingResponse(bookingRepository.save(bookings));
     }
@@ -52,9 +63,8 @@ public class BookingService {
         bookingRepository.deleteById(id);
     }
 
-    public List<Booking> getBookings(){
-        return bookingRepository.findAll();
-        //return bookingRepository.findAll().stream().map(bookingsMapper::toBookingResponse).toList();
+    public List<BookingsResponse> getBookings(){
+        return bookingRepository.findAll().stream().map(bookingsMapper::toBookingResponse).toList();
     }
     public BookingsResponse getBookingById(String id) {
         return bookingsMapper.toBookingResponse(bookingRepository.findById(id)

@@ -5,7 +5,6 @@ import com.groupfour.movietickets.dto.request.ApiResponse;
 import com.groupfour.movietickets.dto.request.BookingCreationRequest;
 import com.groupfour.movietickets.dto.request.BookingUpdateRequest;
 import com.groupfour.movietickets.dto.response.BookingsResponse;
-import com.groupfour.movietickets.entity.Booking;
 import com.groupfour.movietickets.service.BookingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,36 +22,36 @@ public class BookingController {
     BookingService bookingService;
 
     @PostMapping
-    ApiResponse<Booking> createBooking(@RequestBody BookingCreationRequest request){
-        ApiResponse<Booking> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(bookingService.createBookings(request));
-        return apiResponse;
+    ApiResponse<BookingsResponse> createBooking(@RequestBody BookingCreationRequest request){
+        return ApiResponse.<BookingsResponse>builder()
+                .result(bookingService.createBookings(request)).build();
     }
 
     @GetMapping
-    List<Booking> getBookings(){
-        return bookingService.getBookings();
+    ApiResponse<List<BookingsResponse>> getBookings(){
+        return ApiResponse.<List<BookingsResponse>>builder()
+                .result(bookingService.getBookings()).build();
     }
 
     @GetMapping("/{bookingId}")
-    BookingsResponse getBooking(@PathVariable("bookingId") String id){
-        return bookingService.getBookingById(id);
+    ApiResponse<BookingsResponse> getBooking(@PathVariable("bookingId") String id){
+        return ApiResponse.<BookingsResponse>builder().result(bookingService.getBookingById(id)).build();
     }
 
     @PutMapping("/{bookingId}")
-    BookingsResponse updateBooking(@PathVariable("bookingId") String id, @RequestBody BookingUpdateRequest request){
-        return bookingService.updateBooking(id, request);
+    ApiResponse<BookingsResponse> updateBooking(@PathVariable("bookingId") String id, @RequestBody BookingUpdateRequest request){
+        return ApiResponse.<BookingsResponse>builder().result(bookingService.updateBooking(id, request)).build();
     }
 
     //partial update for booking
     @PatchMapping("/{bookingId}")
-    BookingsResponse patchBooking(@PathVariable("bookingId") String id, @RequestBody BookingUpdateRequest request){
-        return bookingService.updateBooking(id, request);
+    ApiResponse<BookingsResponse> patchBooking(@PathVariable("bookingId") String id, @RequestBody BookingUpdateRequest request){
+        return ApiResponse.<BookingsResponse>builder().result(bookingService.updateBooking(id, request)).build();
     }
 
     @DeleteMapping("/{bookingId}")
-    String deleteBooking(@PathVariable("bookingId") String id){
+    ApiResponse<String> deleteBooking(@PathVariable("bookingId") String id){
         bookingService.deleteBooking(id);
-        return "Booking has been deleted!!!";
+        return ApiResponse.<String>builder().result("Booking has been deleted.").build();
     }
 }

@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -14,7 +15,8 @@ import java.time.LocalDate;
 public class BookingsResponse {
     String bookingCode;
     LocalDate bookingDate;
-    double orgPrice;
+    int ticketQuantity;
     double totalPrice;
+    LocalDateTime expiresAt;
     BookingStatus status;
 }

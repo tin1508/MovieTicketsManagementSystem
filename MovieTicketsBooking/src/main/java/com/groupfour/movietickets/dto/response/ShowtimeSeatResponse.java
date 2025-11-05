@@ -1,0 +1,16 @@
+package com.groupfour.movietickets.dto.response;
+
+
+import com.groupfour.movietickets.enums.ShowtimeSeatStatus;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ShowtimeSeatResponse {
+    String id;
+    ShowtimeSeatStatus status;
+}

@@ -1,5 +1,5 @@
 package com.groupfour.movietickets.enums;
 
 public enum BookingStatus {
-    PENDING, CONFIRMED, FAILED, CANCELLED, REFUNDED;
+    PENDING, CONFIRMED, CANCELLED
 }
