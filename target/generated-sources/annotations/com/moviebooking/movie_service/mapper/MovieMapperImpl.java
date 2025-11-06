@@ -6,9 +6,16 @@ import com.moviebooking.movie_service.dto.response.GenreResponse;
 import com.moviebooking.movie_service.dto.response.MovieResponse;
 import com.moviebooking.movie_service.entity.Genre;
 import com.moviebooking.movie_service.entity.Movie;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.annotation.processing.Generated;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.springframework.stereotype.Component;
 
 @Generated(
@@ -17,6 +24,17 @@ import org.springframework.stereotype.Component;
 )
 @Component
 public class MovieMapperImpl implements MovieMapper {
+
+    private final DatatypeFactory datatypeFactory;
+
+    public MovieMapperImpl() {
+        try {
+            datatypeFactory = DatatypeFactory.newInstance();
+        }
+        catch ( DatatypeConfigurationException ex ) {
+            throw new RuntimeException( ex );
+        }
+    }
 
     @Override
     public Movie toMovie(MovieCreationRequest request) {
@@ -34,6 +52,7 @@ public class MovieMapperImpl implements MovieMapper {
         movie.setPosterUrl( request.getPosterUrl() );
         movie.setTrailerUrl( request.getTrailerUrl() );
         movie.setAgeRating( request.getAgeRating() );
+        movie.setMovieStatus( request.getMovieStatus() );
 
         return movie;
     }
@@ -58,6 +77,8 @@ public class MovieMapperImpl implements MovieMapper {
         movieResponse.ageRating( movie.getAgeRating() );
         movieResponse.movieStatus( movie.getMovieStatus() );
         movieResponse.genres( genreSetToGenreResponseSet( movie.getGenres() ) );
+        movieResponse.createAt( xmlGregorianCalendarToLocalDate( localDateTimeToXmlGregorianCalendar( movie.getCreateAt() ) ) );
+        movieResponse.updateAt( xmlGregorianCalendarToLocalDate( localDateTimeToXmlGregorianCalendar( movie.getUpdateAt() ) ) );
 
         return movieResponse.build();
     }
@@ -107,6 +128,33 @@ public class MovieMapperImpl implements MovieMapper {
         if ( request.getAgeRating() != null ) {
             movie.setAgeRating( request.getAgeRating() );
         }
+        if ( request.getMovieStatus() != null ) {
+            movie.setMovieStatus( request.getMovieStatus() );
+        }
+    }
+
+    private XMLGregorianCalendar localDateTimeToXmlGregorianCalendar( LocalDateTime localDateTime ) {
+        if ( localDateTime == null ) {
+            return null;
+        }
+
+        return datatypeFactory.newXMLGregorianCalendar(
+            localDateTime.getYear(),
+            localDateTime.getMonthValue(),
+            localDateTime.getDayOfMonth(),
+            localDateTime.getHour(),
+            localDateTime.getMinute(),
+            localDateTime.getSecond(),
+            localDateTime.get( ChronoField.MILLI_OF_SECOND ),
+            DatatypeConstants.FIELD_UNDEFINED );
+    }
+
+    private static LocalDate xmlGregorianCalendarToLocalDate( XMLGregorianCalendar xcal ) {
+        if ( xcal == null ) {
+            return null;
+        }
+
+        return LocalDate.of( xcal.getYear(), xcal.getMonth(), xcal.getDay() );
     }
 
     protected Set<GenreResponse> genreSetToGenreResponseSet(Set<Genre> set) {

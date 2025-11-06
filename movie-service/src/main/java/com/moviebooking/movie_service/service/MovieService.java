@@ -18,7 +18,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +42,7 @@ public class MovieService {
             throw new AppException(ErrorCode.MOVIE_EXIST);
 
         Movie movie = movieMapper.toMovie(request);
+        movie.setMovieStatus(request.getMovieStatus());
 
         log.info("Request genreIds nhận được: {}", request.getGenreIds());
 
@@ -106,6 +109,13 @@ public class MovieService {
 
 
     public Page<MovieResponse> searchAndFilterMovies(MovieFilterRequest request, Pageable pageable){
+        if(pageable.getSort().isUnsorted()){
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by("createAt").descending()
+            );
+        }
         Specification<Movie> specification = buildSpecification(request);
         Page<Movie> movies = movieRepository.findAll(specification, pageable);
 
@@ -129,8 +139,8 @@ public class MovieService {
             specification = specification.and(MovieSpecification.hasStatus(request.getMovieStatus()));
         }
 
-        if (request.getGenreId() != null){
-            specification = specification.and(MovieSpecification.hasGenre(request.getGenreId()));
+        if (request.getGenreIds() != null && !request.getGenreIds().isEmpty()){
+            specification = specification.and(MovieSpecification.hasGenres(request.getGenreIds()));
         }
 
         if (request.getMinRating() != null || request.getMaxRating() != null){

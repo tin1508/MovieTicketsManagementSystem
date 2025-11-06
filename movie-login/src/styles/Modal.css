@@ -19,6 +19,11 @@
     max-width: 500px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     border: 1px solid #0f3460;
+
+    /* ----- 2 DÒNG THÊM VÀO LÀ ĐÂY ----- */
+    max-height: 90vh; /* Giới hạn chiều cao */
+    overflow-y: auto; /* Thêm thanh cuộn khi cần */
+    /* ---------------------------------- */
 }
 
 .modal-header {

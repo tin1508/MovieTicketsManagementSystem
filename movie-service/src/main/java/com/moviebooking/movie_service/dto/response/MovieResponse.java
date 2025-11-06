@@ -27,4 +27,6 @@ public class MovieResponse {
     MovieStatus movieStatus;
 
     Set<GenreResponse>genres ;
+    LocalDate createAt;
+    LocalDate updateAt;
 }

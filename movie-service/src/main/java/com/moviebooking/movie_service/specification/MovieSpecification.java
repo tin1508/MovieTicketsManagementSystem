@@ -9,6 +9,8 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
 public class MovieSpecification {
     // Tìm phim có title chứa một từ khóa (keyword)
     // Tương đương: Where movie.title LIKE %KeyWord%
@@ -59,6 +61,20 @@ public class MovieSpecification {
             Join<Movie, Genre> genreJoin = root.join("genres", JoinType.INNER);
 
             return criteriaBuilder.equal(genreJoin.get("id"),genreId);
+        };
+    }
+
+    public static Specification<Movie> hasGenres(List<Long> genreIds){
+        return (root, query, criteriaBuilder) -> {
+            if (genreIds == null || genreIds.isEmpty()){
+                return criteriaBuilder.conjunction();
+            }
+
+            query.distinct(true);
+
+            Join<Movie, Genre> genreJoin = root.join("genres");
+
+            return genreJoin.get("id").in(genreIds);
         };
     }
 

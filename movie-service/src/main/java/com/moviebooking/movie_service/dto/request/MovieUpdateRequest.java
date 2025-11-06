@@ -39,6 +39,9 @@ public class MovieUpdateRequest {
     @Size(max = 500)
     String trailerUrl;
 
+    @NotNull(message = "Status is required")
+    MovieStatus movieStatus;
+
     @NotNull(message = "Age rating is required")
     AgeRating ageRating;
 
