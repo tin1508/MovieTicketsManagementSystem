@@ -19,5 +19,8 @@ public interface MovieMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "genres", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createAt", ignore = true)
+    @Mapping(target = "updateAt", ignore = true)
     void updateMovie(@MappingTarget Movie movie, MovieUpdateRequest request);
 }

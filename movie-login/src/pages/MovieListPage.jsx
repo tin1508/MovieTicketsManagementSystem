@@ -1,104 +1,152 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
+import { useDebounce } from 'use-debounce';
 import MovieTable from '../components/movies/MovieTable';
 import AddMovieForm from '../components/movies/AddMovieForm';
 import Modal from '../components/common/Modal';
-import { useState } from 'react';
 import EditMovieForm from '../components/movies/EditMovieForm';
-import { mockMovies } from '../data/mockMovies';
 import * as movieService from '../services/movieService';
+import Pagination from '../components/common/Pagination';
+import MovieFilter from '../components/movies/MovieFilter';
 
 const MovieListPage = () => {
     const [movies, setMovies] = useState([]);
     const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isAdding, setIsAdding] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     
-    const [isAddModalOpen, setIsAddModalOpen] = useState(true);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [currentMovieToEdit, setCurrentMovieToEdit] = useState(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [movieToDelete, setMovieToDelete] = useState(null);
     
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
 
-    useEffect(() => {
-        const fetchMovies = async () => {
-            console.log('useEffect trong MovieListPage đang chạy!');
-            try {
-                setIsLoading(true);
-                setError(null);
-                const data = await movieService.getAllMovies();
+    const [filters, setFilters] = useState({
+        keyword: '',
+        movieStatus: '',
+        genreIds: [],
+    });
+
+    // Debounced fetch để tránh spam API
+    const [debouncedFilters] = useDebounce(filters, 500);
+
+    // Hàm fetch được trừu tượng hóa để tái sử dụng
+    const fetchMovies = useCallback(async (page) => {
+        console.log(`Đang tải trang: ${page} với filters:`, debouncedFilters);
+        try {
+            setIsLoading(true);
+            setError(null);
+            const data = await movieService.getAllMovies(page, 10, debouncedFilters);
+            if (data && data.content) {
                 setMovies(data.content);
-            } catch (err) {
-                setError('Lỗi khi tải danh sách phim.');
-                console.error(err);
-            } finally {
-                setIsLoading(false);
+                setTotalPages(data.totalPages || 0);
+            } else {
+                throw new Error('Response API không hợp lệ');
             }
-        };
+        } catch (err) {
+            setError('Lỗi khi tải danh sách phim.');
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [debouncedFilters]);
+    // useEffect chính để gọi API khi page hoặc filters thay đổi
+    useEffect(() => {
+        fetchMovies(currentPage);
+    }, [currentPage, fetchMovies]);
 
-        fetchMovies();
+    // Handler cho filter changes
+    const handleFilterChange = useCallback((newFilters) => {
+        setFilters(newFilters);
+        setCurrentPage(0); // Reset page khi filter thay đổi
     }, []);
 
-    const handleAddMovie = async (newMovieData) => {
+    const handleAddMovie = useCallback(async (newMovieData) => {
         try {
-            const newMovie = await movieService.createMovie(newMovieData);
-            setMovies([newMovie, ...movies]);
+            setIsAdding(true);
+            setError(null);
+            await movieService.createMovie(newMovieData);
+            // Refetch ngay lập tức trang đầu để hiển thị phim mới
+            await fetchMovies(0);
             setIsAddModalOpen(false);
+            setCurrentPage(0); // Cập nhật UI pagination về trang đầu
         } catch (err) {
-            alert('Lỗi khi thêm phim mới.');
+            setError('Lỗi khi thêm phim mới.');
+            console.error(err);
+        } finally {
+            setIsAdding(false);
         }
-    };
+    }, [fetchMovies]);
 
-    const handleUpdateMovie = async (updatedMovie) => {
+    const handlePageChange = useCallback((pageNumber) => {
+        setCurrentPage(pageNumber);
+    }, []);
+
+    const handleUpdateMovie = useCallback(async (updatedMovieData) => {
         try {
-            const savedMovie = await movieService.updateMovie(updatedMovie.id, updatedMovie);
-            setMovies(movies.map(movie =>
-                movie.id === savedMovie.id ? savedMovie : movie
-            ));
+            setIsUpdating(true);
+            setError(null);
+            await movieService.updateMovie(updatedMovieData.id, updatedMovieData);
+            await fetchMovies(currentPage); // Refetch trang hiện tại ngay lập tức
             setIsEditModalOpen(false);
             setCurrentMovieToEdit(null);
         } catch (err) {
-            alert('Lỗi khi cập nhật phim.');
+            setError('Đã xảy ra lỗi khi cập nhật phim!');
+            console.error(err);
+        } finally {
+            setIsUpdating(false);
         }
-    };
+    }, [currentPage, fetchMovies]);
 
-    const handleConfirmDelete = async () => {
-        if(!movieToDelete) return;
+    const handleConfirmDelete = useCallback(async () => {
+        if (!movieToDelete) return;
         try {
+            setIsDeleting(true);
+            setError(null);
             await movieService.deleteMovie(movieToDelete.id);
-            setMovies(movies.filter(movie => movie.id !== movieToDelete.id));
-            setIsDeleteModalOpen(false); 
-            setMovieToDelete(null);      
+            // Refetch ngay lập tức trang đầu sau delete
+            await fetchMovies(0);
+            setCurrentPage(0); // Reset về trang đầu
+            setIsDeleteModalOpen(false);
+            setMovieToDelete(null);
         } catch (err) {
-            alert('Lỗi khi xóa phim.');
+            setError('Lỗi khi xóa phim.');
+            console.error(err);
+        } finally {
+            setIsDeleting(false);
         }
-    };
+    }, [movieToDelete, fetchMovies]);
 
-    const handleDeleteClick = (movie) => {
-        setMovieToDelete(movie);    
-        setIsDeleteModalOpen(true); 
-    };
+    const handleDeleteClick = useCallback((movie) => {
+        setMovieToDelete(movie);
+        setIsDeleteModalOpen(true);
+    }, []);
 
-    const handleEditClick = (movie) => {
-        setCurrentMovieToEdit(movie); 
-        setIsEditModalOpen(true);   
-    };
+    const handleEditClick = useCallback((movie) => {
+        setCurrentMovieToEdit(movie);
+        setIsEditModalOpen(true);
+    }, []);
 
-    const handleCancelDelete = () => {
+    const handleCancelDelete = useCallback(() => {
         setIsDeleteModalOpen(false);
         setMovieToDelete(null);
-    };
+    }, []);
 
     const renderLoading = () => {
         if (isLoading) {
             return <p>Đang tải danh sách phim...</p>;
         }
         if (error) {
-            return <p className="page-error-message">{error}</p>;   
+            return <p className="page-error-message">{error}</p>;
         }
         return (
-            <MovieTable 
-                movies={movies} 
-                onEditClick={handleEditClick} 
+            <MovieTable
+                movies={movies}
+                onEditClick={handleEditClick}
                 onDeleteClick={handleDeleteClick}
             />
         );
@@ -113,16 +161,32 @@ const MovieListPage = () => {
                 </button>
             </div>
 
-            <MovieTable movies={movies} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick}/>
+            {/* Thêm MovieFilter */}
+            <MovieFilter 
+                filters={filters} 
+                onFilterChange={handleFilterChange} 
+            />
 
-            <Modal 
-                isOpen={isAddModalOpen} 
-                onClose={() => setIsAddModalOpen(false)} 
+            {renderLoading()}
+
+            {!isLoading && totalPages > 0 && (
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
+            )}
+
+            {/* Modals giữ nguyên */}
+            <Modal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
                 title="Thêm Phim Mới"
             >
-                <AddMovieForm 
+                <AddMovieForm
                     onAddMovie={handleAddMovie}
                     onClose={() => setIsAddModalOpen(false)}
+                    isLoading={isAdding}
                 />
             </Modal>
 
@@ -135,6 +199,7 @@ const MovieListPage = () => {
                     movieToEdit={currentMovieToEdit}
                     onUpdateMovie={handleUpdateMovie}
                     onClose={() => setIsEditModalOpen(false)}
+                    isLoading={isUpdating}
                 />
             </Modal>
 
@@ -144,22 +209,26 @@ const MovieListPage = () => {
                 title="Xác nhận Xóa Phim"
             >
                 <div className="confirm-delete-content">
-                    <p>Bạn có chắc chắn muốn xóa bộ phim 
+                    <p>Bạn có chắc chắn muốn xóa bộ phim
                        <strong> "{movieToDelete?.title}"</strong>?
                        <br/>Hành động này không thể hoàn tác.
                     </p>
                     <div className="form-actions">
-                        <button 
-                            type="button" 
-                            className="btn-cancel" 
-                            onClick={handleCancelDelete}>
+                        <button
+                            type="button"
+                            className="btn-cancel"
+                            onClick={handleCancelDelete}
+                            disabled={isDeleting}
+                        >
                             Hủy
                         </button>
-                        <button 
-                            type="button" 
-                            className="btn-submit-danger" 
-                            onClick={handleConfirmDelete}>
-                            Xác nhận Xóa
+                        <button
+                            type="button"
+                            className="btn-submit-danger"
+                            onClick={handleConfirmDelete}
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? 'Đang xóa...' : 'Xác nhận Xóa'}
                         </button>
                     </div>
                 </div>

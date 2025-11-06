@@ -6,8 +6,10 @@ import jakarta.persistence.*;
 import jakarta.transaction.UserTransaction;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,7 +54,7 @@ public class Movie {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    MovieStatus movieStatus;
+    MovieStatus movieStatus = MovieStatus.COMING_SOON;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -62,4 +64,18 @@ public class Movie {
     )
     Set<Genre> genres = new HashSet<>();
 
+    @CreationTimestamp
+    @Column(name = "create_at", updatable = false)
+    LocalDateTime createAt;
+
+    @CreationTimestamp
+    @Column(name = "update_at", updatable = false)
+    LocalDateTime updateAt;
+
+    @PrePersist
+    public void prePersist(){
+        if(this.createAt == null){
+            this.createAt = LocalDateTime.now();
+        }
+    }
 }

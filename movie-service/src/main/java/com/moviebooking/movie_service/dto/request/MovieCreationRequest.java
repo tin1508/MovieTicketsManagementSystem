@@ -42,6 +42,8 @@ public class MovieCreationRequest {
     @NotNull(message = "Age rating is required")
     AgeRating ageRating;
 
+    @NotNull(message = "Movie status is required")
+    MovieStatus movieStatus;
 
     @NotEmpty(message = "Movie must have at least one genre")
     List<Long> genreIds;

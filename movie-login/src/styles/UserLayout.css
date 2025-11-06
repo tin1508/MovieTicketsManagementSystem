@@ -1,0 +1,95 @@
+/* --- Trang Chủ & Trang Chi Tiết --- */
+
+/* Bố cục trang chủ */
+.homepage-container {
+    max-width: 1300px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Mỗi khu vực (Đang chiếu, Sắp chiếu) */
+.movie-section {
+    margin-bottom: 3rem;
+}
+
+.movie-section h2 {
+    color: #e94560; /* Màu đỏ chủ đạo */
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #0f3460;
+    padding-bottom: 0.5rem;
+}
+
+/* Lưới hiển thị các thẻ phim */
+.movie-grid {
+    display: grid;
+    /* Hiển thị 5 cột trên màn lớn, 2 cột trên mobile */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+/* --- Trang Chi Tiết Phim --- */
+.movie-detail-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color: #16213e; /* Nền dark-mode */
+    border-radius: 8px;
+    color: #e0e0e0; /* Màu chữ sáng */
+}
+
+.movie-detail-container h1 {
+    color: #e94560; /* Màu đỏ chủ đạo */
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.movie-detail-content {
+    display: flex;
+    gap: 2rem;
+}
+
+/* Poster ở trang chi tiết */
+.movie-detail-poster {
+    width: 300px;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+    background-color: #0f3460;
+}
+
+/* Thông tin ở trang chi tiết */
+.movie-detail-info {
+    flex: 1;
+    line-height: 1.7;
+}
+
+.movie-detail-info p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.movie-detail-info strong {
+    color: #c4c3ca; /* Màu xám sáng hơn */
+    margin-right: 8px;
+}
+
+/* CSS cho Responsive (Mobile) */
+@media (max-width: 768px) {
+    .movie-detail-content {
+        flex-direction: column; /* Xếp dọc trên mobile */
+    }
+    
+    .movie-detail-poster {
+        width: 100%; /* Chiếm 100% chiều rộng */
+        max-width: 350px; /* Giới hạn để không quá to */
+        margin: 0 auto; /* Căn giữa */
+    }
+    
+    .movie-grid {
+        /* Hiển thị 2 cột trên mobile */
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+}

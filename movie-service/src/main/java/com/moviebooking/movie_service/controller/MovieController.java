@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -58,7 +59,7 @@ public class MovieController {
                 .build();
     }
 
-    @PatchMapping("/{movieId}")
+    @PutMapping("/{movieId}")
     ApiResponse<MovieResponse> updateMovie(@PathVariable String movieId, @RequestBody @Valid MovieUpdateRequest request){
         return ApiResponse.<MovieResponse>builder()
                 .result(movieService.updateMovie(movieId,request))
@@ -70,7 +71,7 @@ public class MovieController {
             @ModelAttribute MovieFilterRequest movieFilterRequest,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "releaseDate") String sortBy,
+            @RequestParam(defaultValue = "createAt") String sortBy,
             @RequestParam(defaultValue = "DESC") String sortDir
     ) {
         Sort sort = sortDir.equalsIgnoreCase("ASC")
@@ -120,7 +121,7 @@ public class MovieController {
             @RequestParam(defaultValue = "10") int size
     ) {
         MovieFilterRequest movieFilterRequest = new MovieFilterRequest();
-        movieFilterRequest.setGenreId(genreId);
+        movieFilterRequest.setGenreIds(List.of(genreId));
 
         Pageable pageable = PageRequest.of(page, size);
 

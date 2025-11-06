@@ -1,0 +1,53 @@
+/* --- MovieCard.css --- */
+
+.movie-card {
+    background-color: #1a1a2e; /* Tái sử dụng màu nền dark-mode */
+    border-radius: 8px;
+    overflow: hidden; /* Đảm bảo bo tròn góc cho ảnh */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #0f3460; /* Tái sử dụng màu border */
+}
+
+/* Hiệu ứng khi hover */
+.movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Bỏ gạch chân link */
+.movie-card a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+/* Poster phim */
+.movie-card-poster {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3; /* Giữ tỷ lệ 2:3 (poster chuẩn) */
+    object-fit: cover; /* Đảm bảo ảnh lấp đầy khung */
+    display: block;
+    background-color: #0f3460; /* Màu nền chờ */
+}
+
+/* Thông tin (tên phim) */
+.movie-card-info {
+    padding: 1rem;
+}
+
+.movie-card-title {
+    color: #e0e0e0; /* Màu chữ sáng */
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    
+    /* Tránh tên phim quá dài (hiển thị 2 dòng) */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 2.2rem; /* Đảm bảo chiều cao 2 dòng */
+}

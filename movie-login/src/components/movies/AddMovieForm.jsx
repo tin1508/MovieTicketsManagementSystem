@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import '../../styles/MovieListPage.css'; // Tái sử dụng một số style
 import { getAllGenres } from '../../services/genreService';
+
 
 const AddMovieForm = ({ onAddMovie, onClose }) => {
     const [title, setTitle] = useState('');
     const [director, setDirector] = useState('');
     const [releaseDate, setReleaseDate] = useState('');
-    const [status, setStatus] = useState('Sắp chiếu');
+    const [status, setStatus] = useState('COMING_SOON');
     const [ageRating, setAgeRating] = useState('T13');  
     const [duration, setDuration] = useState('');
     const [selectedGenres, setSelectedGenres] = useState(new Set());
     const [allGenres, setAllGenres] = useState([]);
     const [description, setDescription] = useState('');
-
     const [error, setError] = useState('');
+
+    const [isGenresDropDownOpen, setIsGenresDropdownOpen] = useState(false);
+    const genreRef = useRef(null);
 
     useEffect(() => {
         // Giả sử chúng ta có một hàm fetchGenres để lấy danh sách thể loại từ API
@@ -30,6 +33,18 @@ const AddMovieForm = ({ onAddMovie, onClose }) => {
         }
         fetchGenres();
     }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (genreRef.current && !genreRef.current.contains(event.target)) {
+                setIsGenresDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [genreRef]);
 
     const handleGenreChange = (genreId) => {
         const newSelectedGenres = new Set(selectedGenres);
@@ -56,6 +71,28 @@ const AddMovieForm = ({ onAddMovie, onClose }) => {
             return;
         }
 
+        if (status === 'COMING_SOON') {
+            if (!releaseDate) {
+                setError('Phim "Sắp chiếu" bắt buộc phải có Ngày phát hành.');
+                return;
+            }
+
+            // Tạo đối tượng Date cho ngày hôm nay (chỉ lấy ngày, bỏ qua giờ)
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); 
+
+            // Tạo đối tượng Date cho ngày phát hành (cần +1 ngày do múi giờ)
+            const releaseDateObj = new Date(releaseDate);
+            releaseDateObj.setDate(releaseDateObj.getDate() + 1);
+            releaseDateObj.setHours(0, 0, 0, 0);
+
+            // So sánh
+            if (releaseDateObj < today) {
+                setError('Ngày phát hành của phim "Sắp chiếu" phải là hôm nay hoặc trong tương lai.');
+                return;
+            }
+        }
+
         if (!title || !director) {
             alert('Tên phim và Đạo diễn là bắt buộc!');
             return;
@@ -67,7 +104,7 @@ const AddMovieForm = ({ onAddMovie, onClose }) => {
             director,
             description,
             releaseDate,
-            status,
+            movieStatus: status,
             ageRating,
             duration: numericDuration,
             genreIds: Array.from(selectedGenres),
@@ -109,7 +146,7 @@ const AddMovieForm = ({ onAddMovie, onClose }) => {
                 <label>Trạng thái</label>
                 <select value={status} onChange={(e) => setStatus(e.target.value)}>
                     <option value="COMING_SOON">Sắp chiếu</option>
-                    <option value="ON_SHOWING">Đang chiếu</option>
+                    <option value="NOW_SHOWING">Đang chiếu</option>
                     <option value="ENDED">Đã chiếu</option>
                 </select>
             </div>
@@ -125,21 +162,30 @@ const AddMovieForm = ({ onAddMovie, onClose }) => {
                 </select>
             </div>
 
-            <div className="form-group">
+            <div className="form-group" ref={genreRef}>
                 <label>Thể loại</label>
-                <div className="genre-checkbox-group">
-                    {allGenres.length > 0 ? allGenres.map((genre) => (
-                        <div key={genre.id} className="genre-checkbox-item">
-                            <input
-                                type="checkbox"
-                                id ={`genre-${genre.id}`}
-                                checked={selectedGenres.has(genre.id)}
-                                onChange={() => handleGenreChange(genre.id)}
-                            />
-                            <label htmlFor={`genre-${genre.id}`}>{genre.name}</label>
-                        </div>
-                    )) : <p>Đang tải thể loại...</p>}
+                <div className="genre-select-trigger" onClick={() => setIsGenresDropdownOpen(!isGenresDropDownOpen)}>
+                    {selectedGenres.size === 0
+                        ? "Chọn thể loại..."
+                        : `Đã chọn ${selectedGenres.size} thể loại`}
+                    <span className="dropdown-arrow">{isGenresDropDownOpen ? '▲' : '▼'}</span>
                 </div>
+
+                {isGenresDropDownOpen && (
+                    <div className="genre-checkbox-group">
+                        {allGenres.length > 0 ? allGenres.map((genre) => (
+                            <div key={genre.id} className="genre-checkbox-item">
+                                <input
+                                    type="checkbox"
+                                    id ={`genre-${genre.id}`}
+                                    checked={selectedGenres.has(genre.id)}
+                                    onChange={() => handleGenreChange(genre.id)}
+                                />
+                                <label htmlFor={`genre-${genre.id}`}>{genre.name}</label>
+                            </div>
+                        )) : <p>Đang tải thể loại...</p>}
+                    </div>
+                )}
             </div>
 
             <div className="form-actions">

@@ -5,6 +5,8 @@ import com.moviebooking.movie_service.enums.MovieStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -13,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 public class MovieFilterRequest {
     String keyword;
     MovieStatus movieStatus;
-    Long genreId;
+    List<Long> genreIds;
     AgeRating ageRating;
     Double minRating;
     Double maxRating;
