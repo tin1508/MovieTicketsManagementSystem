@@ -36,6 +36,7 @@ public class GenreMapperImpl implements GenreMapper {
 
         GenreResponse.GenreResponseBuilder genreResponse = GenreResponse.builder();
 
+        genreResponse.id( genre.getId() );
         genreResponse.name( genre.getName() );
         genreResponse.description( genre.getDescription() );
 

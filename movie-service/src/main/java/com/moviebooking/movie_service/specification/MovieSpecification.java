@@ -12,54 +12,47 @@ import org.springframework.data.jpa.domain.Specification;
 public class MovieSpecification {
     // Tìm phim có title chứa một từ khóa (keyword)
     // Tương đương: Where movie.title LIKE %KeyWord%
-    public static Specification<Movie> titleContains(String keyword){
-        return (root, query, criteriaBuilder) -> {
-           if (keyword == null || keyword.isEmpty()){
-               return criteriaBuilder.disjunction();
-           }
-
-           return criteriaBuilder.like(
-                   criteriaBuilder.lower(root.get("title")),
-                   "%" + keyword.toLowerCase() + "%"
-           );
-        };
-    }
-
     public static Specification<Movie> relaseAfterOn(Integer year){
         return (root, query, criteriaBuilder) -> {
-            if (year == null) return criteriaBuilder.disjunction();
+            if (year == null) return criteriaBuilder.conjunction();
 
             Expression<Integer> yearExpression = criteriaBuilder.function(
                     "YEAR",
                     Integer.class,
-                    root.get("realeaseData")
+                    root.get("releaseDate")
             );
 
             return criteriaBuilder.greaterThanOrEqualTo(yearExpression, year);
         };
     }
 
-    public static Specification<Movie> hasStatus (MovieStatus status){
+    public static Specification<Movie> hasStatus (MovieStatus movieStatus){
         return (root, query, criteriaBuilder) -> {
-            if(status == null) return criteriaBuilder.disjunction();
+            if(movieStatus == null) return criteriaBuilder.conjunction();
 
-            return criteriaBuilder.equal(root.get("movieStatus"), status);
+            return criteriaBuilder.equal(root.get("movieStatus"), movieStatus);
         };
     }
 
     public static Specification<Movie> hasKeyword(String keyword){
         return (root, query, criteriaBuilder) -> {
-            if (keyword == null || keyword.isEmpty()) return criteriaBuilder.disjunction();
+            if (keyword == null || keyword.isEmpty()) return criteriaBuilder.conjunction();
 
-            return criteriaBuilder.like(
+            var titlePredicate = criteriaBuilder.like(
                     criteriaBuilder.lower(root.get("description")),
-                    "%" + keyword + "%");
+                    "%" + keyword.toLowerCase() + "%");
+
+            var descriptionPredicate = criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("title")),
+                    "%" + keyword.toLowerCase() + "%");
+
+            return criteriaBuilder.or(titlePredicate, descriptionPredicate);
         };
     }
 
     public static Specification<Movie> hasGenre(Long genreId){
         return (root, query, criteriaBuilder) -> {
-            if (genreId == null) return criteriaBuilder.disjunction();
+            if (genreId == null) return criteriaBuilder.conjunction();
 
             query.distinct(true);
 
@@ -71,7 +64,7 @@ public class MovieSpecification {
 
     public static Specification<Movie> hasAgeRating(AgeRating ageRating){
         return (root, query, criteriaBuilder) -> {
-            if (ageRating == null) return criteriaBuilder.disjunction();
+            if (ageRating == null) return criteriaBuilder.conjunction();
 
             return criteriaBuilder.equal(root.get("ageRating"), ageRating);
         };
@@ -79,14 +72,14 @@ public class MovieSpecification {
 
     public static Specification<Movie> ratingBetween(Double minRating, Double maxRating){
         return (root, query, criteriaBuilder) -> {
-            if (minRating == null && maxRating == null) return criteriaBuilder.disjunction();
+            if (minRating == null && maxRating == null) return criteriaBuilder.conjunction();
 
             if (minRating != null && maxRating != null) {
-                criteriaBuilder.between(root.get("rating"), minRating, maxRating);
+                return criteriaBuilder.between(root.get("rating"), minRating, maxRating);
             }
 
             if (minRating != null){
-                criteriaBuilder.greaterThanOrEqualTo(root.get("rating"), minRating);
+                return criteriaBuilder.greaterThanOrEqualTo(root.get("rating"), minRating);
             }
 
             return  criteriaBuilder.lessThanOrEqualTo(root.get("rating"), maxRating);

@@ -1,6 +1,6 @@
 package com.moviebooking.movie_service.service;
 
-import com.moviebooking.movie_service.dto.request.ApiResponse;
+import com.moviebooking.movie_service.dto.response.ApiResponse;
 import com.moviebooking.movie_service.dto.request.MovieCreationRequest;
 import com.moviebooking.movie_service.dto.request.MovieFilterRequest;
 import com.moviebooking.movie_service.dto.request.MovieUpdateRequest;
@@ -46,12 +46,13 @@ public class MovieService {
         if (request.getGenreIds() != null && !request.getGenreIds().isEmpty()){
             log.info("ĐÃ ĐI VÀO KHỐI IF. Số lượng genreIds: {}", request.getGenreIds().size());
 
-            Set<Genre> genres = new HashSet<>();
-            for (Long genreId: request.getGenreIds()){
-                Genre genre = genreRepository.findById(genreId)
-                        .orElseThrow(() -> new AppException((ErrorCode.GENRE_NOT_FOUND)));
-                genres.add(genre);
+            List<Genre> genreList = genreRepository.findAllById(request.getGenreIds());
+
+            if (genreList.size() != request.getGenreIds().size()){
+                throw new AppException(ErrorCode.GENRE_NOT_FOUND);
             }
+
+            Set<Genre> genres = new HashSet<>(genreList);
             movie.setGenres(genres);
         }
 
@@ -64,14 +65,10 @@ public class MovieService {
     }
 
     public void deleteMovie(String id){
-        movieRepository.deleteById(id);
-    }
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
 
-    public List<MovieResponse> getAllMovies(){
-        return movieRepository.findAll()
-                .stream()
-                .map(movieMapper::toMovieResponse)
-                .toList();
+        movieRepository.delete(movie);
     }
 
     public MovieResponse updateMovie(String movieId, MovieUpdateRequest request){
@@ -94,29 +91,17 @@ public class MovieService {
             }
         }
 
+        if (request.getTrailerUrl() != null){
+            if (request.getTrailerUrl().isEmpty()){
+                movie.setTrailerUrl(null);
+            } else {
+                movie.setTrailerUrl(request.getTrailerUrl());
+            }
+        }
+
         movieMapper.updateMovie(movie, request);
 
         return movieMapper.toMovieResponse(movieRepository.save(movie));
-    }
-
-    public ApiResponse<List<MovieResponse>> searchMovie(String keyword, Integer year){
-        Specification<Movie> specification = Specification.unrestricted();
-
-        if (keyword != null && !keyword.isEmpty()){
-            specification = specification.and(MovieSpecification.titleContains(keyword));
-        }
-
-        if (year != null){
-            specification = specification.and(MovieSpecification.relaseAfterOn(year));
-        }
-
-        List<Movie> movies = movieRepository.findAll(specification);
-
-        List<MovieResponse> movieResponses = movies.stream().map(movieMapper::toMovieResponse).toList();
-
-        return ApiResponse.<List<MovieResponse>>builder()
-                .result(movieResponses)
-                .build();
     }
 
 
@@ -150,7 +135,7 @@ public class MovieService {
 
         if (request.getMinRating() != null || request.getMaxRating() != null){
             specification = specification.and(MovieSpecification.ratingBetween(
-                    request.getMinRating(), request.getMinRating()));
+                    request.getMinRating(), request.getMaxRating()));
         }
 
         if (request.getYear() != null){

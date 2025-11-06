@@ -2,6 +2,7 @@ package com.moviebooking.movie_service.dto.request;
 
 import com.moviebooking.movie_service.enums.AgeRating;
 import com.moviebooking.movie_service.enums.MovieStatus;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,16 +15,34 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MovieUpdateRequest {
+    @NotBlank(message = "Movie title cannot be blank")
+    @Size(max = 255)
     String title;
-    String director;
-    String description;
-    Integer duration;
-    Double rating;
-    LocalDate releaseDate;
-    String posterUrl;
-    String trailerUrl;
-    AgeRating ageRating;
-    MovieStatus movieStatus;
 
+    @NotBlank(message = "Director name cannot be blank")
+    @Size(max = 100)
+    String director;
+
+    @Size(max = 2000, message = "Description is too long")
+    String description;
+
+    @NotNull(message = "Duration is required")
+    @Positive(message = "Duration must be a positive number")
+    Integer duration;
+
+    @NotNull(message = "Release date is required")
+    LocalDate releaseDate;
+
+    @Size(max = 500)
+    String posterUrl;
+
+    @Size(max = 500)
+    String trailerUrl;
+
+    @NotNull(message = "Age rating is required")
+    AgeRating ageRating;
+
+
+    @NotEmpty(message = "Movie must have at least one genre")
     List<Long> genreIds;
 }

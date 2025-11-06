@@ -1,6 +1,7 @@
 package com.moviebooking.movie_service.controller;
 
-import com.moviebooking.movie_service.dto.request.ApiResponse;
+import com.moviebooking.movie_service.dto.request.GenreUpdateRequest;
+import com.moviebooking.movie_service.dto.response.ApiResponse;
 import com.moviebooking.movie_service.dto.request.GenreCreationRequest;
 import com.moviebooking.movie_service.dto.response.GenreResponse;
 import com.moviebooking.movie_service.service.GenreService;
@@ -26,7 +27,7 @@ public class GenreController {
     }
 
     @DeleteMapping("/{genreId}")
-    ApiResponse<String> deleteGerne(@PathVariable Long genreId){
+    ApiResponse<String> deleteGenre(@PathVariable Long genreId){
         genreService.deleteGenre(genreId);
         return ApiResponse.<String>builder()
                 .result("Genre has been removed")
@@ -44,6 +45,13 @@ public class GenreController {
     ApiResponse<List<GenreResponse>> getAllGenres(){
         return ApiResponse.<List<GenreResponse>>builder()
                 .result(genreService.getAllGenres())
+                .build();
+    }
+
+    @PatchMapping("/{genreId}")
+    ApiResponse<GenreResponse> updateGenre(@PathVariable Long genreId, GenreUpdateRequest request){
+        return ApiResponse.<GenreResponse>builder()
+                .result(genreService.updateGenre(genreId, request))
                 .build();
     }
 }
