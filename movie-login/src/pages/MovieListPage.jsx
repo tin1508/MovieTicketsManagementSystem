@@ -7,6 +7,7 @@ import EditMovieForm from '../components/movies/EditMovieForm';
 import * as movieService from '../services/movieService';
 import Pagination from '../components/common/Pagination';
 import MovieFilter from '../components/movies/MovieFilter';
+import UploadPosterForm from '../components/movies/UploadPosterForm';
 
 const MovieListPage = () => {
     const [movies, setMovies] = useState([]);
@@ -21,6 +22,10 @@ const MovieListPage = () => {
     const [currentMovieToEdit, setCurrentMovieToEdit] = useState(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [movieToDelete, setMovieToDelete] = useState(null);
+    
+    const [movieToUpload, setMovieToUpload] = useState(null);
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -136,6 +141,35 @@ const MovieListPage = () => {
         setMovieToDelete(null);
     }, []);
 
+    const handleUploadClick = useCallback((movie) => {
+        setMovieToUpload(movie);
+        setIsUploadModalOpen(true);
+    }, []);
+
+    const handleUploadModalClose = () => {
+        setIsUploadModalOpen(false);
+        setMovieToUpload(null);
+    };
+
+    const handleUploadSubmit = async (file) => {
+        if (!movieToUpload) return;
+
+        setIsUploading(true);
+        setError(null); // Xóa lỗi cũ
+        try {
+            await movieService.uploadPoster(movieToUpload.id, file);
+            
+            // Tải lại dữ liệu trang hiện tại để cập nhật ảnh
+            await fetchMovies(currentPage); 
+            
+            handleUploadModalClose(); // Đóng modal
+        } catch (err) {
+            setError('Lỗi khi tải poster. Vui lòng thử lại.');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
     const renderLoading = () => {
         if (isLoading) {
             return <p>Đang tải danh sách phim...</p>;
@@ -148,6 +182,7 @@ const MovieListPage = () => {
                 movies={movies}
                 onEditClick={handleEditClick}
                 onDeleteClick={handleDeleteClick}
+                onUploadClick={handleUploadClick}
             />
         );
     };
@@ -200,6 +235,19 @@ const MovieListPage = () => {
                     onUpdateMovie={handleUpdateMovie}
                     onClose={() => setIsEditModalOpen(false)}
                     isLoading={isUpdating}
+                />
+            </Modal>
+
+            <Modal
+                isOpen={isUploadModalOpen}
+                onClose={handleUploadModalClose}
+                title="Tải lên Poster"
+            >
+                <UploadPosterForm
+                    movie={movieToUpload}
+                    onClose={handleUploadModalClose}
+                    onUploadSuccess={handleUploadSubmit}
+                    isLoading={isUploading}
                 />
             </Modal>
 

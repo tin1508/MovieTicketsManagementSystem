@@ -33,7 +33,7 @@ public class FileStorageService {
         // Đảm bảo thư mục tồn tại, tạo thư mục nếu chưa có
         // Sao chép (lưu) file vào ổ đĩa server
         // Trả về URL công khai
-        validateFle(file);
+        validateFile(file);
 
         String filename = generateFileName(file);
         Path uploadPath = getUploadPath(category);
@@ -79,27 +79,30 @@ public class FileStorageService {
         }
     }
 
-    private void validateFle(MultipartFile file){
-        if (file.isEmpty()){
+    private void validateFile(MultipartFile file) {
+        if (file.isEmpty()) {
             throw new AppException(ErrorCode.INVALID_FILE_TYPE);
         }
 
         String originalFileName = file.getOriginalFilename();
-
-        if (originalFileName != null && originalFileName.contains("...")){
+        if (originalFileName != null && originalFileName.contains("..")) {
             throw new AppException(ErrorCode.INVALID_FILE_PATH);
         }
 
-        if (file.getSize() > fileStorageProperties.getMaxSize()){
+        if (file.getSize() > fileStorageProperties.getMaxSize()) {
             throw new AppException(ErrorCode.FILE_TOO_LARGE);
         }
 
         String contentType = file.getContentType();
+        if (contentType != null && contentType.equals("image/jpg")) {
+            contentType = "image/jpeg";
+        }
 
-        if (contentType != null || !fileStorageProperties.getAllowedTypes().contains("...")){
+        if (contentType == null || !fileStorageProperties.getAllowedTypes().contains(contentType)) {
             throw new AppException(ErrorCode.INVALID_FILE_TYPE);
         }
     }
+
 
     // Tạo tên file dưới dạng UUID + đuôi của file gốc (ví dụ .png)
     private String generateFileName(MultipartFile file){
@@ -139,11 +142,8 @@ public class FileStorageService {
         // .path("/uploads"): nối thêm chỗi uploads, tương tự với category, filename.
         // Cuối cùng .toUristring() là để nối tất cả lại thành một chuỗi URL.
         return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/uploads")
-                .path(category)
-                .path("/")
-                .path(fileName)
-                .toUriString();
+                .path("/uploads/" + category + "/" + fileName).toUriString();
+
     }
 
     private String extractFileNameFormUrl(String fileUrl){

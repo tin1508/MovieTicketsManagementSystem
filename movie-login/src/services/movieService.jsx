@@ -3,8 +3,8 @@ import * as genreService from './genreService';
 const API_URL = 'http://localhost:8080/api/v1/movies';
 
 export const getAllMovies = async (page = 0, size = 10, filters = {}) => {
-    const { keyword, movieStatus, genreIds } = filters; // Lấy ra mảng genreIds
-
+    // 1. (Giữ nguyên) Xây dựng params
+    const { keyword, movieStatus, genreIds } = filters;
     const params = new URLSearchParams();
     params.append('page', page);
     params.append('size', size);
@@ -13,24 +13,58 @@ export const getAllMovies = async (page = 0, size = 10, filters = {}) => {
         params.append('keyword', keyword);
     }
     if (movieStatus) {
-        params.append('movieStatus', movieStatus);
+        params.append('movieStatus', movieStatus); 
     }
-
-    // THAY ĐỔI QUAN TRỌNG LÀ Ở ĐÂY
     if (genreIds && genreIds.length > 0) {
-        // Thay vì: params.append('genreIds', genreIds.join(','));
-        // Dùng:
         genreIds.forEach(id => params.append('genreIds', id));
-        // Điều này sẽ tạo ra URL: ...&genreIds=4&genreIds=7
     }
 
     try {
-        // Dùng API_URL của bạn
-        const response = await axios.get(`${API_URL}?${params.toString()}`);
-        return response.data;
+        // 2. (Giữ nguyên) Cấu hình gọi API
+        const response = await axios.get(`${API_URL}?${params.toString()}`, {
+            headers: {
+                'Authorization': null 
+            }
+        }); 
+        // 3. (SỬA LỖI) Unpack dữ liệu trước khi trả về
+        if (response.data && response.data.result) {
+            // Trả về object Page { content: [...], totalPages: X }
+            return response.data.result; 
+        } else {
+            // Fallback nếu API trả về { content: [...] } trực tiếp
+            if (response.data && response.data.content) {
+                return response.data;
+            }
+            // Nếu không, ném lỗi
+            throw new Error('Cấu trúc API movies không hợp lệ');
+        }
+    
     } catch (error) {
         console.error('Lỗi khi tải danh sách phim:', error);
         throw error;
+    }
+};
+
+export const uploadPoster = async (movieId, file) => {
+    // 1. Tạo đối tượng FormData
+    const formData = new FormData();
+    formData.append('file', file); // 'file' phải khớp với @RequestParam("file") của backend
+
+    try {
+        // 2. Gọi API POST đến /movies/{id}/poster
+        const response = await axios.post(`${API_URL}/${movieId}/poster`, formData, {
+            headers: {
+                // 3. Quan trọng: Báo cho axios đây là dữ liệu 'multipart/form-data'
+                'Content-Type': 'multipart/form-data', 
+            }
+        });
+        
+        // Trả về dữ liệu (ApiResponse { result: { url: "..." } })
+        return response.data;
+
+    } catch (error) {
+        console.error('Lỗi khi tải poster:', error.response?.data || error);
+        throw error.response?.data || error;
     }
 };
 

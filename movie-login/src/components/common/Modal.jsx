@@ -1,7 +1,7 @@
 import React from 'react';
 import '../../styles/Modal.css'; // Sẽ tạo file này ngay sau đây
 
-const Modal = ({ isOpen, onClose, title, children }) => {
+const Modal = ({ isOpen, onClose, title, children, customClass = '' }) => {
     if (!isOpen) {
         return null; // Không render gì cả nếu modal không mở
     }

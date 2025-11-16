@@ -13,6 +13,7 @@ import com.moviebooking.movie_service.mapper.MovieMapper;
 import com.moviebooking.movie_service.repository.GenreRepository;
 import com.moviebooking.movie_service.repository.MovieRepository;
 import com.moviebooking.movie_service.specification.MovieSpecification;
+import jakarta.persistence.criteria.JoinType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -154,4 +155,5 @@ public class MovieService {
 
         return specification;
     }
+
 }

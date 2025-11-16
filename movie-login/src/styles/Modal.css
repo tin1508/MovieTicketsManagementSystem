@@ -47,3 +47,39 @@
     font-size: 2rem;
     cursor: pointer;
 }
+
+/* Thêm vào Modal.css (hoặc file CSS chung) */
+
+/* Nút "Chọn ảnh..." tùy chỉnh */
+.file-upload-label {
+    display: inline-block;
+    padding: 10px 15px;
+    /* Dùng màu xanh dương (giống nút Sửa) */
+    background-color: #007bff; 
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+}
+.file-upload-label:hover {
+    background-color: #0056b3;
+}
+
+/* Ẩn nút input file mặc định */
+.upload-poster-form input[type="file"] {
+    display: none;
+}
+
+/* Xem trước ảnh */
+.image-preview {
+    margin-top: 1rem;
+    text-align: center;
+    border: 1px dashed #0f3460;
+    padding: 10px;
+    border-radius: 5px;
+}
+.image-preview img {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+}

@@ -103,8 +103,10 @@ public class MovieSpecification {
     }
 
     public static Specification<Movie> isActive() {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.isTrue(root.get("isActive"));
+        return (root, query, criteriaBuilder) -> {
+            Expression<Boolean> isActiveExpression = root.get("isActive");
+            return criteriaBuilder.equal(isActiveExpression, true);
+        };
     }
 
 }

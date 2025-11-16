@@ -1,0 +1,295 @@
+/* styles/UserNavbar.css - PHIÊN BẢN FIX CUỐI CÙNG */
+
+/* Container chính của header */
+header.main-header {
+    background-color: #1a1a2e; 
+    color: #e0e0e0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* 1. THANH NAV CHÍNH (TRÊN) */
+header.main-header > .navbar-top {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0.6rem 1rem !important;
+    min-height: 60px !important;
+    border-bottom: 1px solid rgba(15, 52, 96, 0.5);
+    gap: 0.5rem !important;
+    flex-wrap: nowrap !important;
+    overflow: visible !important;
+}
+
+/* Logo bên trái */
+header.main-header .navbar-top > .nav-left {
+    flex: 0 0 80px !important;
+    min-width: 80px !important;
+    max-width: 100px !important;
+}
+
+header.main-header .nav-left .nav-logo {
+    display: inline-block;
+}
+
+header.main-header .nav-left .nav-logo img {
+    height: 35px !important;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+/* Nút CTA ở giữa */
+header.main-header .navbar-top > .nav-center {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    justify-content: center;
+    gap: 0.5rem !important;
+}
+
+header.main-header .nav-center .btn-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 14px !important;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem !important;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+header.main-header .btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+header.main-header .btn-cta-yellow {
+    background: linear-gradient(135deg, #f7b731 0%, #f39c12 100%);
+    color: #1a1a2e;
+}
+
+header.main-header .btn-cta-yellow:hover {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+}
+
+header.main-header .btn-cta-purple {
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+    color: white;
+}
+
+header.main-header .btn-cta-purple:hover {
+    background: linear-gradient(135deg, #8e44ad 0%, #7d3c98 100%);
+}
+
+/* Khu vực Search/Auth bên phải */
+header.main-header .navbar-top > .nav-right {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.5rem !important;
+    flex: 0 0 auto !important;
+    flex-shrink: 0 !important;
+}
+
+/* Ô tìm kiếm */
+header.main-header .nav-right > .nav-search {
+    position: relative;
+    width: 170px !important;
+    flex-shrink: 0 !important;
+}
+
+header.main-header .nav-search > input {
+    width: 100% !important;
+    padding: 8px 35px 8px 12px !important;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #333;
+    font-size: 0.82rem !important;
+    transition: all 0.3s ease;
+    box-sizing: border-box !important;
+}
+
+header.main-header .nav-search input:focus {
+    border-color: #e94560;
+    background-color: #fff;
+}
+
+header.main-header .nav-search input::placeholder {
+    color: #999;
+}
+
+header.main-header .nav-search > .search-button {
+    position: absolute;
+    right: 8px !important;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 5px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+header.main-header .nav-search .search-button:hover {
+    color: #e94560;
+}
+
+/* Nút Đăng nhập */
+header.main-header .nav-right > a.nav-auth {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    text-decoration: none !important;
+    color: #e0e0e0 !important;
+    font-weight: 500;
+    font-size: 0.82rem !important;
+    padding: 6px 10px !important;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+}
+
+header.main-header .nav-auth:hover {
+    background-color: rgba(233, 69, 96, 0.1) !important;
+    color: #e94560 !important;
+}
+
+/* Nút Ngôn ngữ */
+header.main-header .nav-right > .nav-lang {
+    display: flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+    color: #e0e0e0 !important;
+    cursor: pointer;
+    padding: 6px 8px !important;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-size: 0.8rem !important;
+    font-weight: 500;
+    flex-shrink: 0 !important;
+}
+
+header.main-header .nav-lang:hover {
+    background-color: rgba(233, 69, 96, 0.1) !important;
+    color: #e94560 !important;
+}
+
+/* 2. THANH NAV PHỤ (DƯỚI) */
+header.main-header > .navbar-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.5rem;
+    background-color: #16213e;
+    font-size: 0.9rem;
+}
+
+header.main-header .navbar-bottom .nav-bottom-left, 
+header.main-header .navbar-bottom .nav-bottom-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* Các link chính (Có icon) */
+header.main-header .navbar-bottom a.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #e0e0e0;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+header.main-header .nav-link:hover {
+    background-color: rgba(233, 69, 96, 0.15);
+    color: #e94560;
+}
+
+/* Các link phụ (không icon) */
+header.main-header .navbar-bottom a.nav-link-sub {
+    color: #c4c3ca;
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 0.88rem;
+    padding: 6px 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+header.main-header .nav-link-sub:hover {
+    color: #e94560;
+    background-color: rgba(233, 69, 96, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    header.main-header .navbar-top {
+        padding: 0.8rem 1rem !important;
+        gap: 0.6rem !important;
+    }
+    
+    header.main-header .btn-cta {
+        padding: 8px 15px !important;
+        font-size: 0.82rem !important;
+    }
+    
+    header.main-header .nav-search {
+        width: 170px !important;
+    }
+    
+    header.main-header .nav-right {
+        min-width: 350px !important;
+    }
+}
+
+@media (max-width: 992px) {
+    header.main-header .navbar-bottom {
+        padding: 0.7rem 1rem;
+    }
+    
+    header.main-header .nav-bottom-left,
+    header.main-header .nav-bottom-right {
+        gap: 1.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    header.main-header .navbar-top {
+        flex-wrap: wrap !important;
+        gap: 0.8rem !important;
+    }
+    
+    header.main-header .nav-center {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    header.main-header .nav-right {
+        min-width: auto !important;
+    }
+    
+    header.main-header .nav-search {
+        width: 100% !important;
+        max-width: 250px;
+    }
+}

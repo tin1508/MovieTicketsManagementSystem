@@ -13,6 +13,11 @@ spring:
     show-sql: true
   security:
     enabled: false
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 50MB
 app:
   cors:
     allowed-origins: http://localhost:5173
@@ -22,7 +27,6 @@ file:
     max-size: 52428800
     allowed-types:
       - image/jpeg
-      - image/jpg
       - image/png
       - image/webp
       - video/mp4
@@ -30,3 +34,7 @@ file:
       - video/quicktime
       - video/x-msvideo
       - video/webm
+
+jwt:
+  signerKey: "92f5c84902ace8e29f5c7b38a6b631ee957ff3de1e5b550f2ca837b1923d67ea"
+

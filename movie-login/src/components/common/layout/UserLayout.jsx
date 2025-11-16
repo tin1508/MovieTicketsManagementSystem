@@ -2,45 +2,27 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 
-// TODO: Sau này bạn có thể tạo và import UserNavbar/UserFooter
-// import UserNavbar from './UserNavbar';
-// import UserFooter from './UserFooter';
+// 1. Sửa lại đường dẫn import (dấu ./ nghĩa là "cùng thư mục")
+import UserNavbar from './UserNavbar'; 
+import UserFooter from './UserFooter';
+import '../../../styles/UserLayout.css'; // Sẽ tạo file CSS sau
+// import UserFooter from './UserFooter'; // TODO: Sẽ thêm sau
 
 const UserLayout = () => {
-    return (
-        <div className="user-layout">
-            
-            {/* Đây là Navbar (Header) tạm thời cho trang User */}
-            {/* <UserNavbar /> */}
-            <header style={{ 
-                padding: '1rem 2rem', 
-                backgroundColor: '#0f3460', // Tái sử dụng màu theme
-                color: 'white', 
-                fontSize: '1.2rem',
-                fontWeight: 'bold'
-            }}>
-                Logo (Trang Khách Hàng)
-            </header>
+return (
+    <div className="user-layout">
+    
+        {/* 2. Bỏ comment và SỬ DỤNG UserNavbar */}
+            <UserNavbar /> 
 
-            <main style={{ minHeight: '80vh' }}>
-                {/* <Outlet /> là nơi React Router
-                sẽ render các trang con 
-                (như HomePage, MovieDetailPage) */}
-                <Outlet />
+            {/* 3. XÓA BỎ header tạm thời */}
+
+            <main>
+            <Outlet />
             </main>
-            
-            {/* Đây là Footer tạm thời */}
-            {/* <UserFooter /> */}
-            <footer style={{ 
-                padding: '2rem', 
-                backgroundColor: '#0f3460', 
-                color: '#c4c3ca', 
-                textAlign: 'center', 
-                marginTop: '2rem' 
-            }}>
-                Movie Booking System Footer © 2025
-            </footer>
-        </div>
+
+            <UserFooter />
+    </div>
     );
 };
 

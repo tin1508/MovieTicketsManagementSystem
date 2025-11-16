@@ -22,9 +22,10 @@
 
 /* Lưới hiển thị các thẻ phim */
 .movie-grid {
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
     /* Hiển thị 5 cột trên màn lớn, 2 cột trên mobile */
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    justify-content: center;
     gap: 1.5rem;
 }
 
@@ -91,5 +92,114 @@
         /* Hiển thị 2 cột trên mobile */
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 1rem;
+    }
+}
+
+/* Thêm vào file styles/UserLayout.css */
+
+.see-more-container {
+    text-align: center; /* Căn giữa nút */
+    margin-top: 2rem;
+}
+
+.btn-see-more {
+    padding: 10px 30px;
+    border: 1px solid #e94560; /* Màu đỏ chủ đạo */
+    color: #e94560;
+    background-color: transparent;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-see-more:hover {
+    background-color: #e94560;
+    color: white;
+}
+
+/* === Nút Xem Trailer === */
+.btn-watch-trailer {
+    display: inline-flex; /* Để căn icon và chữ */
+    align-items: center;
+    gap: 8px;
+    background-color: #e94560; /* Màu đỏ chủ đạo */
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 1.5rem; /* Khoảng cách với phần mô tả */
+    transition: all 0.3s ease;
+}
+
+.btn-watch-trailer:hover {
+    background-color: #d43d51;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(233, 69, 96, 0.3);
+}
+
+
+/* === CSS cho Modal Trailer === */
+.trailer-modal .modal-body {
+    /* Ghi đè: Xóa padding mặc định của modal */
+    padding: 0;
+}
+
+.trailer-iframe-container {
+    /* Tạo tỷ lệ 16:9 cho video */
+    position: relative;
+    padding-bottom: 56.25%; /* Tỷ lệ 16:9 */
+    height: 0;
+    overflow: hidden;
+    background-color: #000;
+}
+
+.trailer-iframe-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0 0 8px 8px; /* Bo góc dưới (nếu modal của bạn bo góc) */
+}
+
+/* Thêm vào cuối file styles/UserLayout.css */
+
+/* Định dạng cho khu vực nội dung chính (main content) */
+.user-layout main {
+    background-color: #1a1a2e; /* 1. Đặt màu nền tối (dark-mode) */
+    min-height: 80vh;          /* 2. Giữ chiều cao tối thiểu */
+    
+    /* 3. Thêm đệm (padding) để nội dung không dính sát viền */
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.movie-grid-fixed {
+    display: grid;
+    /* Luôn luôn chia thành 4 cột bằng nhau */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 1.5rem; /* Khoảng cách giữa các phim */
+}
+
+/* * Responsive cho màn hình nhỏ (ví dụ: mobile)
+ * Chuyển về 2 cột
+ */
+@media (max-width: 768px) {
+    .movie-grid-fixed {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* * Responsive cho màn hình tablet
+ * Chuyển về 3 cột
+ */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .movie-grid-fixed {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
