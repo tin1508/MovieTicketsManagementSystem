@@ -1,0 +1,165 @@
+/* styles/ProfilePage.css */
+
+/* Hộp thông tin cá nhân */
+.profile-info-box {
+    background-color: #16213e; /* Nền tối (giống modal) */
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #0f3460;
+    max-width: 600px;
+    color: #e0e0e0;
+}
+.profile-info-box p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+.profile-info-box p strong {
+    color: #c4c3ca;
+    min-width: 120px;
+    display: inline-block;
+}
+
+/* Nút đăng xuất */
+.btn-logout {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    background-color: #dc3545; /* Màu đỏ (danger) */
+    color: white;
+    margin-top: 1rem;
+    transition: background-color 0.3s;
+}
+.btn-logout:hover {
+    background-color: #c82333;
+}
+
+/* Danh sách lịch sử đặt vé */
+.booking-history-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Tấm vé (ticket) */
+.booking-ticket {   
+    background-color: #16213e;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #0f3460;
+    color: #e0e0e0;
+}
+.booking-ticket h4 {
+    font-size: 1.3rem;
+    color: #e94560; /* Màu đỏ chủ đạo */
+    margin-bottom: 1rem;
+}
+.booking-ticket p {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+.booking-ticket p strong {
+    color: #c4c3ca;
+}
+
+/* Thêm vào cuối file styles/ProfilePage.css */
+
+/* Nút bấm trong chế độ XEM */
+.profile-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+.btn-edit {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    background-color: #007bff; /* Màu xanh (Giống admin) */
+    color: white;
+    transition: background-color 0.3s;
+}
+.btn-edit:hover {
+    background-color: #0056b3;
+}
+
+
+/* --- FORM SỬA (EDIT MODE) --- */
+.profile-edit-form {
+    background-color: #16213e;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #0f3460;
+    max-width: 600px;
+}
+
+/* Tái sử dụng style từ trang Admin */
+.profile-edit-form .form-group {
+     margin-bottom: 1.5rem;
+}
+.profile-edit-form .form-group label {
+     display: block;
+     margin-bottom: 0.5rem;
+     color: #c4c3ca;
+     font-weight: 500;
+}
+.profile-edit-form .form-group input {
+     width: 100%;
+     padding: 0.75rem;
+     border: 1px solid #0f3460;
+    border-radius: 4px;
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+     font-size: 1rem;
+     box-sizing: border-box; 
+}
+.profile-edit-form .form-group input:disabled {
+    background-color: #2a3b5e;
+    color: #888;
+}
+
+/* Nút bấm trong form Sửa (Lưu, Hủy) */
+.profile-edit-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.profile-edit-form .btn-submit {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #e94560; /* Màu đỏ chủ đạo */
+    color: white;
+}
+.profile-edit-form .btn-cancel {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #6c757d; /* Màu xám */
+    color: white;
+}
+.profile-edit-form .btn-submit:disabled,
+.profile-edit-form .btn-cancel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Tái sử dụng CSS lỗi (nếu cần) */
+.profile-edit-form .form-error-message {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-align: center;
+}

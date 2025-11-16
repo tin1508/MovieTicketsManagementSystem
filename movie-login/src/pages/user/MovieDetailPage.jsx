@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import * as movieService from '../../services/movieService';
+import Modal from '../../components/common/Modal';
+import { getYoutubeEmbedUrl } from '../../utils/youtubeHelper';
+import {FaPlay} from 'react-icons/fa';
 import '../../styles/UserLayout.css';
 
 const MovieDetailPage = () => {
@@ -9,6 +12,8 @@ const MovieDetailPage = () => {
     const [movie, setMovie] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const [isTrailerOpen, setIsTrailerOpen] = useState(false);
 
     useEffect(() => {
         const fetchMovie = async () => {
@@ -30,11 +35,14 @@ const MovieDetailPage = () => {
         fetchMovie();
     }, [movieId]);
 
+    const embedUrl = movie ? getYoutubeEmbedUrl(movie.trailerUrl) : null;
+
     if (isLoading) return <p>Đang tải chi tiết phim...</p>;
     if (error) return <p className="page-error-message">{error}</p>;
     if (!movie) return <p>Không có thông tin phim.</p>;
 
     return (
+        <>
         <div className="movie-detail-container">
             <h1>{movie.title}</h1>
             <div className="movie-detail-content">
@@ -44,6 +52,14 @@ const MovieDetailPage = () => {
                     className="movie-detail-poster"
                 />
                 <div className="movie-detail-info">
+                    {embedUrl && (
+                            <button 
+                                className="btn-watch-trailer" 
+                                onClick={() => setIsTrailerOpen(true)}
+                            >
+                                <FaPlay /> Xem Trailer
+                            </button>
+                        )}
                     <p><strong>Mô tả:</strong> {movie.description}</p>
                     <p><strong>Đạo diễn:</strong> {movie.director}</p>
                     <p><strong>Thời lượng:</strong> {movie.duration} phút</p>
@@ -54,6 +70,26 @@ const MovieDetailPage = () => {
                 </div>
             </div>
         </div>
+        {embedUrl && (
+                <Modal
+                    isOpen={isTrailerOpen}
+                    onClose={() => setIsTrailerOpen(false)}
+                    title={`Trailer: ${movie.title}`}
+                    // Chúng ta thêm 1 class đặc biệt để CSS riêng cho trailer
+                    customClass="trailer-modal" 
+                >
+                    <div className="trailer-iframe-container">
+                        <iframe
+                            src={embedUrl}
+                            title="YouTube video player"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                        ></iframe>
+                    </div>
+                </Modal>
+            )}
+        </>
     );
 };
 

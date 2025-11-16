@@ -1,36 +1,58 @@
-/* Tổng thể cho trang */
-.login-container {
+/* styles/Login.css (PHIÊN BẢN MỚI) */
+
+/* 1. Container căn giữa (nằm trong UserLayout) */
+.auth-page-container {
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #e0e0e0;
+    /* Thêm padding trên/dưới để nó không dính Header/Footer */
+    padding: 4rem 1rem; 
 }
 
-/* Hộp đăng nhập chính */
-.login-box {
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+/* 2. HỘP MÀU TRẮNG */
+.auth-box {
     width: 100%;
-    max-width: 400px;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 500px; /* Độ rộng của hộp */
+    background-color: #ffffff;
+    color: #333; /* Chữ màu đen/xám đậm */
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Để bo góc các tab */
 }
 
-/* Tiêu đề */
-.login-header h2 {
-    margin-bottom: 10px;
-    font-size: 28px;
-    color: #ffffff;
+/* 3. KHU VỰC CHỨA TAB */
+.auth-tabs {
+    display: flex;
+    background-color: #f4f4f4; /* Nền của thanh tab (màu xám nhạt) */
 }
 
-.login-header p {
-    margin-bottom: 30px;
-    color: #a7a9be;
+.auth-tab-btn {
+    flex: 1;
+    padding: 18px;
+    border: none;
+    background-color: transparent;
+    color: #888; /* Chữ tab (màu xám mờ) */
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Tab đang được chọn (ACTIVE) */
+.auth-tab-btn.active {
+    background-color: #ffffff; /* Nền trắng (nổi lên) */
+    color: #333; /* Chữ đen */
+}
+
+/* 4. Vùng nội dung form (padding) */
+.auth-content {
+    padding: 2.5rem;
+}
+
+/* 5. SỬA LẠI STYLE CHO FORM TRÊN NỀN TRẮNG */
+
+/* Xóa bỏ header (vì tab đã thay thế) */
+.login-header {
+    display: none;
 }
 
 /* Nhóm input (label và input) */
@@ -43,82 +65,69 @@
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    color: #c4c3ca;
+    color: #555; /* Chữ xám đậm */
 }
 
 .input-group input {
     width: 100%;
     padding: 12px 15px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid #ccc; /* Border xám nhạt */
     border-radius: 8px;
-    background-color: rgba(0, 0, 0, 0.2);
-    color: #ffffff;
+    background-color: #f9f9f9; /* Nền input xám rất nhạt */
+    color: #333; /* Chữ đen */
     font-size: 16px;
-    box-sizing: border-box; /* Đảm bảo padding không làm thay đổi width */
+    box-sizing: border-box; 
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .input-group input:focus {
     outline: none;
-    border-color: #e94560;
-    box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+    border-color: #e94560; /* Màu đỏ chủ đạo (giữ nguyên) */
+    box-shadow: 0 0 5px rgba(233, 69, 96, 0.3);
 }
 
-/* Các tùy chọn trong form */
-.form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    font-size: 14px;
-}
-
-.remember-me {
-    display: flex;
-    align-items: center;
-}
-
-.remember-me input {
-    margin-right: 8px;
-}
-
-.forgot-password, .signup-link a {
-    color: #e94560;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.forgot-password:hover, .signup-link a:hover {
-    color: #ff7675;
-}
-
-/* Nút đăng nhập */
+/* Nút bấm (Submit) */
 .login-button {
     width: 100%;
     padding: 15px;
     border: none;
     border-radius: 8px;
-    background-color: #e94560;
-    color: #ffffff;
+    /* Dùng màu VÀNG (từ ảnh của bạn) */
+    background-color: #f7b731; 
+    color: #333; /* Chữ đen */
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
+    margin-top: 1rem;
 }
 
 .login-button:hover {
-    background-color: #d43d51;
+    background-color: #f5a623; /* Vàng đậm hơn */
     transform: translateY(-2px);
 }
-
-/* Liên kết đăng ký */
-.signup-link {
-    margin-top: 25px;
-    font-size: 14px;
+.login-button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
 }
 
-/* Thêm vào cuối file Login.css */
+/* Link chuyển đổi (nằm trong AuthPage) */
+.signup-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #555;
+}
+.signup-link a {
+    color: #e94560;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+.signup-link a:hover {
+    text-decoration: underline;
+}
 
+/* Thông báo lỗi */
 .error-message {
     background-color: #ff4d4d;
     color: white;
@@ -127,9 +136,4 @@
     margin-bottom: 15px;
     font-size: 14px;
     text-align: center;
-}
-
-.login-button:disabled {
-    background-color: #a7a9be;
-    cursor: not-allowed;
 }

@@ -2,16 +2,19 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-const ProtectedRoute = ({ children }) => {
-    const { isAuthenticated } = useAuth();
+const ProtectedRoute = ({ children, requiredRole }) => {
+  const { isAuthenticated, user } = useAuth();
+  console.log(">>> Auth check:", { isAuthenticated, user });
 
-    if (!isAuthenticated) {
-        // Nếu người dùng chưa được xác thực, điều hướng họ về trang đăng nhập
-        return <Navigate to="/" />;
-    }
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
-    // Nếu đã xác thực, hiển thị component con được truyền vào
-    return children;
+  if (requiredRole && !user?.roles?.includes(requiredRole)) {
+    return <Navigate to="/" replace />; // Không đúng role → quay về trang chủ
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;

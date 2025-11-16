@@ -1,0 +1,85 @@
+/* styles/UserFooter.css */
+
+.footer-container {
+    background-color: #0f3460; /* Dùng màu nền tối (từ header tạm) */
+    color: #c4c3ca; /* Màu chữ xám nhạt */
+    padding-top: 3rem;
+    margin-top: 3rem; /* Khoảng cách với nội dung trang */
+    border-top: 1px solid #1a1a2e;
+}
+
+.footer-content {
+    display: grid;
+    /* Chia 3 cột, tự động co dãn */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    
+    /* Căn giữa layout */
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+}
+
+.footer-column {
+    font-size: 0.95rem;
+}
+
+.footer-column h4 {
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    position: relative;
+    /* Gạch chân màu đỏ */
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e94560;
+    display: inline-block;
+}
+
+/* Cột Liên hệ */
+.footer-column p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+.footer-column p span {
+    flex: 1;
+}
+
+/* Cột Link */
+.footer-link {
+    display: block;
+    color: #c4c3ca;
+    text-decoration: none;
+    margin-bottom: 0.75rem;
+    transition: color 0.2s ease, padding-left 0.2s ease;
+}
+.footer-link:hover {
+    color: #e94560; /* Màu đỏ chủ đạo */
+    padding-left: 5px;
+}
+
+/* Cột Mạng xã hội */
+.social-icons {
+    display: flex;
+    gap: 1.5rem;
+}
+.social-link {
+    color: #c4c3ca;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+.social-link:hover {
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* Dòng Copyright ở dưới cùng */
+.footer-bottom {
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border-top: 1px solid #1a1a2e;
+    font-size: 0.9rem;
+    color: #a7a9be;
+}

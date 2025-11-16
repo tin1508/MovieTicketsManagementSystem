@@ -12,6 +12,7 @@ const EditMovieForm = ({ movieToEdit, onUpdateMovie, onClose }) => {
     const [movieStatus, setMovieStatus] = useState('Sắp chiếu');
     const [ageRating, setAgeRating] = useState('T13');
     const [allGenres, setAllGenres] = useState([]);
+    const [trailerUrl, setTrailerUrl] = useState('');
     const [selectedGenres, setSelectedGenres] = useState(new Set());
     const [error, setError] = useState('');
 
@@ -42,6 +43,7 @@ const EditMovieForm = ({ movieToEdit, onUpdateMovie, onClose }) => {
             setDuration(movieToEdit.duration || '');
             setMovieStatus(movieToEdit.movieStatus || 'COMING_SOON');
             setAgeRating(movieToEdit.ageRating || 'T13');
+            setTrailerUrl(movieToEdit.trailerUrl || '');
             if (movieToEdit.genres && Array.isArray(movieToEdit.genres)) {
                 const genreIds = movieToEdit.genres.map(genre => genre.id);
                 setSelectedGenres(new Set(genreIds));  
@@ -89,6 +91,7 @@ const EditMovieForm = ({ movieToEdit, onUpdateMovie, onClose }) => {
             duration: numericDuration,
             movieStatus, ageRating,
             genreIds: Array.from(selectedGenres),
+            trailerUrl: trailerUrl
         };
         onUpdateMovie(updatedMovie); // Gửi dữ liệu phim đã cập nhật ra ngoài
     };
@@ -134,6 +137,15 @@ const EditMovieForm = ({ movieToEdit, onUpdateMovie, onClose }) => {
                     <option value="T16">T16 (16+)</option>
                     <option value="T18">T18 (18+)</option>
                 </select>
+            </div>
+            <div className="form-group">
+                <label>Đường dẫn Trailer (Trailer URL)</label>
+                <input 
+                    type="text" 
+                    value={trailerUrl} 
+                    onChange={(e) => setTrailerUrl(e.target.value)} 
+                    placeholder="https://youtube.com/watch?v=..."
+                />
             </div>
             <div className="form-group" ref={genreRef}>
                 <label>Thể loại (Chọn ít nhất 1)</label>

@@ -13,6 +13,8 @@ const AddMovieForm = ({ onAddMovie, onClose }) => {
     const [selectedGenres, setSelectedGenres] = useState(new Set());
     const [allGenres, setAllGenres] = useState([]);
     const [description, setDescription] = useState('');
+    const [posterUrl, setPosterUrl] = useState('');
+    const [trailerUrl, setTrailerUrl] = useState('');
     const [error, setError] = useState('');
 
     const [isGenresDropDownOpen, setIsGenresDropdownOpen] = useState(false);
@@ -108,6 +110,7 @@ const AddMovieForm = ({ onAddMovie, onClose }) => {
             ageRating,
             duration: numericDuration,
             genreIds: Array.from(selectedGenres),
+            trailerUrl: trailerUrl,
         };
 
         onAddMovie(newMovie); // Gửi dữ liệu phim mới ra ngoài
@@ -161,6 +164,15 @@ const AddMovieForm = ({ onAddMovie, onClose }) => {
                     <option value="T18">T18 (18+)</option> {/* <-- ĐÚNG */}
                 </select>
             </div>
+                <div className="form-group">
+                 <label>Đường dẫn Trailer (Trailer URL)</label>
+                 <input 
+                    type="text" 
+                    value={trailerUrl} 
+                    onChange={(e) => setTrailerUrl(e.target.value)} 
+                    placeholder="https://youtube.com/watch?v=..."
+                />
+             </div>
 
             <div className="form-group" ref={genreRef}>
                 <label>Thể loại</label>

@@ -3,6 +3,7 @@ import '../../styles/UserLayout.css';
 import React, { useState, useEffect } from 'react';
 import * as movieService from '../../services/movieService';
 import MovieCard from '../../components/movies/MovieCard';
+import { Link } from 'react-router-dom';
 
 const HomePage = () => {
     const [nowShowingMovies, setNowShowingMovies] = useState([]);
@@ -46,20 +47,35 @@ const HomePage = () => {
             <section className="movie-section">
                 <h2>Phim Đang Chiếu</h2>
                 <div className="movie-grid">
-                    {nowShowingMovies.map(movie => (
+                    {nowShowingMovies.slice(0, 4).map(movie => (
                         <MovieCard key={movie.id} movie={movie} />
                     ))}
                 </div>
+                    {nowShowingMovies.length > 4 && (
+                        <div className="see-more-container">
+                            <Link to="/phim/dang-chieu" className="btn-see-more">
+                                Xem thêm
+                            </Link>
+                        </div>
+                    )}
             </section>
 
             <section className="movie-section">
                 <h2>Phim Sắp Chiếu</h2>
                 <div className="movie-grid">
-                    {comingSoonMovies.map(movie => (
+                    {comingSoonMovies.slice(0, 4).map(movie => (
                         <MovieCard key={movie.id} movie={movie} />
                     ))}
                 </div>
-            </section>
+                {/* 2. Thêm nút "Xem thêm" */}
+                {comingSoonMovies.length > 4 && (
+                    <div className="see-more-container">
+                        <Link to="/phim/sap-chieu" className="btn-see-more">
+                            Xem thêm
+                        </Link>
+                    </div>
+                )}
+            </section>  
         </div>
     );
 };
