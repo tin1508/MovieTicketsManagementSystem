@@ -1,10 +1,13 @@
+/* CSS cho Modal (Dark Mode Theme) */
+
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    /* Giữ nguyên lớp phủ mờ */
+    background-color: rgba(0, 0, 0, 0.7); 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,57 +15,70 @@
 }
 
 .modal-content {
-    background-color: #1a1a2e;
+    /* THEME: Nền container tối */
+    background-color: #1a1a1a; 
     padding: 2rem;
     border-radius: 8px;
     width: 90%;
     max-width: 500px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    border: 1px solid #0f3460;
+    /* THEME: Shadow tối hơn */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); 
+    /* THEME: Viền tối */
+    border: 1px solid #333; 
 
-    /* ----- 2 DÒNG THÊM VÀO LÀ ĐÂY ----- */
-    max-height: 90vh; /* Giới hạn chiều cao */
-    overflow-y: auto; /* Thêm thanh cuộn khi cần */
-    /* ---------------------------------- */
+    /* Giới hạn chiều cao và thêm cuộn (giữ nguyên) */
+    max-height: 90vh; 
+    overflow-y: auto; 
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #0f3460;
+    /* THEME: Viền tối */
+    border-bottom: 1px solid #333; 
     padding-bottom: 1rem;
     margin-bottom: 1rem;
 }
 
 .modal-header h2 {
     margin: 0;
-    color: #e94560;
+    /* THEME: Màu VÀNG chủ đạo cho tiêu đề */
+    color: #ffc107; 
 }
 
 .modal-close-button {
     background: none;
     border: none;
-    color: #e0e0e0;
+    /* THEME: Màu chữ sáng */
+    color: #e0e0e0; 
     font-size: 2rem;
     cursor: pointer;
+    transition: color 0.2s ease;
+}
+.modal-close-button:hover {
+    color: #ffffff;
 }
 
-/* Thêm vào Modal.css (hoặc file CSS chung) */
+/* --- Phần Upload Ảnh --- */
 
 /* Nút "Chọn ảnh..." tùy chỉnh */
 .file-upload-label {
     display: inline-block;
     padding: 10px 15px;
-    /* Dùng màu xanh dương (giống nút Sửa) */
-    background-color: #007bff; 
-    color: white;
-    border-radius: 5px;
+    /* THEME: Nền VÀNG chủ đạo */
+    background-color: #ffc107; 
+    /* THEME: Chữ ĐEN trên nền vàng */
+    color: #111; 
+    border-radius: 6px; /* Đồng bộ 6px */
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 700; /* Đồng bộ font-weight */
+    transition: all 0.2s ease;
 }
 .file-upload-label:hover {
-    background-color: #0056b3;
+    /* THEME: Vàng sáng hơn khi hover */
+    background-color: #ffca2c; 
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
 }
 
 /* Ẩn nút input file mặc định */
@@ -74,12 +90,15 @@
 .image-preview {
     margin-top: 1rem;
     text-align: center;
-    border: 1px dashed #0f3460;
+    /* THEME: Viền nét đứt (màu xám) */
+    border: 1px dashed #555; 
     padding: 10px;
     border-radius: 5px;
+    background-color: #2c2c2c; /* Thêm nền tối nhẹ */
 }
 .image-preview img {
     max-width: 100%;
     max-height: 300px;
     object-fit: contain;
+    border-radius: 4px; /* Thêm bo góc nhẹ cho ảnh */
 }

@@ -8,7 +8,6 @@ import com.moviebooking.movie_service.dto.request.UserUpdateRequest;
 import com.moviebooking.movie_service.dto.response.ApiResponse;
 import com.moviebooking.movie_service.dto.response.UserResponse;
 import com.moviebooking.movie_service.entity.User;
-import com.moviebooking.movie_service.service.AuthenticationService;
 import com.moviebooking.movie_service.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -30,10 +29,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
+
     UserService userService;
 
     @PostMapping
-    ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request) {
+    ApiResponse<User> createUser(@Valid @RequestBody UserCreationRequest request) {
         ApiResponse<User> apiResponse = new ApiResponse<>();
 
         apiResponse.setResult(userService.createUser(request));

@@ -1,11 +1,14 @@
-/* styles/UserFooter.css */
+/* styles/UserFooter.css (DARK MODE THEME) */
 
 .footer-container {
-    background-color: #0f3460; /* Dùng màu nền tối (từ header tạm) */
-    color: #c4c3ca; /* Màu chữ xám nhạt */
+    /* THEME: Nền container tối */
+    background-color: #1a1a1a; 
+    /* THEME: Màu chữ phụ */
+    color: #a9b3c1; 
     padding-top: 3rem;
     margin-top: 3rem; /* Khoảng cách với nội dung trang */
-    border-top: 1px solid #1a1a2e;
+    /* THEME: Viền tối */
+    border-top: 1px solid #333; 
 }
 
 .footer-content {
@@ -26,12 +29,13 @@
 
 .footer-column h4 {
     font-size: 1.2rem;
-    color: #fff;
+    /* THEME: Chữ sáng */
+    color: #fff; 
     margin-bottom: 1.5rem;
     position: relative;
-    /* Gạch chân màu đỏ */
+    /* THEME: Gạch chân màu VÀNG chủ đạo */
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e94560;
+    border-bottom: 2px solid #ffc107; 
     display: inline-block;
 }
 
@@ -50,13 +54,15 @@
 /* Cột Link */
 .footer-link {
     display: block;
-    color: #c4c3ca;
+    /* THEME: Màu chữ phụ */
+    color: #a9b3c1; 
     text-decoration: none;
     margin-bottom: 0.75rem;
     transition: color 0.2s ease, padding-left 0.2s ease;
 }
 .footer-link:hover {
-    color: #e94560; /* Màu đỏ chủ đạo */
+    /* THEME: Màu VÀNG chủ đạo */
+    color: #ffc107; 
     padding-left: 5px;
 }
 
@@ -66,11 +72,13 @@
     gap: 1.5rem;
 }
 .social-link {
-    color: #c4c3ca;
+    /* THEME: Màu chữ phụ */
+    color: #a9b3c1; 
     transition: color 0.2s ease, transform 0.2s ease;
 }
 .social-link:hover {
-    color: white;
+    /* THEME: Màu VÀNG chủ đạo */
+    color: #ffc107; 
     transform: translateY(-3px);
 }
 
@@ -79,7 +87,9 @@
     text-align: center;
     padding: 1.5rem;
     margin-top: 2rem;
-    border-top: 1px solid #1a1a2e;
+    /* THEME: Viền tối */
+    border-top: 1px solid #333; 
     font-size: 0.9rem;
-    color: #a7a9be;
+    /* THEME: Màu chữ phụ */
+    color: #a9b3c1; 
 }

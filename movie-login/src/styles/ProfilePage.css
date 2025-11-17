@@ -1,20 +1,24 @@
-/* styles/ProfilePage.css */
+/* styles/ProfilePage.css (DARK MODE THEME) */
 
 /* Hộp thông tin cá nhân */
 .profile-info-box {
-    background-color: #16213e; /* Nền tối (giống modal) */
+    /* THEME: Nền container tối */
+    background-color: #1a1a1a; 
     padding: 2rem;
     border-radius: 8px;
-    border: 1px solid #0f3460;
+    /* THEME: Viền tối */
+    border: 1px solid #333; 
     max-width: 600px;
-    color: #e0e0e0;
+    /* THEME: Chữ sáng */
+    color: #e0e0e0; 
 }
 .profile-info-box p {
     font-size: 1.1rem;
     margin-bottom: 1rem;
 }
 .profile-info-box p strong {
-    color: #c4c3ca;
+    /* THEME: Màu chữ phụ */
+    color: #a9b3c1; 
     min-width: 120px;
     display: inline-block;
 }
@@ -23,17 +27,20 @@
 .btn-logout {
     padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 5px;
+    /* THEME: Bo góc 6px */
+    border-radius: 6px; 
     cursor: pointer;
-    font-weight: bold;
+    /* THEME: Font-weight 700 */
+    font-weight: 700; 
     font-size: 1rem;
-    background-color: #dc3545; /* Màu đỏ (danger) */
+    /* THEME: Màu đỏ (danger) */
+    background-color: #f44336; 
     color: white;
     margin-top: 1rem;
     transition: background-color 0.3s;
 }
 .btn-logout:hover {
-    background-color: #c82333;
+    background-color: #d32f2f; /* Đỏ đậm hơn */
 }
 
 /* Danh sách lịch sử đặt vé */
@@ -44,16 +51,20 @@
 }
 
 /* Tấm vé (ticket) */
-.booking-ticket {   
-    background-color: #16213e;
+.booking-ticket { 
+    /* THEME: Nền container tối */
+    background-color: #1a1a1a; 
     padding: 1.5rem;
     border-radius: 8px;
-    border: 1px solid #0f3460;
-    color: #e0e0e0;
+    /* THEME: Viền tối */
+    border: 1px solid #333; 
+    /* THEME: Chữ sáng */
+    color: #e0e0e0; 
 }
 .booking-ticket h4 {
     font-size: 1.3rem;
-    color: #e94560; /* Màu đỏ chủ đạo */
+    /* THEME: Màu VÀNG chủ đạo */
+    color: #ffc107; 
     margin-bottom: 1rem;
 }
 .booking-ticket p {
@@ -61,10 +72,11 @@
     margin-bottom: 0.5rem;
 }
 .booking-ticket p strong {
-    color: #c4c3ca;
+    /* THEME: Màu chữ phụ */
+    color: #a9b3c1; 
 }
 
-/* Thêm vào cuối file styles/ProfilePage.css */
+/* --- Chế độ XEM & SỬA --- */
 
 /* Nút bấm trong chế độ XEM */
 .profile-actions {
@@ -75,25 +87,32 @@
 .btn-edit {
     padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 5px;
+    /* THEME: Bo góc 6px */
+    border-radius: 6px; 
     cursor: pointer;
-    font-weight: bold;
+    /* THEME: Font-weight 700 */
+    font-weight: 700; 
     font-size: 1rem;
-    background-color: #007bff; /* Màu xanh (Giống admin) */
-    color: white;
-    transition: background-color 0.3s;
+    /* THEME: Màu VÀNG chủ đạo */
+    background-color: #ffc107; 
+    /* THEME: Chữ đen trên nền vàng */
+    color: #111; 
+    transition: all 0.2s ease;
 }
 .btn-edit:hover {
-    background-color: #0056b3;
+    background-color: #ffca2c;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
 }
 
 
 /* --- FORM SỬA (EDIT MODE) --- */
 .profile-edit-form {
-    background-color: #16213e;
+    /* THEME: Nền container tối */
+    background-color: #1a1a1a; 
     padding: 2rem;
     border-radius: 8px;
-    border: 1px solid #0f3460;
+    /* THEME: Viền tối */
+    border: 1px solid #333; 
     max-width: 600px;
 }
 
@@ -104,22 +123,37 @@
 .profile-edit-form .form-group label {
      display: block;
      margin-bottom: 0.5rem;
-     color: #c4c3ca;
+     /* THEME: Màu chữ phụ */
+     color: #a9b3c1; 
      font-weight: 500;
 }
 .profile-edit-form .form-group input {
      width: 100%;
      padding: 0.75rem;
-     border: 1px solid #0f3460;
-    border-radius: 4px;
-    background-color: #1a1a2e;
-    color: #e0e0e0;
+     /* THEME: Viền input tối */
+     border: 1px solid #555; 
+     /* THEME: Bo góc 6px */
+     border-radius: 6px; 
+     /* THEME: Nền input tối */
+     background-color: #2c2c2c; 
+     /* THEME: Chữ sáng */
+     color: #e0e0e0; 
      font-size: 1rem;
      box-sizing: border-box; 
+     transition: border-color 0.3s, box-shadow 0.3s;
 }
+.profile-edit-form .form-group input:focus {
+    outline: none;
+    /* THEME: Viền vàng khi focus */
+    border-color: #ffc107; 
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.3); 
+}
+
 .profile-edit-form .form-group input:disabled {
-    background-color: #2a3b5e;
-    color: #888;
+    /* THEME: Nền disabled */
+    background-color: #555; 
+    /* THEME: Chữ disabled */
+    color: #999; 
 }
 
 /* Nút bấm trong form Sửa (Lưu, Hủy) */
@@ -129,36 +163,57 @@
     gap: 1rem;
     margin-top: 1rem;
 }
-.profile-edit-form .btn-submit {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    background-color: #e94560; /* Màu đỏ chủ đạo */
-    color: white;
-}
+.profile-edit-form .btn-submit,
 .profile-edit-form .btn-cancel {
     padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 5px;
+    /* THEME: Bo góc 6px */
+    border-radius: 6px; 
     cursor: pointer;
-    font-weight: bold;
-    background-color: #6c757d; /* Màu xám */
-    color: white;
+    /* THEME: Font-weight 700 */
+    font-weight: 700; 
+    font-size: 1rem;
+    transition: all 0.2s ease;
 }
+
+.profile-edit-form .btn-submit {
+    /* THEME: Màu VÀNG chủ đạo */
+    background-color: #ffc107; 
+    /* THEME: Chữ đen trên nền vàng */
+    color: #111; 
+}
+.profile-edit-form .btn-submit:hover:not(:disabled) {
+    background-color: #ffca2c;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+}
+
+.profile-edit-form .btn-cancel {
+    /* THEME: Nút xám tối */
+    background-color: #555; 
+    /* THEME: Chữ sáng */
+    color: #e0e0e0; 
+}
+.profile-edit-form .btn-cancel:hover:not(:disabled) {
+    background-color: #666;
+}
+
 .profile-edit-form .btn-submit:disabled,
 .profile-edit-form .btn-cancel:disabled {
-    opacity: 0.6;
+    /* THEME: Style disabled chuẩn */
+    background-color: #555; 
+    color: #999; 
     cursor: not-allowed;
+    box-shadow: none;
 }
 
 /* Tái sử dụng CSS lỗi (nếu cần) */
 .profile-edit-form .form-error-message {
-    background-color: #ff4d4d;
+    /* THEME: Màu đỏ (danger) */
+    background-color: #f44336; 
     color: white;
     padding: 10px;
-    border-radius: 5px;
+    /* THEME: Bo góc 6px */
+    border-radius: 6px; 
     margin-bottom: 15px;
     font-size: 14px;
     text-align: center;

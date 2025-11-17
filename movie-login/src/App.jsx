@@ -15,6 +15,7 @@ import MovieGridPage from './pages/user/MovieGridPage';
 import SearchPage from './pages/user/SearchPage';
 import ProfilePage from './pages/user/ProfilePage';
 import AuthPage from './pages/AuthPage';
+import './styles/App.css';
 
 function App() {
   return (

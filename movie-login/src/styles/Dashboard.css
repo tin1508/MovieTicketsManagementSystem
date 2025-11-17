@@ -1,8 +1,10 @@
-/* -- Cấu trúc layout chính -- */
+/* ======================================== */
+/* -- Cấu trúc layout chính (Theme Cinema) -- */
+/* ======================================== */
 .dashboard-container {
     display: flex;
     min-height: 100vh;
-    background-color: #1a1a2e;
+    background-color: #1a1a1a;
     color: #e0e0e0;
     font-family: 'Segoe UI', sans-serif;
 }
@@ -21,18 +23,18 @@
 /* -- Sidebar -- */
 .sidebar {
     width: 250px;
-    background-color: #16213e;
+    background-color: #222;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #0f3460;
+    border-right: 1px solid #333;
 }
 
 .sidebar-header {
     padding: 1.5rem;
     text-align: center;
     font-size: 1.5rem;
-    color: #e94560;
-    border-bottom: 1px solid #0f3460;
+    color: #ffc107;
+    border-bottom: 1px solid #333;
 }
 
 .sidebar-nav ul {
@@ -44,21 +46,21 @@
 .sidebar-nav li a {
     display: block;
     padding: 1rem 1.5rem;
-    color: #c4c3ca;
+    color: #a9b3c1;
     text-decoration: none;
     transition: background-color 0.3s, color 0.3s;
     border-left: 3px solid transparent;
 }
 
 .sidebar-nav li a:hover {
-    background-color: #0f3460;
+    background-color: #333;
     color: #ffffff;
 }
 
 .sidebar-nav li.active a {
-    background-color: rgba(233, 69, 96, 0.1);
-    color: #e94560;
-    border-left: 3px solid #e94560;
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    border-left: 3px solid #ffc107;
 }
 
 /* -- Header -- */
@@ -67,8 +69,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background-color: #16213e;
-    border-bottom: 1px solid #0f3460;
+    background-color: #222;
+    border-bottom: 1px solid #333;
 }
 
 .user-info {
@@ -78,15 +80,121 @@
 }
 
 .logout-button {
-    background-color: #e94560;
-    color: white;
+    background-color: #ffc107;
+    color: #111;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 5px;
     cursor: pointer;
+    font-weight: 600;
     transition: background-color 0.3s;
 }
 
 .logout-button:hover {
-    background-color: #d43d51;
+    background-color: #ffca2c;
+}
+
+
+/* ======================================== */
+/* -- Trang Quản Lý Phim (Movie Management) -- */
+/* ======================================== */
+
+/* Tiêu đề "Quản Lý Phim" */
+.page-title {
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+/* Nút "+ Thêm Phim Mới" */
+.btn-add-new {
+    background-color: #ffc107;
+    color: #111;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
+}
+
+.btn-add-new:hover {
+    background-color: #ffca2c;
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Khung Filter */
+.filter-bar {
+    background-color: #222222 !important; /* <-- CHỖ SỬA ĐÂY */
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #333;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+/* Ô input và dropdown (Select) */
+.filter-input,
+.filter-select {
+    flex-grow: 1;
+    background-color: #2c2c2c !important;
+    color: #e0e0e0;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.filter-input::placeholder {
+    color: #888;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    background-color: #333;
+    border-color: #ffc107;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+    outline: none;
+}
+
+/* Nút "Xóa Filter" */
+.btn-clear-filter {
+    background-color: #4a4a4a;
+    color: #e0e0e0;
+    border: 1px solid #666;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-clear-filter:hover {
+    background-color: #5a5a5a;
+    border-color: #888;
+}
+
+/* Header của Bảng (Table Header) */
+.table-header {
+    background-color: #222222 !important; /* <-- CHỖ SỬA ĐÂY */
+    padding: 1rem 1.5rem;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 3px solid #ffc107; /* <-- VIỀN VÀNG */
+    display: flex; 
+    justify-content: space-between;
+}
+
+.table-header span { /* Giả sử text nằm trong thẻ span hoặc th */
+    color: #a9b3c1;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
 }

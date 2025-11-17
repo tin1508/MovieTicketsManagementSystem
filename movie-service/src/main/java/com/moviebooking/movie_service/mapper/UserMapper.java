@@ -7,7 +7,6 @@ import com.moviebooking.movie_service.dto.request.UserUpdateRequest;
 import com.moviebooking.movie_service.dto.response.UserResponse;
 import com.moviebooking.movie_service.entity.User;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")

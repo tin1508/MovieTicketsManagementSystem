@@ -1,10 +1,11 @@
-/* styles/UserNavbar.css - PHIÊN BẢN FIX CUỐI CÙNG */
+/* styles/UserNavbar.css - (PHIÊN BẢN DARK MODE) */
 
 /* Container chính của header */
 header.main-header {
-    background-color: #1a1a2e; 
+    /* THEME: Nền container tối */
+    background-color: #1a1a1a; 
     color: #e0e0e0;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -17,7 +18,8 @@ header.main-header > .navbar-top {
     justify-content: space-between !important;
     padding: 0.6rem 1rem !important;
     min-height: 60px !important;
-    border-bottom: 1px solid rgba(15, 52, 96, 0.5);
+    /* THEME: Viền tối */
+    border-bottom: 1px solid #333; 
     gap: 0.5rem !important;
     flex-wrap: nowrap !important;
     overflow: visible !important;
@@ -71,20 +73,21 @@ header.main-header .btn-cta:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
+/* THEME: Cập nhật nút CTA Vàng */
 header.main-header .btn-cta-yellow {
-    background: linear-gradient(135deg, #f7b731 0%, #f39c12 100%);
-    color: #1a1a2e;
+    background: linear-gradient(135deg, #ffc107 0%, #f39c12 100%);
+    /* THEME: Chữ đen trên nền vàng */
+    color: #111; 
 }
-
 header.main-header .btn-cta-yellow:hover {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    background: linear-gradient(135deg, #ffca2c 0%, #f7b731 100%);
 }
 
+/* Giữ nguyên nút CTA màu tím (cho mục đích phân biệt) */
 header.main-header .btn-cta-purple {
     background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
     color: white;
 }
-
 header.main-header .btn-cta-purple:hover {
     background: linear-gradient(135deg, #8e44ad 0%, #7d3c98 100%);
 }
@@ -110,22 +113,25 @@ header.main-header .nav-search > input {
     width: 100% !important;
     padding: 8px 35px 8px 12px !important;
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    /* THEME: Viền/Nền input tối */
+    border: 1px solid #555; 
     outline: none;
-    background-color: rgba(255, 255, 255, 0.95);
-    color: #333;
+    background-color: #2c2c2c; 
+    color: #e0e0e0; 
     font-size: 0.82rem !important;
     transition: all 0.3s ease;
     box-sizing: border-box !important;
 }
 
 header.main-header .nav-search input:focus {
-    border-color: #e94560;
-    background-color: #fff;
+    /* THEME: Focus vàng */
+    border-color: #ffc107; 
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.3);
 }
 
 header.main-header .nav-search input::placeholder {
-    color: #999;
+    /* THEME: Màu chữ phụ */
+    color: #a9b3c1; 
 }
 
 header.main-header .nav-search > .search-button {
@@ -135,7 +141,8 @@ header.main-header .nav-search > .search-button {
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #666;
+    /* THEME: Màu icon (chữ phụ) */
+    color: #a9b3c1; 
     cursor: pointer;
     padding: 5px !important;
     display: flex;
@@ -145,19 +152,24 @@ header.main-header .nav-search > .search-button {
 }
 
 header.main-header .nav-search .search-button:hover {
-    color: #e94560;
+    /* THEME: Hover vàng */
+    color: #ffc107; 
 }
 
 /* Nút Đăng nhập */
+/* Nút Đăng nhập (Kiểu Nút Viền) */
 header.main-header .nav-right > a.nav-auth {
     display: flex !important;
     align-items: center !important;
     gap: 4px !important;
     text-decoration: none !important;
-    color: #e0e0e0 !important;
-    font-weight: 500;
+    /* THEME: Nền trong suốt, viền vàng, chữ vàng */
+    background-color: transparent;
+    border: 1px solid #e0e0e0; /* Thêm viền vàng */
+    color: #e0e0e0 !important; 
+    font-weight: 700; /* In đậm chữ */
     font-size: 0.82rem !important;
-    padding: 6px 10px !important;
+    padding: 6px 10px !important; /* Giữ padding cũ */
     border-radius: 6px;
     transition: all 0.3s ease;
     white-space: nowrap !important;
@@ -165,8 +177,9 @@ header.main-header .nav-right > a.nav-auth {
 }
 
 header.main-header .nav-auth:hover {
-    background-color: rgba(233, 69, 96, 0.1) !important;
-    color: #e94560 !important;
+    /* THEME: Nền vàng, chữ đen khi hover */
+    background-color: #e0e0e0 !important;
+    color: #111 !important;
 }
 
 /* Nút Ngôn ngữ */
@@ -185,8 +198,9 @@ header.main-header .nav-right > .nav-lang {
 }
 
 header.main-header .nav-lang:hover {
-    background-color: rgba(233, 69, 96, 0.1) !important;
-    color: #e94560 !important;
+    /* THEME: Hover vàng */
+    background-color: rgba(255, 193, 7, 0.1) !important; 
+    color: #ffc107 !important;
 }
 
 /* 2. THANH NAV PHỤ (DƯỚI) */
@@ -195,7 +209,8 @@ header.main-header > .navbar-bottom {
     align-items: center;
     justify-content: space-between;
     padding: 0.85rem 1.5rem;
-    background-color: #16213e;
+    /* THEME: Nền tối (giống input/button) */
+    background-color: #2c2c2c; 
     font-size: 0.9rem;
 }
 
@@ -220,13 +235,15 @@ header.main-header .navbar-bottom a.nav-link {
 }
 
 header.main-header .nav-link:hover {
-    background-color: rgba(233, 69, 96, 0.15);
-    color: #e94560;
+    /* THEME: Hover vàng */
+    background-color: rgba(255, 193, 7, 0.15); 
+    color: #ffc107;
 }
 
 /* Các link phụ (không icon) */
 header.main-header .navbar-bottom a.nav-link-sub {
-    color: #c4c3ca;
+    /* THEME: Màu chữ phụ */
+    color: #a9b3c1; 
     text-decoration: none;
     font-weight: 400;
     font-size: 0.88rem;
@@ -236,11 +253,12 @@ header.main-header .navbar-bottom a.nav-link-sub {
 }
 
 header.main-header .nav-link-sub:hover {
-    color: #e94560;
-    background-color: rgba(233, 69, 96, 0.1);
+    /* THEME: Hover vàng */
+    color: #ffc107; 
+    background-color: rgba(255, 193, 7, 0.1);
 }
 
-/* Responsive */
+/* Responsive (Không thay đổi) */
 @media (max-width: 1200px) {
     header.main-header .navbar-top {
         padding: 0.8rem 1rem !important;

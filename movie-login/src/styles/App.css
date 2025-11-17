@@ -1,0 +1,14 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-family: 'Segoe UI', sans-serif;
+    
+    /* Đặt màu nền chính tại đây */
+    background-color: #1a1a1a; 
+}
+
+#root { 
+  /* Hoặc bất kỳ ID nào của div gốc trong React */
+  min-height: 100vh;
+}

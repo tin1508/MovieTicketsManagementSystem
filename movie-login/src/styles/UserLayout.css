@@ -1,4 +1,7 @@
-/* --- Trang Chủ & Trang Chi Tiết --- */
+/* Đây là tệp CSS cho bố cục trang chủ và trang chi tiết, đã được cập nhật theo "dark mode" (chủ đề tối) của bạn:
+
+```css */
+/* === Bố cục Trang Chủ & Trang Chi Tiết (DARK MODE THEME) === */
 
 /* Bố cục trang chủ */
 .homepage-container {
@@ -13,18 +16,19 @@
 }
 
 .movie-section h2 {
-    color: #e94560; /* Màu đỏ chủ đạo */
+    /* THEME: Màu VÀNG chủ đạo */
+    color: #ffc107; 
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
-    border-bottom: 2px solid #0f3460;
+    /* THEME: Viền tối */
+    border-bottom: 2px solid #333; 
     padding-bottom: 0.5rem;
 }
 
-/* Lưới hiển thị các thẻ phim */
+/* Lưới hiển thị các thẻ phim (Flexbox) */
 .movie-grid {
     display: flex;
     flex-wrap: wrap;
-    /* Hiển thị 5 cột trên màn lớn, 2 cột trên mobile */
     justify-content: center;
     gap: 1.5rem;
 }
@@ -34,13 +38,18 @@
     max-width: 1100px;
     margin: 2rem auto;
     padding: 1.5rem;
-    background-color: #16213e; /* Nền dark-mode */
+    /* THEME: Nền container tối */
+    background-color: #1a1a1a; 
+    /* THEME: Viền tối */
+    border: 1px solid #333; 
     border-radius: 8px;
-    color: #e0e0e0; /* Màu chữ sáng */
+    /* THEME: Chữ sáng */
+    color: #e0e0e0; 
 }
 
 .movie-detail-container h1 {
-    color: #e94560; /* Màu đỏ chủ đạo */
+    /* THEME: Màu VÀNG chủ đạo */
+    color: #ffc107; 
     font-size: 2.5rem;
     margin-bottom: 1.5rem;
 }
@@ -57,7 +66,8 @@
     aspect-ratio: 2 / 3;
     object-fit: cover;
     border-radius: 8px;
-    background-color: #0f3460;
+    /* THEME: Nền placeholder tối */
+    background-color: #2c2c2c; 
 }
 
 /* Thông tin ở trang chi tiết */
@@ -72,30 +82,12 @@
 }
 
 .movie-detail-info strong {
-    color: #c4c3ca; /* Màu xám sáng hơn */
+    /* THEME: Màu chữ phụ */
+    color: #a9b3c1; 
     margin-right: 8px;
 }
 
-/* CSS cho Responsive (Mobile) */
-@media (max-width: 768px) {
-    .movie-detail-content {
-        flex-direction: column; /* Xếp dọc trên mobile */
-    }
-    
-    .movie-detail-poster {
-        width: 100%; /* Chiếm 100% chiều rộng */
-        max-width: 350px; /* Giới hạn để không quá to */
-        margin: 0 auto; /* Căn giữa */
-    }
-    
-    .movie-grid {
-        /* Hiển thị 2 cột trên mobile */
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 1rem;
-    }
-}
-
-/* Thêm vào file styles/UserLayout.css */
+/* === Nút Xem Thêm & Xem Trailer === */
 
 .see-more-container {
     text-align: center; /* Căn giữa nút */
@@ -104,18 +96,23 @@
 
 .btn-see-more {
     padding: 10px 30px;
-    border: 1px solid #e94560; /* Màu đỏ chủ đạo */
-    color: #e94560;
+    /* THEME: Viền VÀNG */
+    border: 1px solid #ffc107; 
+    /* THEME: Chữ VÀNG */
+    color: #ffc107; 
     background-color: transparent;
-    border-radius: 5px;
+    /* THEME: Bo góc 6px */
+    border-radius: 6px; 
     text-decoration: none;
     font-weight: 600;
     transition: all 0.3s ease;
 }
 
 .btn-see-more:hover {
-    background-color: #e94560;
-    color: white;
+    /* THEME: Nền VÀNG */
+    background-color: #ffc107; 
+    /* THEME: Chữ đen trên nền vàng */
+    color: #111; 
 }
 
 /* === Nút Xem Trailer === */
@@ -123,33 +120,37 @@
     display: inline-flex; /* Để căn icon và chữ */
     align-items: center;
     gap: 8px;
-    background-color: #e94560; /* Màu đỏ chủ đạo */
-    color: white;
+    /* THEME: Nền VÀNG */
+    background-color: #ffc107; 
+    /* THEME: Chữ đen trên nền vàng */
+    color: #111; 
     border: none;
     padding: 12px 24px;
     font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 5px;
+    /* THEME: Font-weight 700 */
+    font-weight: 700; 
+    /* THEME: Bo góc 6px */
+    border-radius: 6px; 
     cursor: pointer;
-    margin-bottom: 1.5rem; /* Khoảng cách với phần mô tả */
+    margin-bottom: 1.5rem; 
     transition: all 0.3s ease;
 }
 
 .btn-watch-trailer:hover {
-    background-color: #d43d51;
+    /* THEME: Vàng sáng hơn */
+    background-color: #ffca2c; 
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(233, 69, 96, 0.3);
+    /* THEME: Shadow vàng */
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3); 
 }
 
 
 /* === CSS cho Modal Trailer === */
 .trailer-modal .modal-body {
-    /* Ghi đè: Xóa padding mặc định của modal */
     padding: 0;
 }
 
 .trailer-iframe-container {
-    /* Tạo tỷ lệ 16:9 cho video */
     position: relative;
     padding-bottom: 56.25%; /* Tỷ lệ 16:9 */
     height: 0;
@@ -163,42 +164,56 @@
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 0 0 8px 8px; /* Bo góc dưới (nếu modal của bạn bo góc) */
+    border-radius: 0 0 8px 8px; /* Giả sử modal có bo góc 8px */
 }
 
-/* Thêm vào cuối file styles/UserLayout.css */
+/* === Bố cục Layout Chung === */
 
-/* Định dạng cho khu vực nội dung chính (main content) */
 .user-layout main {
-    background-color: #1a1a2e; /* 1. Đặt màu nền tối (dark-mode) */
-    min-height: 80vh;          /* 2. Giữ chiều cao tối thiểu */
-    
-    /* 3. Thêm đệm (padding) để nội dung không dính sát viền */
+    /* THEME: Nền đen (base) cho toàn bộ trang */
+    background-color: #000; 
+    min-height: 80vh; 
     padding-top: 2rem;
     padding-bottom: 2rem;
 }
 
+/* Lưới hiển thị phim (Grid) */
 .movie-grid-fixed {
     display: grid;
-    /* Luôn luôn chia thành 4 cột bằng nhau */
     grid-template-columns: repeat(4, 1fr); 
-    gap: 1.5rem; /* Khoảng cách giữa các phim */
+    gap: 1.5rem; 
 }
 
-/* * Responsive cho màn hình nhỏ (ví dụ: mobile)
- * Chuyển về 2 cột
- */
+/* --- Responsive (Chung) --- */
+
 @media (max-width: 768px) {
+    /* Chi tiết phim (xếp dọc) */
+    .movie-detail-content {
+        flex-direction: column; 
+    }
+    
+    .movie-detail-poster {
+        width: 100%; 
+        max-width: 350px; 
+        margin: 0 auto; 
+    }
+    
+    /* Lưới (flex) 2 cột */
+    .movie-grid {
+        /* (Giữ nguyên flex-wrap, 2 card sẽ tự xuống hàng) */
+        gap: 1rem;
+    }
+
+    /* Lưới (grid) 2 cột */
     .movie-grid-fixed {
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
     }
 }
 
-/* * Responsive cho màn hình tablet
- * Chuyển về 3 cột
- */
+/* Responsive cho màn hình tablet */
 @media (min-width: 769px) and (max-width: 1024px) {
+    /* Lưới (grid) 3 cột */
     .movie-grid-fixed {
         grid-template-columns: repeat(3, 1fr);
     }

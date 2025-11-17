@@ -1,28 +1,35 @@
-/* styles/Login.css (PHIÊN BẢN MỚI) */
+/* styles/Login.css (PHIÊN BẢN DARK MODE) */
 
 /* 1. Container căn giữa (nằm trong UserLayout) */
 .auth-page-container {
     display: flex;
     justify-content: center;
-    /* Thêm padding trên/dưới để nó không dính Header/Footer */
-    padding: 4rem 1rem; 
+    align-items: center; /* Căn giữa theo chiều dọc */
+    padding: 4rem 1rem;
+    /* THEME: Sử dụng nền gradient tối */
+    background-image: radial-gradient(circle, #222, #000);
+    min-height: 100vh; /* Đảm bảo nó lấp đầy màn hình */
 }
 
-/* 2. HỘP MÀU TRẮNG */
+/* 2. HỘP MÀU TỐI (THAY VÌ TRẮNG) */
 .auth-box {
     width: 100%;
     max-width: 500px; /* Độ rộng của hộp */
-    background-color: #ffffff;
-    color: #333; /* Chữ màu đen/xám đậm */
+    /* THEME: Nền container tối */
+    background-color: #1a1a1a;
+    color: #e0e0e0; /* THEME: Chữ màu sáng */
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    /* THEME: Viền tối */
+    border: 1px solid #333;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Shadow tối hơn */
     overflow: hidden; /* Để bo góc các tab */
 }
 
 /* 3. KHU VỰC CHỨA TAB */
 .auth-tabs {
     display: flex;
-    background-color: #f4f4f4; /* Nền của thanh tab (màu xám nhạt) */
+    /* THEME: Nền của thanh tab (giống nền nút tối) */
+    background-color: #2c2c2c; 
 }
 
 .auth-tab-btn {
@@ -30,7 +37,8 @@
     padding: 18px;
     border: none;
     background-color: transparent;
-    color: #888; /* Chữ tab (màu xám mờ) */
+    /* THEME: Chữ tab (màu xám mờ) */
+    color: #a9b3c1; 
     font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
@@ -39,8 +47,9 @@
 
 /* Tab đang được chọn (ACTIVE) */
 .auth-tab-btn.active {
-    background-color: #ffffff; /* Nền trắng (nổi lên) */
-    color: #333; /* Chữ đen */
+    /* THEME: Dùng màu VÀNG chủ đạo */
+    background-color: #ffc107; 
+    color: #111; /* THEME: Chữ đen trên nền vàng */
 }
 
 /* 4. Vùng nội dung form (padding) */
@@ -48,7 +57,7 @@
     padding: 2.5rem;
 }
 
-/* 5. SỬA LẠI STYLE CHO FORM TRÊN NỀN TRẮNG */
+/* 5. SỬA LẠI STYLE CHO FORM TRÊN NỀN TỐI */
 
 /* Xóa bỏ header (vì tab đã thay thế) */
 .login-header {
@@ -65,16 +74,18 @@
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    color: #555; /* Chữ xám đậm */
+    /* THEME: Chữ xám nhạt (phụ) */
+    color: #a9b3c1; 
 }
 
 .input-group input {
     width: 100%;
     padding: 12px 15px;
-    border: 1px solid #ccc; /* Border xám nhạt */
+    /* THEME: Viền và nền input tối */
+    border: 1px solid #555; 
     border-radius: 8px;
-    background-color: #f9f9f9; /* Nền input xám rất nhạt */
-    color: #333; /* Chữ đen */
+    background-color: #2c2c2c; /* Nền input xám tối */
+    color: #e0e0e0; /* Chữ sáng */
     font-size: 16px;
     box-sizing: border-box; 
     transition: border-color 0.3s, box-shadow 0.3s;
@@ -82,8 +93,9 @@
 
 .input-group input:focus {
     outline: none;
-    border-color: #e94560; /* Màu đỏ chủ đạo (giữ nguyên) */
-    box-shadow: 0 0 5px rgba(233, 69, 96, 0.3);
+    /* THEME: Viền màu VÀNG chủ đạo khi focus */
+    border-color: #ffc107; 
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.3); /* Shadow vàng */
 }
 
 /* Nút bấm (Submit) */
@@ -92,22 +104,26 @@
     padding: 15px;
     border: none;
     border-radius: 8px;
-    /* Dùng màu VÀNG (từ ảnh của bạn) */
-    background-color: #f7b731; 
-    color: #333; /* Chữ đen */
+    /* THEME: Dùng màu VÀNG chủ đạo */
+    background-color: #ffc107; 
+    color: #111; /* Chữ đen */
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
     margin-top: 1rem;
 }
 
-.login-button:hover {
-    background-color: #f5a623; /* Vàng đậm hơn */
+.login-button:hover:not(:disabled) {
+    /* THEME: Vàng sáng hơn khi hover */
+    background-color: #ffca2c; 
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.3); /* Shadow vàng */
     transform: translateY(-2px);
 }
 .login-button:disabled {
-    background-color: #aaa;
+    /* THEME: Nút disabled tối */
+    background-color: #555;
+    color: #999;
     cursor: not-allowed;
 }
 
@@ -115,10 +131,12 @@
 .signup-link {
     text-align: center;
     margin-top: 1.5rem;
-    color: #555;
+    /* THEME: Chữ xám nhạt */
+    color: #a9b3c1;
 }
 .signup-link a {
-    color: #e94560;
+    /* THEME: Link màu VÀNG chủ đạo */
+    color: #ffc107; 
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
@@ -129,7 +147,8 @@
 
 /* Thông báo lỗi */
 .error-message {
-    background-color: #ff4d4d;
+    /* THEME: Màu đỏ lỗi (giống .btn-cancel-selection) */
+    background-color: #f44336; 
     color: white;
     padding: 10px;
     border-radius: 5px;
