@@ -1,29 +1,29 @@
 import axios from 'axios';
 // Hoặc import 'api' nếu bạn có file axios instance đã cấu hình sẵn token
-// import api from './api'; 
+// import axiosInstance from '.././api/axiosInstance'; 
 
 // TODO: Đổi URL này thành URL API backend của bạn
-// const API_URL = "http://localhost:8080/api/v1"; 
+const API_URL = "http://localhost:8080/api/v1"; 
 
-// // Hàm lấy token (giả sử bạn lưu token trong localStorage)
-// const getAuthToken = () => {
-//     return localStorage.getItem('accessToken');
-// };
+// Hàm lấy token (giả sử bạn lưu token trong localStorage)
+const getAuthToken = () => {
+    return localStorage.getItem('accessToken');
+};
 
-// const getAuthHeaders = () => {
-//     const token = getAuthToken();
-//     if (!token) {
-//         // Ném lỗi sớm nếu không có token (cho các hàm Admin)
-//         throw new Error('Không tìm thấy token. Vui lòng đăng nhập lại.');
-//     }
-//     return { 'Authorization': `Bearer ${token}` };
-// };
+const getAuthHeaders = () => {
+    const token = getAuthToken();
+    if (!token) {
+        // Ném lỗi sớm nếu không có token (cho các hàm Admin)
+        throw new Error('Không tìm thấy token. Vui lòng đăng nhập lại.');
+    }
+    return { 'Authorization': `Bearer ${token}` };
+};
 
 export const getAllUsers = async (page = 0, size = 10) => {
   try {
-   const response = await axios.get('/users', {
+   const response = await axios.get('${API_URL}/users', {
         params: { page, size },
-      //headers: getAuthHeaders(), // <-- Dùng hàm headers đã sửa
+        headers: getAuthHeaders(), // <-- Dùng hàm headers đã sửa
    });
 
    // 5. SỬA LỖI LOGIC: Dựa trên log (10:39 PM) của bạn,
@@ -47,8 +47,8 @@ export const getAllUsers = async (page = 0, size = 10) => {
 // Cập nhật vai trò/trạng thái người dùng
 export const updateUser = async (userId, updateData) => {
    try {
-     const response = await axios.put(`/users/${userId}`, updateData) 
-       //headers: getAuthHeaders() // <-- Dùng hàm headers đã sửa
+     const response = await axios.put(`${API_URL}/users/${userId}`, updateData) 
+      headers: getAuthHeaders() // <-- Dùng hàm headers đã sửa
      return response.data;
    } catch (error) {
      console.error(`Lỗi khi cập nhật người dùng ${userId}:`, error);
@@ -59,8 +59,8 @@ export const updateUser = async (userId, updateData) => {
 // Xóa người dùng
 export const deleteUser = async (userId) => {
    try {
-     const response = await axios.delete(`/users/${userId}`, {
-       headers: getAuthHeaders() // <-- Dùng hàm headers đã sửa
+      const response = await axios.delete(`${API_URL}/users/${userId}`, {
+      headers: getAuthHeaders() // <-- Dùng hàm headers đã sửa
      });
      return response.data;
    } catch (error) {
@@ -71,9 +71,9 @@ export const deleteUser = async (userId) => {
 
 export const getMyProfile = async () => {
    try {
-     const response = await axios.get(`/users/myInfo`); 
-       //headers: getAuthHeaders() // <-- Dùng hàm headers đã sửa
-     
+      const response = await axios.get(`${API_URL}/users/myInfo`, {
+         headers: getAuthHeaders() 
+      });
      return response.data.result || response.data;
    } catch (error) {
      console.error('Lỗi khi lấy thông tin cá nhân:', error);
@@ -83,8 +83,10 @@ export const getMyProfile = async () => {
 
 export const updateMyProfile = async (profileData) => {
    try {
-     const response = await axios.put(`/users/myInfo`, profileData);
-      return response.data;
+      const response = await axios.put(`${API_URL}/users/myInfo`, profileData, {
+        headers: getAuthHeaders()
+      });
+     return response.data;
     } catch (error) {
       console.error('Lỗi khi cập nhật thông tin cá nhân:', error);
       throw error;
