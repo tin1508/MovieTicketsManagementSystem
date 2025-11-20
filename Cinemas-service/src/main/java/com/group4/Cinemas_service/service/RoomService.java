@@ -5,6 +5,7 @@ import com.group4.Cinemas_service.dto.response.RoomResponse;
 import com.group4.Cinemas_service.entity.Cinema;
 import com.group4.Cinemas_service.entity.Room;
 import com.group4.Cinemas_service.entity.Seat;
+import com.group4.Cinemas_service.enums.SeatType;
 import com.group4.Cinemas_service.mapper.RoomMapper;
 import com.group4.Cinemas_service.repository.CinemaRepository;
 import com.group4.Cinemas_service.repository.RoomRepository;
@@ -36,19 +37,56 @@ public class RoomService {
 
         roomRepository.save(room);
 
-        // === Generate seats ===
+        // Tạo ghế tự động
         for (int row = 0; row < request.getTotalRows(); row++) {
-            String rowName = String.valueOf((char)('A' + row)); // A,B,C...
+            String rowName = String.valueOf((char) ('A' + row));
 
-            for (int number = 1; number <= request.getSeatsPerRow(); number++) {
+            boolean isCoupleRow = (row == request.getTotalRows() - 1);
+
+            double leftBound = request.getSeatsPerRow() * 0.3;
+            double rightBound = request.getSeatsPerRow() * 0.7;
+
+            double topBound = request.getTotalRows() * 0.3;
+            double bottomBound = request.getTotalRows() * 0.7;
+
+            for (int seatNum = 1; seatNum <= request.getSeatsPerRow(); seatNum++) {
+
                 Seat seat = new Seat();
                 seat.setRowName(rowName);
-                seat.setSeatNumber(number);
+                seat.setSeatNumber(seatNum);
+
+                if (isCoupleRow) {
+                    seat.setSeatType(SeatType.COUPLE);
+                } else {
+
+                    boolean isVipHoriz = (seatNum > leftBound && seatNum < rightBound);
+                    boolean isVipVert = (row > topBound && row < bottomBound);
+
+                    if (isVipHoriz && isVipVert) {
+                        seat.setSeatType(SeatType.VIP);
+                    } else {
+                        seat.setSeatType(SeatType.NORMAL);
+                    }
+                }
+
                 seat.setRoom(room);
                 seatRepository.save(seat);
             }
         }
 
+        return roomMapper.toResponse(room);
+    }
+
+    public List<RoomResponse> getAll() {
+        return roomRepository.findAll()
+                .stream()
+                .map(roomMapper::toResponse)
+                .toList();
+    }
+
+    public RoomResponse getById(Long id) {
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Room not found"));
         return roomMapper.toResponse(room);
     }
 }

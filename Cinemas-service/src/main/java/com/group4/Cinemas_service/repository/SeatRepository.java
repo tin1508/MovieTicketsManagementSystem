@@ -2,6 +2,7 @@ package com.group4.Cinemas_service.repository;
 
 
 import com.group4.Cinemas_service.entity.Seat;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

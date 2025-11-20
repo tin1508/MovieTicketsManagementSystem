@@ -15,6 +15,7 @@ public class SeatMapper {
         dto.setSeatNumber(seat.getSeatNumber());
         dto.setSeatCode(seat.getRowName() + seat.getSeatNumber()); // A1, B5, ...
         dto.setRoomId(seat.getRoom().getId());
+        dto.setSeatType(seat.getSeatType().name());
         return dto;
     }
 }

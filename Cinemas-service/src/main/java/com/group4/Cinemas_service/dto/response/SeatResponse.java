@@ -8,4 +8,5 @@ public class SeatResponse {
     private int seatNumber;
     private String seatCode;
     private Long roomId;
+    private String seatType;
 }

@@ -1,5 +1,6 @@
 package com.group4.Cinemas_service.entity;
 
+import com.group4.Cinemas_service.enums.SeatType;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,9 +13,13 @@ public class Seat {
 
     private int seatNumber;
 
+    @Enumerated(EnumType.STRING)
+    private SeatType seatType;
+
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
+
 
     public Long getId() {
         return id;
@@ -42,5 +47,13 @@ public class Seat {
 
     public void setRoom(Room room) {
         this.room = room;
+    }
+
+    public SeatType getSeatType() {
+        return seatType;
+    }
+
+    public void setSeatType(SeatType seatType) {
+        this.seatType = seatType;
     }
 }
