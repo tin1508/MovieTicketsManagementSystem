@@ -16,7 +16,7 @@ public class SeatService {
     private final SeatMapper seatMapper;
 
     public List<SeatResponse> getSeatsByRoom(Long roomId) {
-        return seatRepository.findByRoomId(roomId)
+        return seatRepository.findByRoom_Id(roomId)
                 .stream()
                 .map(seatMapper::toResponse)
                 .toList();
