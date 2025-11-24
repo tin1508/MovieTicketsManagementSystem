@@ -1,95 +1,161 @@
-/* styles/UserFooter.css (DARK MODE THEME) */
+/* styles/UserFooter.css (GLASSMORPHISM THEME) */
 
+/* ======================================== */
+/* 1. CONTAINER CHÍNH */
+/* ======================================== */
 .footer-container {
-    /* THEME: Nền container tối */
-    background-color: #1a1a1a; 
-    /* THEME: Màu chữ phụ */
+    /* GLASSMORPHISM: Thay nền đặc bằng nền kính tối */
+    background: rgba(0, 0, 0, 0.5); 
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    
+    /* Viền trên sáng nhẹ để tách biệt nội dung */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    
     color: #a9b3c1; 
-    padding-top: 3rem;
-    margin-top: 3rem; /* Khoảng cách với nội dung trang */
-    /* THEME: Viền tối */
-    border-top: 1px solid #333; 
+    padding-top: 4rem;
+    margin-top: 4rem; /* Tăng khoảng cách để thoáng hơn */
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.3); /* Shadow ngược lên trên */
 }
 
 .footer-content {
     display: grid;
-    /* Chia 3 cột, tự động co dãn */
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
+    /* Chia 3 cột linh hoạt */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 3rem;
     
-    /* Căn giữa layout */
     max-width: 1300px;
     margin: 0 auto;
-    padding: 0 2.5rem;
+    padding: 0 2rem;
 }
 
+/* ======================================== */
+/* 2. CÁC CỘT (COLUMNS) */
+/* ======================================== */
 .footer-column {
     font-size: 0.95rem;
 }
 
 .footer-column h4 {
-    font-size: 1.2rem;
-    /* THEME: Chữ sáng */
+    font-size: 1.3rem;
     color: #fff; 
     margin-bottom: 1.5rem;
+    font-weight: 700;
     position: relative;
-    /* THEME: Gạch chân màu VÀNG chủ đạo */
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #ffc107; 
     display: inline-block;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 
-/* Cột Liên hệ */
+/* Gạch chân trang trí màu vàng */
+.footer-column h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 40px;
+    height: 3px;
+    background-color: #ffc107; /* VÀNG chủ đạo */
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5); /* Hiệu ứng phát sáng */
+}
+
+/* --- Cột Liên hệ --- */
 .footer-column p {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 1rem;
+    align-items: flex-start; /* Căn icon lên trên cùng dòng */
+    gap: 12px;
+    margin-bottom: 1.2rem;
     line-height: 1.6;
+    color: #ccc;
 }
-.footer-column p span {
-    flex: 1;
+.footer-column p svg {
+    color: #ffc107; /* Icon màu vàng */
+    flex-shrink: 0;
+    margin-top: 4px;
 }
 
-/* Cột Link */
+/* --- Cột Link --- */
 .footer-link {
     display: block;
-    /* THEME: Màu chữ phụ */
     color: #a9b3c1; 
     text-decoration: none;
-    margin-bottom: 0.75rem;
-    transition: color 0.2s ease, padding-left 0.2s ease;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
 }
+
+/* Hiệu ứng mũi tên ẩn hiện khi hover */
+.footer-link::before {
+    content: '›';
+    margin-right: 8px;
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: all 0.3s ease;
+    color: #ffc107;
+    font-weight: bold;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
 .footer-link:hover {
-    /* THEME: Màu VÀNG chủ đạo */
     color: #ffc107; 
     padding-left: 5px;
 }
 
-/* Cột Mạng xã hội */
-.social-icons {
-    display: flex;
-    gap: 1.5rem;
-}
-.social-link {
-    /* THEME: Màu chữ phụ */
-    color: #a9b3c1; 
-    transition: color 0.2s ease, transform 0.2s ease;
-}
-.social-link:hover {
-    /* THEME: Màu VÀNG chủ đạo */
-    color: #ffc107; 
-    transform: translateY(-3px);
+.footer-link:hover::before {
+    opacity: 1;
+    transform: translateX(0);
 }
 
-/* Dòng Copyright ở dưới cùng */
+/* --- Cột Mạng xã hội (Buttons) --- */
+.social-icons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.social-link {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    
+    /* Style nút kính mờ */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.social-link:hover {
+    background-color: #ffc107;
+    color: #111;
+    transform: translateY(-5px); /* Bay lên */
+    box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+    border-color: #ffc107;
+}
+
+/* ======================================== */
+/* 3. COPYRIGHT (DÒNG CUỐI) */
+/* ======================================== */
 .footer-bottom {
     text-align: center;
-    padding: 1.5rem;
-    margin-top: 2rem;
-    /* THEME: Viền tối */
-    border-top: 1px solid #333; 
+    padding: 2rem 1rem;
+    margin-top: 3rem;
+    
+    /* Viền mờ ngăn cách */
+    border-top: 1px solid rgba(255, 255, 255, 0.05); 
+    
     font-size: 0.9rem;
-    /* THEME: Màu chữ phụ */
-    color: #a9b3c1; 
+    color: #777;
+}
+
+.footer-bottom p {
+    margin: 0;
 }

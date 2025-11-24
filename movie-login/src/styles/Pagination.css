@@ -1,64 +1,85 @@
-/* CSS cho Phân trang (Dark Mode Theme) */
+/* styles/Pagination.css (GLASSMORPHISM THEME) */
 
 .pagination-container {
     display: flex;
     justify-content: center;
     margin-top: 2rem;
+    margin-bottom: 2rem;
 }
 
 .pagination {
     display: flex;
     list-style: none;
-    padding: 0;
-    /* THEME: Bo góc và viền tối */
-    border-radius: 6px; 
-    overflow: hidden;
-    border: 1px solid #333;
+    padding: 5px; /* Tạo khoảng hở bên trong */
+    
+    /* GLASSMORPHISM: Khung bao ngoài dạng viên thuốc */
+    background: rgba(255, 255, 255, 0.03);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px; /* Bo tròn 2 đầu */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    
+    gap: 5px; /* Khoảng cách giữa các nút */
 }
 
-/** {.page-item {
-     không có gì }
-} */
+/* Các item bên trong */
+.page-item {
+    margin: 0;
+}
 
+/* Style cho từng nút bấm */
 .page-link {
-    /* THEME: Chữ sáng trên nền nút tối */
-    color: #e0e0e0;
-    background-color: #2c2c2c; 
-    border: none;
-    padding: 0.75rem 1rem;
-    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 10px;
+    
+    /* Nền trong suốt */
+    background-color: transparent;
+    border: 1px solid transparent; /* Để giữ kích thước không đổi khi hover */
+    border-radius: 50%; /* Nút tròn nhìn hiện đại hơn */
+    
+    color: #a9b3c1; /* Màu chữ xám xanh */
     font-size: 1rem;
-    transition: background-color 0.3s;
-    /* THEME: Viền tối ngăn cách */
-    border-right: 1px solid #333; 
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-decoration: none;
 }
 
-.page-item:last-child .page-link {
-    border-right: none;
-}
-
+/* Hiệu ứng khi Hover */
 .page-link:hover {
-    /* THEME: Nền hover tối hơn */
-    background-color: #3a3a3a; 
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
+/* Trạng thái ACTIVE (Trang hiện tại) */
 .page-item.active .page-link {
-    /* THEME: Nền VÀNG chủ đạo */
-    background-color: #ffc107; 
-    /* THEME: Chữ đen trên nền vàng */
-    color: #111; 
-    font-weight: 700;
+    /* Nền VÀNG chủ đạo */
+    background-color: #ffc107;
+    
+    /* Chữ đen */
+    color: #111;
+    font-weight: 800;
+    
+    /* Hiệu ứng phát sáng (Glow) */
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.5);
+    transform: scale(1.05);
 }
 
+/* Trạng thái DISABLED (Vô hiệu hóa - Nút Prev/Next khi ở đầu/cuối) */
 .page-item.disabled .page-link {
-    /* THEME: Màu chữ disabled */
-    color: #999; 
+    color: #555;
     cursor: not-allowed;
-    /* THEME: Nền disabled */
-    background-color: #555; 
+    background-color: transparent;
 }
 
 .page-item.disabled .page-link:hover {
-    /* THEME: Nền disabled (không đổi khi hover) */
-    background-color: #555; 
+    transform: none;
+    background-color: transparent;
 }
