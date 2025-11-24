@@ -1,139 +1,227 @@
-/* styles/Login.css (PHIÊN BẢN MỚI) */
+/* styles/Login.css (GLASSMORPHISM THEME) */
 
-/* 1. Container căn giữa (nằm trong UserLayout) */
+/* ======================================== */
+/* 1. CONTAINER & BACKGROUND */
+/* ======================================== */
 .auth-page-container {
     display: flex;
     justify-content: center;
-    /* Thêm padding trên/dưới để nó không dính Header/Footer */
-    padding: 4rem 1rem; 
+    align-items: center; 
+    padding: 2rem 1rem;
+    min-height: 100vh;
+    
+    /* Đồng bộ Gradient nền với UserLayout/Dashboard */
+    background: radial-gradient(circle at 50% 0%, #2c3e50 0%, #000000 100%);
 }
 
-/* 2. HỘP MÀU TRẮNG */
+/* ======================================== */
+/* 2. AUTH BOX (KHỐI KÍNH MỜ) */
+/* ======================================== */
 .auth-box {
     width: 100%;
-    max-width: 500px; /* Độ rộng của hộp */
-    background-color: #ffffff;
-    color: #333; /* Chữ màu đen/xám đậm */
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Để bo góc các tab */
+    max-width: 480px;
+    
+    /* Hiệu ứng Kính mờ (Glassmorphism) */
+    background: rgba(255, 255, 255, 0.03);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    
+    /* Viền sáng mỏng tạo độ nổi */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px; /* Bo góc mềm mại hơn */
+    
+    /* Shadow sâu tạo chiều sâu 3D */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    overflow: hidden; 
+    position: relative;
+    z-index: 10;
 }
 
-/* 3. KHU VỰC CHỨA TAB */
+/* ======================================== */
+/* 3. TABS (THANH CHUYỂN ĐỔI) */
+/* ======================================== */
 .auth-tabs {
     display: flex;
-    background-color: #f4f4f4; /* Nền của thanh tab (màu xám nhạt) */
+    background: rgba(0, 0, 0, 0.2); /* Nền tối nhẹ cho thanh tab */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .auth-tab-btn {
     flex: 1;
-    padding: 18px;
+    padding: 1.2rem;
     border: none;
     background-color: transparent;
-    color: #888; /* Chữ tab (màu xám mờ) */
+    color: #a9b3c1; /* Màu xám xanh */
     font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
 }
 
-/* Tab đang được chọn (ACTIVE) */
+.auth-tab-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Tab đang kích hoạt */
 .auth-tab-btn.active {
-    background-color: #ffffff; /* Nền trắng (nổi lên) */
-    color: #333; /* Chữ đen */
+    color: #ffc107; /* Chữ vàng */
+    background: rgba(255, 193, 7, 0.1); /* Nền vàng trong suốt rất nhẹ */
 }
 
-/* 4. Vùng nội dung form (padding) */
+/* Thêm thanh gạch chân vàng cho tab active */
+.auth-tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #ffc107;
+    box-shadow: 0 -2px 10px rgba(255, 193, 7, 0.5);
+}
+
+/* ======================================== */
+/* 4. FORM CONTENT */
+/* ======================================== */
 .auth-content {
     padding: 2.5rem;
 }
 
-/* 5. SỬA LẠI STYLE CHO FORM TRÊN NỀN TRẮNG */
-
-/* Xóa bỏ header (vì tab đã thay thế) */
 .login-header {
-    display: none;
+    display: none; /* Ẩn header text cũ vì đã có Tab */
 }
 
-/* Nhóm input (label và input) */
+/* Nhóm Input */
 .input-group {
-    margin-bottom: 20px;
+    margin-bottom: 1.5rem;
     text-align: left;
 }
 
 .input-group label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #555; /* Chữ xám đậm */
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #a9b3c1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .input-group input {
     width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ccc; /* Border xám nhạt */
+    padding: 14px 16px;
+    
+    /* Input trong suốt (Glass Input) */
+    background-color: rgba(0, 0, 0, 0.3); 
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
-    background-color: #f9f9f9; /* Nền input xám rất nhạt */
-    color: #333; /* Chữ đen */
-    font-size: 16px;
-    box-sizing: border-box; 
-    transition: border-color 0.3s, box-shadow 0.3s;
+    
+    color: #fff;
+    font-size: 1rem;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+    transition: all 0.3s ease;
 }
 
 .input-group input:focus {
     outline: none;
-    border-color: #e94560; /* Màu đỏ chủ đạo (giữ nguyên) */
-    box-shadow: 0 0 5px rgba(233, 69, 96, 0.3);
+    background-color: rgba(0, 0, 0, 0.5);
+    border-color: #ffc107; 
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15); /* Shadow vàng nhẹ */
 }
 
-/* Nút bấm (Submit) */
+.input-group input::placeholder {
+    color: #666;
+}
+
+/* ======================================== */
+/* 5. BUTTONS & LINKS */
+/* ======================================== */
+
 .login-button {
     width: 100%;
-    padding: 15px;
+    padding: 14px;
+    margin-top: 1.5rem;
     border: none;
-    border-radius: 8px;
-    /* Dùng màu VÀNG (từ ảnh của bạn) */
-    background-color: #f7b731; 
-    color: #333; /* Chữ đen */
-    font-size: 18px;
-    font-weight: bold;
+    border-radius: 50px; /* Bo tròn nút bấm nhìn hiện đại hơn */
+    
+    /* Gradient vàng */
+    background: linear-gradient(45deg, #ffc107, #ffb300);
+    color: #000;
+    
+    font-size: 1.1rem;
+    font-weight: 800;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-    margin-top: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
 }
 
-.login-button:hover {
-    background-color: #f5a623; /* Vàng đậm hơn */
-    transform: translateY(-2px);
+.login-button:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.5);
+    background: linear-gradient(45deg, #ffca2c, #ffc107);
 }
+
 .login-button:disabled {
-    background-color: #aaa;
+    background: #444;
+    color: #888;
     cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
 }
 
-/* Link chuyển đổi (nằm trong AuthPage) */
+/* Link chuyển đổi (Đăng ký/Đăng nhập) */
 .signup-link {
     text-align: center;
-    margin-top: 1.5rem;
-    color: #555;
+    margin-top: 2rem;
+    color: #a9b3c1;
+    font-size: 0.95rem;
 }
+
 .signup-link a {
-    color: #e94560;
-    font-weight: 600;
+    color: #ffc107; 
+    font-weight: 700;
     text-decoration: none;
-    cursor: pointer;
+    margin-left: 5px;
+    position: relative;
+    transition: color 0.2s;
 }
-.signup-link a:hover {
-    text-decoration: underline;
+
+.signup-link a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: #ffc107;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.signup-link a:hover::after {
+    transform: scaleX(1);
 }
 
 /* Thông báo lỗi */
 .error-message {
-    background-color: #ff4d4d;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    font-size: 14px;
+    background: rgba(244, 67, 54, 0.15); /* Nền đỏ trong suốt */
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    color: #ff6b6b;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }

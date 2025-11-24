@@ -3,8 +3,10 @@ package com.moviebooking.movie_service.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 
@@ -39,6 +41,10 @@ public class User {
 
     @Column(name = "phone_number", length = 13)
     private String phoneNumber;
+
+    @CreationTimestamp
+    @Column(name = "create_at", updatable = false)
+    LocalDateTime createAt;
 
     Set<String> roles;
 }

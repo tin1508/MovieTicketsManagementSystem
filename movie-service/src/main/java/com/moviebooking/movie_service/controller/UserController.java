@@ -8,7 +8,6 @@ import com.moviebooking.movie_service.dto.request.UserUpdateRequest;
 import com.moviebooking.movie_service.dto.response.ApiResponse;
 import com.moviebooking.movie_service.dto.response.UserResponse;
 import com.moviebooking.movie_service.entity.User;
-import com.moviebooking.movie_service.service.AuthenticationService;
 import com.moviebooking.movie_service.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -30,10 +29,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
+
     UserService userService;
 
     @PostMapping
-    ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request) {
+    ApiResponse<User> createUser(@Valid @RequestBody UserCreationRequest request) {
         ApiResponse<User> apiResponse = new ApiResponse<>();
 
         apiResponse.setResult(userService.createUser(request));
@@ -90,17 +90,25 @@ public class UserController {
 
     @PutMapping("/change-password")
     public ResponseEntity<ApiResponse<Void>> changePassword(
+            @AuthenticationPrincipal Jwt jwt, // <-- 1. Sửa: Lấy Jwt từ Security Context
             @Valid @RequestBody ChangePasswordRequest request
-            ) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = (String) authentication.getPrincipal();
+    ) {
+        // 2. Sửa: Lấy username (hoặc userId) từ Jwt
+        String username = jwt.getSubject();
 
-        userService.changePassword(userId, request);
+        // Gọi service (lưu ý: service của bạn cần tìm user theo username này)
+        userService.changePassword(username, request);
 
         ApiResponse<Void> response = ApiResponse.<Void>builder()
                 .message("Password changed successfully")
                 .build();
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getTotalUsers() {
+        long totalUsers = userService.getTotalUsers();
+        return ResponseEntity.ok(totalUsers);
     }
 }

@@ -31,6 +31,9 @@ public enum ErrorCode {
     PASSWORD_NOT_MATCH(1012, "New password and confirm password do not match", HttpStatus.BAD_REQUEST),
     SAME_PASSWORD(1013, "New password must be different from old password", HttpStatus.BAD_REQUEST),
 
+    BANNER_NOT_FOUND(4001, "Banner not existed", HttpStatus.NOT_FOUND),
+    BANNER_EXISTED(4002, "Banner existed", HttpStatus.BAD_REQUEST)
+
     ;
 
     private final int code;

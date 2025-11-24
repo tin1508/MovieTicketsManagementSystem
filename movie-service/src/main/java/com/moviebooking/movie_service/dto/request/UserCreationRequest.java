@@ -21,7 +21,11 @@ public class UserCreationRequest {
     @Size(min = 8, message = "INVALID_PASSWORD")
     String password;
     String confirmPassword;
+
+
+    @NotBlank(message = "First name is required")
     String firstName;
+    @NotBlank(message = "Last name is required")
     String lastName;
 
     @NotBlank(message = "Email is required")

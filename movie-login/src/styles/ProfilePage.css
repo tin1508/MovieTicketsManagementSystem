@@ -1,165 +1,126 @@
-/* styles/ProfilePage.css */
+/* styles/ProfilePage.css (GLASSMORPHISM + ACCORDION) */
 
-/* Hộp thông tin cá nhân */
-.profile-info-box {
-    background-color: #16213e; /* Nền tối (giống modal) */
-    padding: 2rem;
-    border-radius: 8px;
-    border: 1px solid #0f3460;
-    max-width: 600px;
-    color: #e0e0e0;
+/* Tiêu đề chính */
+.main-page-title {
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
-.profile-info-box p {
+
+/* Layout 1 cột dọc */
+.profile-layout {
+    display: flex;
+    flex-direction: column;
+    /* gap: 2rem; <-- XÓA GAP ĐỂ TRƯỢT MƯỢT HƠN */
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* --- HỘP THÔNG TIN (GLASS) --- */
+.profile-box {
+    /* Nền kính mờ tinh tế */
+    background: rgba(255, 255, 255, 0.03); 
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    
+    border-radius: 16px;
+    padding: 2.5rem;
+    color: #e0e0e0;
+    position: relative;
+    z-index: 2; /* Đảm bảo hộp trên nổi hơn hộp dưới */
+}
+
+/* Header của hộp (chứa tiêu đề và nút chìa khóa) */
+.profile-box-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.profile-box h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #ffc107;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+/* --- NÚT CHÌA KHÓA (TOGGLE) --- */
+.btn-toggle-password {
+    background-color: rgba(255, 193, 7, 0.1); /* Nền vàng rất nhạt */
+    color: #ffc107; /* Icon vàng */
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
     font-size: 1.1rem;
-    margin-bottom: 1rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Hiệu ứng nảy */
 }
-.profile-info-box p strong {
-    color: #c4c3ca;
-    min-width: 120px;
-    display: inline-block;
+.btn-toggle-password:hover {
+    background-color: #ffc107;
+    color: #111;
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
 }
-
-/* Nút đăng xuất */
-.btn-logout {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1rem;
-    background-color: #dc3545; /* Màu đỏ (danger) */
-    color: white;
-    margin-top: 1rem;
-    transition: background-color 0.3s;
-}
-.btn-logout:hover {
-    background-color: #c82333;
+.btn-toggle-password.active {
+    background-color: #ffc107;
+    color: #111;
+    transform: rotate(0);
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.6);
 }
 
-/* Danh sách lịch sử đặt vé */
-.booking-history-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+/* --- HIỆU ỨNG TRƯỢT (ACCORDION) --- */
+.password-accordion {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-30px); /* Dịch lên để ẩn dưới hộp trên */
+    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); /* Trượt mượt */
+    z-index: 1;
 }
 
-/* Tấm vé (ticket) */
-.booking-ticket {   
-    background-color: #16213e;
-    padding: 1.5rem;
-    border-radius: 8px;
-    border: 1px solid #0f3460;
-    color: #e0e0e0;
-}
-.booking-ticket h4 {
-    font-size: 1.3rem;
-    color: #e94560; /* Màu đỏ chủ đạo */
-    margin-bottom: 1rem;
-}
-.booking-ticket p {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-}
-.booking-ticket p strong {
-    color: #c4c3ca;
+.password-accordion.open {
+    max-height: 600px; /* Đủ lớn */
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: 2rem; /* Tạo khoảng cách khi mở */
 }
 
-/* Thêm vào cuối file styles/ProfilePage.css */
+/* --- FORM INPUT (GIỮ NGUYÊN) --- */
+.profile-box .form-group { margin-bottom: 1.5rem; text-align: left; }
+.profile-box .form-group label { display: block; margin-bottom: 0.5rem; color: #aaa; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.profile-box .form-group input { width: 100%; padding: 12px 16px; font-size: 1rem; color: #fff; background-color: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; transition: all 0.3s ease; box-sizing: border-box; }
+.profile-box .form-group input:focus { outline: none; border-color: #ffc107; background-color: rgba(0, 0, 0, 0.4); box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2); }
+.profile-box .form-group input:disabled { background-color: rgba(255, 255, 255, 0.05); color: #888; border-color: transparent; cursor: not-allowed; }
+.form-grid.two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
 
-/* Nút bấm trong chế độ XEM */
-.profile-actions {
-    margin-top: 2rem;
-    display: flex;
-    gap: 1rem;
-}
-.btn-edit {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1rem;
-    background-color: #007bff; /* Màu xanh (Giống admin) */
-    color: white;
-    transition: background-color 0.3s;
-}
-.btn-edit:hover {
-    background-color: #0056b3;
-}
+/* --- BUTTONS (GIỮ NGUYÊN) --- */
+.form-actions-group, .form-actions-left { display: flex; gap: 1rem; margin-top: 2rem; }
+.btn-submit-profile, .btn-logout-profile { padding: 12px 24px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; text-transform: uppercase; cursor: pointer; color: #111; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+.btn-submit-profile { background-color: #ffc107; }
+.btn-submit-profile:hover:not(:disabled) { background-color: #ffca2c; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(255, 193, 7, 0.3); }
+.btn-submit-profile:disabled { background-color: #555; color: #999; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-logout-profile { background-color: #dc3545; color: white; }
+.btn-logout-profile:hover { background-color: #ff4d4d; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(220, 53, 69, 0.3); }
 
-
-/* --- FORM SỬA (EDIT MODE) --- */
-.profile-edit-form {
-    background-color: #16213e;
-    padding: 2rem;
-    border-radius: 8px;
-    border: 1px solid #0f3460;
-    max-width: 600px;
-}
-
-/* Tái sử dụng style từ trang Admin */
-.profile-edit-form .form-group {
-     margin-bottom: 1.5rem;
-}
-.profile-edit-form .form-group label {
-     display: block;
-     margin-bottom: 0.5rem;
-     color: #c4c3ca;
-     font-weight: 500;
-}
-.profile-edit-form .form-group input {
-     width: 100%;
-     padding: 0.75rem;
-     border: 1px solid #0f3460;
-    border-radius: 4px;
-    background-color: #1a1a2e;
-    color: #e0e0e0;
-     font-size: 1rem;
-     box-sizing: border-box; 
-}
-.profile-edit-form .form-group input:disabled {
-    background-color: #2a3b5e;
-    color: #888;
-}
-
-/* Nút bấm trong form Sửa (Lưu, Hủy) */
-.profile-edit-form .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-.profile-edit-form .btn-submit {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    background-color: #e94560; /* Màu đỏ chủ đạo */
-    color: white;
-}
-.profile-edit-form .btn-cancel {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    background-color: #6c757d; /* Màu xám */
-    color: white;
-}
-.profile-edit-form .btn-submit:disabled,
-.profile-edit-form .btn-cancel:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* Tái sử dụng CSS lỗi (nếu cần) */
-.profile-edit-form .form-error-message {
-    background-color: #ff4d4d;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    font-size: 14px;
-    text-align: center;
+/* Responsive */
+@media (max-width: 768px) {
+    .form-grid.two-cols { grid-template-columns: 1fr; }
+    .profile-box { padding: 1.5rem; }
 }

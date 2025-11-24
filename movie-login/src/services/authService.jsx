@@ -8,18 +8,18 @@ const API_AUTH_URL = "http://localhost:8080/api/v1/auth";
  */
 export const loginUser = async (username, password) => {
   try {
-     const res = await axios.post(`${API_AUTH_URL}/token`, { username, password });
+    const res = await axios.post(`${API_AUTH_URL}/token`, { username, password });
 
-     // Backend trả về { result: { token, ... } }
-     const payload = res.data?.result || res.data;
-    
-    // 1. CHỈ TRẢ VỀ PAYLOAD
-    // (Xóa localStorage.setItem từ đây)
-     return payload; 
+    const payload = res.data?.result || res.data;
 
-  } catch (error) { // 2. Sửa lỗi: 'err' thành 'error'
-      console.error('Lỗi khi đăng nhập:', error.response?.data || error.message);
-      throw error.response?.data || new Error('Lỗi đăng nhập');
+    // LƯU TOKEN VÀO LOCAL STORAGE
+    localStorage.setItem("token", payload.accessToken);
+
+    return payload;
+
+  } catch (error) {
+    console.error('Lỗi khi đăng nhập:', error.response?.data || error.message);
+    throw error.response?.data || new Error('Lỗi đăng nhập');
   }
 };
 

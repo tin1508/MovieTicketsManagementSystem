@@ -1,0 +1,66 @@
+/* styles/HeroBanner.css */
+
+.hero-banner-container {
+    max-width: 1400px;
+    margin: 0 auto 2rem auto; /* Căn giữa và tạo khoảng cách dưới */
+}
+
+/* Định dạng mỗi slide (ảnh poster) */
+.hero-slide {
+    padding: 0 10px; /* Tạo khoảng cách 2 bên cho mỗi ảnh */
+    box-sizing: border-box;
+}
+
+.hero-slide img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3; /* Giữ tỷ lệ 2:3 */
+    object-fit: cover;
+    border-radius: 8px; /* Bo góc */
+    border: 1px solid #333; /* Thêm viền tối */
+    transition: transform 0.3s ease;
+}
+
+.hero-slide img:hover {
+    transform: scale(1.03); /* Phóng to nhẹ khi hover */
+}
+
+/* === LÀM ĐẸP MŨI TÊN (TRÁI/PHẢI) === */
+.hero-slide.full-width-slide img {
+    width: 100%;
+    height: auto;
+    
+    /* QUAN TRỌNG: Tỉ lệ điện ảnh */
+    aspect-ratio: 21 / 9; 
+    
+    object-fit: cover;
+    border-radius: 0; 
+    border: none;
+}
+
+/* Tùy chỉnh mũi tên cho theme tối */
+.slick-arrow {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    height: 60px;
+    width: 35px;
+    border-radius: 5px;
+    z-index: 10;
+}
+.slick-arrow:hover {
+    background-color: rgba(255, 193, 7, 0.8) !important; /* Màu vàng khi hover */
+}
+
+/* Di chuyển mũi tên ra ngoài 1 chút */
+.slick-prev {
+    left: -15px !important; 
+}
+.slick-next {
+    right: -15px !important;
+}
+
+/* Đổi màu icon mũi tên (từ đen sang trắng) */
+.slick-prev:before, 
+.slick-next:before {
+    color: white !important;
+    font-size: 24px !important;
+}

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import * as movieService from '../../services/movieService';
 import MovieCard from '../../components/movies/MovieCard';
 import { Link } from 'react-router-dom';
+import HeroBanner from '../../components/common/layout/HeroBanner';
 
 const HomePage = () => {
     const [nowShowingMovies, setNowShowingMovies] = useState([]);
@@ -44,6 +45,7 @@ const HomePage = () => {
 
     return (
         <div className="homepage-container">
+            <HeroBanner />
             <section className="movie-section">
                 <h2>Phim Đang Chiếu</h2>
                 <div className="movie-grid">

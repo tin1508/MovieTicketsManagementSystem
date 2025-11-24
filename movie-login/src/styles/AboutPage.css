@@ -1,0 +1,60 @@
+/* styles/AboutPage.css */
+
+/* Hộp nội dung chính */
+.about-content {
+    /* Tái sử dụng nền tối từ các component khác */
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 2rem;
+    color: #e0e0e0; /* Chữ sáng */
+    line-height: 1.7;
+    font-size: 1.1rem;
+}
+
+/* Tiêu đề phụ (H3) */
+.about-content h3 {
+    /* Dùng màu vàng chủ đạo */
+    color: #ffc107;
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 0.5rem;
+}
+
+/* Chữ mô tả (P) */
+.about-content p {
+    margin-bottom: 1rem;
+    color: #a9b3c1; /* Màu chữ phụ */
+}
+
+/* Lưới hiển thị đội ngũ */
+.team-grid {
+    display: grid;
+    /* Hiển thị 3 cột, tự động xuống hàng nếu không đủ */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Thẻ thành viên */
+.team-member {
+    background-color: #2c2c2c; /* Nền tối hơn */
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #333;
+}
+
+.team-member h4 {
+    color: #fff;
+    font-size: 1.2rem;
+    margin: 0.5rem 0 0.25rem 0;
+}
+
+.team-member p {
+    color: #ffc107; /* Màu vàng */
+    font-size: 0.9rem;
+    margin: 0;
+}

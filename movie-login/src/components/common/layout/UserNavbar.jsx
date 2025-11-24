@@ -31,7 +31,7 @@ const UserNavbar = () => {
             <div className="navbar-top">
                 <div className="nav-left">
                     <Link to="/" className="nav-logo">
-                        <img src="/logo/logohihi.png" alt="U-Film" />
+                        <img src="/logo/cufilm1.png" alt="U-Film" />
                     </Link>
                 </div>
 

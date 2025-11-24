@@ -1,0 +1,19 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-family: 'Segoe UI', sans-serif;
+    
+    /* --- THAY ĐỔI TẠI ĐÂY --- */
+    /* Xóa màu cũ: background-color: #1a1a1a; */
+    
+    /* Dùng màu nền Gradient (Xanh đen sâu thẳm) */
+    background: radial-gradient(circle at 50% 0%, #1f2a38 0%, #0a0a0a 100%);
+    background-attachment: fixed; /* Cố định nền khi cuộn trang */
+    color: #e0e0e0;
+    /* ----------------------- */
+}
+
+#root { 
+  min-height: 100vh;
+}
