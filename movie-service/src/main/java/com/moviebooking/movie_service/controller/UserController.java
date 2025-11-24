@@ -90,17 +90,25 @@ public class UserController {
 
     @PutMapping("/change-password")
     public ResponseEntity<ApiResponse<Void>> changePassword(
+            @AuthenticationPrincipal Jwt jwt, // <-- 1. Sửa: Lấy Jwt từ Security Context
             @Valid @RequestBody ChangePasswordRequest request
-            ) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = (String) authentication.getPrincipal();
+    ) {
+        // 2. Sửa: Lấy username (hoặc userId) từ Jwt
+        String username = jwt.getSubject();
 
-        userService.changePassword(userId, request);
+        // Gọi service (lưu ý: service của bạn cần tìm user theo username này)
+        userService.changePassword(username, request);
 
         ApiResponse<Void> response = ApiResponse.<Void>builder()
                 .message("Password changed successfully")
                 .build();
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getTotalUsers() {
+        long totalUsers = userService.getTotalUsers();
+        return ResponseEntity.ok(totalUsers);
     }
 }

@@ -103,13 +103,18 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.findById(id)
                 .orElseThrow(() ->new RuntimeException("User not found")));
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    public long getTotalUsers() {
+        log.info("In method get total users count");
+        return userRepository.count();
+    }
 
     @Transactional
-    public void changePassword(String userId, ChangePasswordRequest request){
-        if (!request.getNewPassword().equals(request.getOldPassword()))
+    public void changePassword(String username, ChangePasswordRequest request){
+        if (!request.getNewPassword().equals(request.getConfirmPassword()))
             throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
 
-        User user = userRepository.findById(userId).orElseThrow(()
+        User user = userRepository.findByUsername(username).orElseThrow(()
                 -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
@@ -126,4 +131,4 @@ public class UserService {
 
         userRepository.save(user);
     }
-}
+}   

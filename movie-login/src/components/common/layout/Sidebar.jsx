@@ -14,6 +14,7 @@ const Sidebar = () => {
                     <li><NavLink to="/dashboard/movies">🎟️ Quản lý Phim</NavLink></li>
                     <li><NavLink to="/dashboard/schedules">🗓️ Quản lý Lịch chiếu</NavLink></li>
                     <li><NavLink to="/dashboard/users">👤 Quản lý Người dùng</NavLink></li>
+                    <li><NavLink to="/dashboard/banners">🖼️ Quản lý Banner</NavLink></li>
                 </ul>
             </nav>
         </aside>

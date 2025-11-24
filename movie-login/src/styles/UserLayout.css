@@ -1,31 +1,41 @@
-/* Đây là tệp CSS cho bố cục trang chủ và trang chi tiết, đã được cập nhật theo "dark mode" (chủ đề tối) của bạn:
+/* =========================================
+   USER LAYOUT: DARK MODE & GLASSMORPHISM
+   ========================================= */
 
-```css */
-/* === Bố cục Trang Chủ & Trang Chi Tiết (DARK MODE THEME) === */
+/* 1. Bố cục chung & Nền (Background) */
+.user-layout main {
+    /* Gradient: Tối ở góc, sáng nhẹ ở giữa/trên */
+    background: radial-gradient(circle at 50% 0%, #2c3e50 0%, #000000 100%);
+    min-height: 80vh; 
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    color: #e0e0e0;
+}
 
-/* Bố cục trang chủ */
 .homepage-container {
     max-width: 1300px;
     margin: 2rem auto;
     padding: 0 1rem;
 }
 
-/* Mỗi khu vực (Đang chiếu, Sắp chiếu) */
+/* =========================================
+   2. TRANG CHỦ (Homepage)
+   ========================================= */
+
+/* Khu vực phim (Đang chiếu, Sắp chiếu) */
 .movie-section {
     margin-bottom: 3rem;
 }
 
 .movie-section h2 {
-    /* THEME: Màu VÀNG chủ đạo */
-    color: #ffc107; 
+    color: #ffc107; /* VÀNG chủ đạo */
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
-    /* THEME: Viền tối */
     border-bottom: 2px solid #333; 
     padding-bottom: 0.5rem;
 }
 
-/* Lưới hiển thị các thẻ phim (Flexbox) */
+/* Lưới hiển thị phim (Grid) - Dùng cho cả 2 kiểu */
 .movie-grid {
     display: flex;
     flex-wrap: wrap;
@@ -33,75 +43,23 @@
     gap: 1.5rem;
 }
 
-/* --- Trang Chi Tiết Phim --- */
-.movie-detail-container {
-    max-width: 1100px;
-    margin: 2rem auto;
-    padding: 1.5rem;
-    /* THEME: Nền container tối */
-    background-color: #1a1a1a; 
-    /* THEME: Viền tối */
-    border: 1px solid #333; 
-    border-radius: 8px;
-    /* THEME: Chữ sáng */
-    color: #e0e0e0; 
+.movie-grid-fixed {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 1.5rem; 
 }
 
-.movie-detail-container h1 {
-    /* THEME: Màu VÀNG chủ đạo */
-    color: #ffc107; 
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.movie-detail-content {
-    display: flex;
-    gap: 2rem;
-}
-
-/* Poster ở trang chi tiết */
-.movie-detail-poster {
-    width: 300px;
-    height: auto;
-    aspect-ratio: 2 / 3;
-    object-fit: cover;
-    border-radius: 8px;
-    /* THEME: Nền placeholder tối */
-    background-color: #2c2c2c; 
-}
-
-/* Thông tin ở trang chi tiết */
-.movie-detail-info {
-    flex: 1;
-    line-height: 1.7;
-}
-
-.movie-detail-info p {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-}
-
-.movie-detail-info strong {
-    /* THEME: Màu chữ phụ */
-    color: #a9b3c1; 
-    margin-right: 8px;
-}
-
-/* === Nút Xem Thêm & Xem Trailer === */
-
+/* Nút Xem Thêm */
 .see-more-container {
-    text-align: center; /* Căn giữa nút */
+    text-align: center;
     margin-top: 2rem;
 }
 
 .btn-see-more {
     padding: 10px 30px;
-    /* THEME: Viền VÀNG */
     border: 1px solid #ffc107; 
-    /* THEME: Chữ VÀNG */
     color: #ffc107; 
     background-color: transparent;
-    /* THEME: Bo góc 6px */
     border-radius: 6px; 
     text-decoration: none;
     font-weight: 600;
@@ -109,50 +67,212 @@
 }
 
 .btn-see-more:hover {
-    /* THEME: Nền VÀNG */
     background-color: #ffc107; 
-    /* THEME: Chữ đen trên nền vàng */
     color: #111; 
 }
 
-/* === Nút Xem Trailer === */
-.btn-watch-trailer {
-    display: inline-flex; /* Để căn icon và chữ */
+/* =========================================
+   3. TRANG CHI TIẾT PHIM (GLASSMORPHISM)
+   ========================================= */
+
+/* Container chính với hiệu ứng KÍNH MỜ */
+.movie-detail-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 3rem;
+    
+    /* Hiệu ứng kính mờ (Glassmorphism) */
+    background: rgba(30, 30, 40, 0.6); /* Nền tối bán trong suốt */
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    color: #e0e0e0;
+}
+
+/* Ảnh nền mờ (Backdrop) - Nếu có sử dụng */
+.movie-detail-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: blur(30px) brightness(0.4);
+    z-index: -1;
+}
+
+/* Bố cục nội dung chi tiết */
+.movie-detail-header {
+    display: flex;
+    gap: 3rem;
+    align-items: flex-start;
+    position: relative;
+    z-index: 2;
+}
+
+/* Poster phim (Mới) */
+.detail-poster {
+    width: 320px;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease;
+    object-fit: cover;
+}
+.detail-poster:hover {
+    transform: scale(1.02);
+}
+
+/* --- Thông tin phim --- */
+.movie-info-content {
+    flex: 1;
+}
+
+/* Tiêu đề phim */
+.movie-title {
+    font-size: 3rem;
+    font-weight: 800;
+    /* Gradient vàng cho chữ */
+    background: linear-gradient(to right, #ffc107, #ff9800);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text; /* Chuẩn hóa */
+    color: #ffc107; /* Fallback */
+    
+    margin: 0 0 1.5rem 0;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    line-height: 1.2;
+}
+
+/* Metadata (Ngày, Giờ, Tuổi) */
+.movie-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: #ccc;
+}
+.meta-item {
+    display: flex;
     align-items: center;
     gap: 8px;
-    /* THEME: Nền VÀNG */
-    background-color: #ffc107; 
-    /* THEME: Chữ đen trên nền vàng */
-    color: #111; 
-    border: none;
-    padding: 12px 24px;
+}
+.meta-item svg {
+    color: #ffc107;
+}
+
+/* Nhãn độ tuổi */
+.age-rating {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+/* Thể loại (Genres) */
+.movie-genres {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+}
+.genre-badge {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    background-color: transparent;
+    border: 1px solid #ffc107;
+    color: #ffc107;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+.genre-badge:hover {
+    background-color: #ffc107;
+    color: #111;
+}
+
+/* Mô tả phim */
+.movie-description {
     font-size: 1.1rem;
-    /* THEME: Font-weight 700 */
-    font-weight: 700; 
-    /* THEME: Bo góc 6px */
-    border-radius: 6px; 
+    line-height: 1.8;
+    color: #ddd;
+    margin-bottom: 2rem;
+    background: rgba(0,0,0,0.2);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid #ffc107;
+}
+
+/* --- Nút Bấm (Actions) --- */
+.action-buttons {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+/* Nút Xem Trailer (Style mới - Trong suốt) */
+.btn-watch-trailer {
+    background: transparent;
+    border: 2px solid #e0e0e0;
+    color: #e0e0e0;
+    padding: 12px 28px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 50px;
     cursor: pointer;
-    margin-bottom: 1.5rem; 
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    text-decoration: none; /* Đề phòng dùng thẻ a */
+}
+
+.btn-watch-trailer:hover:not(.disabled) {
+    border-color: #ffc107;
+    color: #ffc107;
+    background: rgba(255, 193, 7, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.2);
+}
+
+/* Nút Đặt Vé */
+.btn-booking {
+    background: linear-gradient(45deg, #ffc107, #ff9800);
+    border: none;
+    color: #111;
+    padding: 12px 35px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
     transition: all 0.3s ease;
 }
-
-.btn-watch-trailer:hover {
-    /* THEME: Vàng sáng hơn */
-    background-color: #ffca2c; 
-    transform: translateY(-2px);
-    /* THEME: Shadow vàng */
-    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3); 
+.btn-booking:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.6);
 }
 
-
-/* === CSS cho Modal Trailer === */
+/* =========================================
+   4. MODAL (TRAILER & UPLOAD)
+   ========================================= */
 .trailer-modal .modal-body {
     padding: 0;
 }
 
 .trailer-iframe-container {
     position: relative;
-    padding-bottom: 56.25%; /* Tỷ lệ 16:9 */
+    padding-bottom: 56.25%; /* 16:9 */
     height: 0;
     overflow: hidden;
     background-color: #000;
@@ -164,57 +284,70 @@
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 0 0 8px 8px; /* Giả sử modal có bo góc 8px */
+    border-radius: 0 0 8px 8px;
 }
 
-/* === Bố cục Layout Chung === */
+/* =========================================
+   5. RESPONSIVE
+   ========================================= */
 
-.user-layout main {
-    /* THEME: Nền đen (base) cho toàn bộ trang */
-    background-color: #000; 
-    min-height: 80vh; 
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-}
-
-/* Lưới hiển thị phim (Grid) */
-.movie-grid-fixed {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); 
-    gap: 1.5rem; 
-}
-
-/* --- Responsive (Chung) --- */
-
-@media (max-width: 768px) {
-    /* Chi tiết phim (xếp dọc) */
-    .movie-detail-content {
-        flex-direction: column; 
-    }
-    
-    .movie-detail-poster {
-        width: 100%; 
-        max-width: 350px; 
-        margin: 0 auto; 
-    }
-    
-    /* Lưới (flex) 2 cột */
-    .movie-grid {
-        /* (Giữ nguyên flex-wrap, 2 card sẽ tự xuống hàng) */
-        gap: 1rem;
-    }
-
-    /* Lưới (grid) 2 cột */
-    .movie-grid-fixed {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-    }
-}
-
-/* Responsive cho màn hình tablet */
-@media (min-width: 769px) and (max-width: 1024px) {
-    /* Lưới (grid) 3 cột */
+@media (max-width: 1024px) {
     .movie-grid-fixed {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+@media (max-width: 768px) {
+    /* Layout chung */
+    .movie-grid {
+        gap: 1rem;
+    }
+    .movie-grid-fixed {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    /* Trang chi tiết phim (Mobile) */
+    .movie-detail-container {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .movie-detail-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1.5rem;
+    }
+
+    .detail-poster {
+        width: 100%;
+        max-width: 250px; /* Giới hạn chiều rộng trên mobile */
+    }
+
+    .movie-title {
+        font-size: 2rem;
+    }
+
+    .movie-meta, .movie-genres, .action-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-watch-trailer, .btn-booking {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* --- LEGACY CLASSES (GIỮ LẠI ĐỂ TRÁNH LỖI NẾU HTML CŨ VẪN DÙNG) --- */
+/* Nếu bạn đã cập nhật hoàn toàn JSX sang class mới (detail-poster, movie-header...), bạn có thể xóa đoạn dưới */
+.movie-detail-content { display: flex; gap: 2rem; }
+.movie-detail-poster { width: 300px; height: auto; border-radius: 8px; }
+.movie-detail-info { flex: 1; line-height: 1.7; }
+/* ------------------------------------------------------------------ */

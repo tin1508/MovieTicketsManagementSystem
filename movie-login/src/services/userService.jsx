@@ -21,28 +21,29 @@ const getAuthHeaders = () => {
 
 export const getAllUsers = async (page = 0, size = 10) => {
   try {
-   const response = await axios.get('${API_URL}/users', {
+    const response = await axios.get(`${API_URL}/users`, {
         params: { page, size },
         headers: getAuthHeaders(), // <-- Dùng hàm headers đã sửa
-   });
+    });
 
-   // 5. SỬA LỖI LOGIC: Dựa trên log (10:39 PM) của bạn,
+    // 5. SỬA LỖI LOGIC: Dựa trên log (10:39 PM) của bạn,
     // API trả về { result: [...] } (một MẢNG)
-   if (response.data && Array.isArray(response.data.result)) {
-     return response.data.result;
-   }
+    if (response.data && Array.isArray(response.data.result)) {
+        return response.data.result;
+    }
     
     // Phòng hờ nếu backend trả về Page (có content)
     if (response.data && response.data.content) {
         return response.data;
     }
 
-   return response.data; // Fallback
+    return response.data; // Fallback
   } catch (error) {
-   console.error("Get all users failed:", error.response?.data || error.message);
-   throw error;
+    console.error("Get all users failed:", error.response?.data || error.message);
+    throw error;
   }
 };
+
 
 // Cập nhật vai trò/trạng thái người dùng
 export const updateUser = async (userId, updateData) => {
@@ -93,6 +94,29 @@ export const updateMyProfile = async (profileData) => {
     }
 };
 
+export const changePassword = async (oldPassword, newPassword) => {
+    try {
+        const response = await axios.put(`${API_URL}/users/change-password`, 
+            { 
+                // Tên trường phải khớp 100% với DTO ChangePasswordRequest.java
+                oldPassword: oldPassword, 
+                newPassword: newPassword,
+                
+                // DTO yêu cầu 'confirmPassword' không được để trống (@NotBlank)
+                // Vì frontend đã kiểm tra trùng khớp rồi, ta gửi luôn newPassword vào đây
+                confirmPassword: newPassword 
+            }, 
+            {
+                headers: getAuthHeaders() // Gửi kèm token
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Lỗi khi đổi mật khẩu:', error.response?.data || error.message);
+        throw error;
+    }
+};
+
 // HÀM MỚI: Lấy lịch sử đặt vé
 // export const getMyBookings = async () => {
 //     const token = getAuthToken();
@@ -110,4 +134,3 @@ export const updateMyProfile = async (profileData) => {
 //         throw error;
 //     }
 // };
-
