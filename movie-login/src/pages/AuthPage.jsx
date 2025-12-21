@@ -9,6 +9,8 @@ const AuthPage = () => {
     const [activeTab, setActiveTab] = useState('login'); 
     const location = useLocation();
 
+    const redirectAfterLogin = location.state?.from || '/';
+
     useEffect(() => {
         if (location.pathname === '/register') {
             setActiveTab('register');
@@ -42,7 +44,7 @@ const AuthPage = () => {
                 {/* 3. Thêm 1 div bọc nội dung (để có padding) */}
                 <div className="auth-content">
                     {activeTab === 'login' ? (
-                        <LoginForm />
+                        <LoginForm redirectPath={redirectAfterLogin}/>
                     ) : (
                         <RegisterForm />
                     )}

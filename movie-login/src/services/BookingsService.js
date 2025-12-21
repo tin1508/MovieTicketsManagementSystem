@@ -1,0 +1,11 @@
+import axios from 'axios';
+
+const API_BOOKINGS_URL = 'http://localhost:8080/api/v1/bookings';
+
+export const listBookings = () => axios.get(API_BOOKINGS_URL);
+export const createBooking = async (bookingData) => {
+    const token = localStorage.getItem('accessToken');
+    return axios.post(`${API_BOOKINGS_URL}`, bookingData, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+}

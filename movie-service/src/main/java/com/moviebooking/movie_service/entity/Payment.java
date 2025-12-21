@@ -22,6 +22,7 @@ public class Payment {
     @OneToOne
     @JoinColumn(name = "booking_id")
     Booking booking;
+
     String transactionId;
     @Enumerated(EnumType.STRING)
     PaymentStatus paymentStatus;

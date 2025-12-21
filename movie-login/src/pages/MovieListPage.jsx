@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useDebounce } from 'use-debounce';
+import { useNavigate } from 'react-router-dom';
 import MovieTable from '../components/movies/MovieTable';
 import AddMovieForm from '../components/movies/AddMovieForm';
 import Modal from '../components/common/Modal';
@@ -38,8 +39,8 @@ const MovieListPage = () => {
 
     // Debounced fetch để tránh spam API
     const [debouncedFilters] = useDebounce(filters, 500);
-
-    // Hàm fetch được trừu tượng hóa để tái sử dụng
+    const navigator = useNavigate();
+    // Hàm fetch được  trừu tượng hóa để tái sử dụng
     const fetchMovies = useCallback(async (page) => {
         console.log(`Đang tải trang: ${page} với filters:`, debouncedFilters);
         try {
@@ -119,10 +120,13 @@ const MovieListPage = () => {
             setIsDeleteModalOpen(false);
             setMovieToDelete(null);
         } catch (err) {
-            setError('Lỗi khi xóa phim.');
-            console.error(err);
+            const serverMessage = err.response?.data?.message || err.message;
+            if(serverMessage !== null){
+                alert("KHÔNG THỂ XÓA: Phim này hiện đang có suất chiếu!!!");
+            }
         } finally {
             setIsDeleting(false);
+            setIsDeleteModalOpen(false);
         }
     }, [movieToDelete, fetchMovies]);
 
@@ -183,10 +187,13 @@ const MovieListPage = () => {
                 onEditClick={handleEditClick}
                 onDeleteClick={handleDeleteClick}
                 onUploadClick={handleUploadClick}
+                onViewShowtimes={handleViewShowtimes} 
             />
         );
     };
-
+    const handleViewShowtimes = useCallback((movie) => {
+        navigator(`/dashboard/showtimes?movieId=${movie.id}&movieTitle=${encodeURIComponent(movie.title)}`)
+    }, [navigator]);
     return (
         <div>
             <div className="page-header">

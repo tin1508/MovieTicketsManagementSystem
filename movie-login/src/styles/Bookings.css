@@ -1,0 +1,533 @@
+/* src/styles/GlassBookingTheme.css */
+
+:root {
+    --neon-yellow: #F4F169;       /* Màu vàng bạn yêu cầu */
+    --glass-bg: rgba(255, 255, 255, 0.05); /* Màu trắng rất mờ (5%) */
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1); /* Viền kính sáng nhẹ */
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* Bóng đổ sâu */
+    --text-color: #ffffff;
+}
+
+/* 1. Nền trang tối (Bắt buộc phải tối thì kính mới đẹp) */
+.movie-page-bg {
+    background: radial-gradient(circle at center, #2b2b40 0%, #1a1a2e 100%);
+    min-height: 100vh;
+    color: var(--text-color);
+    padding-bottom: 50px;
+}
+
+/* 2. Wrapper căn giữa */
+.booking-section-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+    padding: 0 20px;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 10px rgba(244, 241, 105, 0.3); /* Hiệu ứng phát sáng nhẹ */
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* 3. HIỆU ỨNG GLASSMORPHISM (Tấm kính) */
+.glass-panel {
+    background: var(--glass-bg);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(16px);       /* Làm mờ hậu cảnh đằng sau tấm kính */
+    -webkit-backdrop-filter: blur(16px); /* Hỗ trợ Safari */
+    border: var(--glass-border);
+    border-radius: 20px;               /* Bo góc mềm mại */
+    padding: 30px;
+    width: 100%;
+    max-width: 900px;                  /* Không để nó bè ra quá rộng */
+}
+
+/* --- TÙY CHỈNH COMPONENT SHOWTIMES BÊN TRONG --- */
+
+/* Tiêu đề nhỏ (Chọn ngày, Chọn giờ...) */
+.showtimes-container h5 {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 300;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 5px;
+    display: inline-block;
+}
+
+/* Layout danh sách */
+.date-list, .time-grid {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center; /* Căn giữa các nút */
+    margin-bottom: 25px;
+}
+
+/* NÚT CHỌN (Glass button style) */
+.date-btn, .time-btn {
+    background: rgba(255, 255, 255, 0.03); /* Nền nút hơi sáng nhẹ */
+    border: 1px solid var(--neon-yellow);  /* Viền vàng */
+    color: var(--neon-yellow);             /* Chữ vàng */
+    border-radius: 12px;
+    padding: 10px 20px;
+    min-width: 90px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    /* Flex để căn chỉnh ngày/tháng */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.date-day-number { font-size: 1.5rem; font-weight: bold; }
+.date-day-name { font-size: 0.9rem; text-transform: uppercase; opacity: 0.8; }
+
+/* HOVER EFFECT */
+.date-btn:hover:not(:disabled), .time-btn:hover:not(:disabled) {
+    background: rgba(244, 241, 105, 0.1); /* Vàng rất nhạt */
+    box-shadow: 0 0 15px rgba(244, 241, 105, 0.2); /* Phát sáng nhẹ */
+    transform: translateY(-2px);
+}
+
+/* ACTIVE STATE (Khi được chọn) */
+.date-btn.active, .time-btn.active {
+    background: var(--neon-yellow) !important; /* Nền vàng đặc */
+    color: #1a1a2e !important;                 /* Chữ màu tối (để tương phản với nền vàng) */
+    box-shadow: 0 0 20px rgba(244, 241, 105, 0.5); /* Phát sáng mạnh hơn */
+    font-weight: 800;
+    transform: scale(1.05);
+    border-color: var(--neon-yellow);
+}
+
+/* --- PHẦN CHỌN SỐ LƯỢNG VÉ --- */
+.ticket-quantity-selector {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 20px;
+    padding-top: 20px;
+    text-align: center;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.quantity-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%; /* Nút tròn */
+    background: transparent;
+    border: 2px solid var(--neon-yellow);
+    color: var(--neon-yellow);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.quantity-btn:hover:not(:disabled) {
+    background: var(--neon-yellow);
+    color: #000;
+}
+
+.quantity-display {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    min-width: 50px;
+}
+
+/* NÚT XÁC NHẬN CUỐI CÙNG */
+.btn-continue {
+    background: linear-gradient(135deg, #F4F169 0%, #D4D140 100%);
+    color: #1a1a2e;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 15px 50px;
+    border: none;
+    border-radius: 30px; /* Bo tròn kiểu viên thuốc */
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(244, 241, 105, 0.3);
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+.btn-cancel {
+    background: linear-gradient(135deg, #F4F169 0%, #D4D140 100%);
+    color: #1a1a2e;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 15px 50px;
+    border: none;
+    border-radius: 30px; /* Bo tròn kiểu viên thuốc */
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(244, 241, 105, 0.3);
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+.btn-continue:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(244, 241, 105, 0.5);
+}
+/* ... (Giữ nguyên các phần CSS Glass/Color ở câu trả lời trước) ... */
+
+/* --- TẠO ANIMATION HIỆN RA TỪ TỪ --- */
+
+/* Class bao quanh mỗi bước (Ngày / Giờ / Số lượng) */
+.section-step {
+    margin-bottom: 25px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Hiệu ứng trượt xuống */
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); /* Dịch lên trên 20px */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); /* Về vị trí cũ */
+    }
+}
+
+.slide-down {
+    animation: slideDownFade 0.5s ease-out forwards;
+}
+
+.fade-in {
+    animation: slideDownFade 0.3s ease-out forwards;
+}
+
+/* Tinh chỉnh lại tiêu đề nhỏ h5 cho đẹp hơn */
+.section-step h5 {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--neon-yellow); /* Gạch chân vàng mảnh */
+    padding-bottom: 5px;
+    display: inline-block;
+}
+
+/* Tinh chỉnh thông báo lỗi/trống */
+.section-step p {
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+/* Remove up/down arrows from number input for Chrome, Safari, Edge, Opera */
+input.quantity-input::-webkit-outer-spin-button,
+input.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input.quantity-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.quantity-input {
+    width: 50px; /* Adjust width as needed */
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    margin: 0 10px;
+    padding: 5px;
+    outline: none;
+}
+
+/* Optional: Highlight when focused */
+.quantity-input:focus {
+    border-color: #007bff;
+}
+.seat.normal { border-color: #555; }
+.seat.vip { border-color: #f1c40f; } /* Gold */
+.seat.couple { background-color: #e84393; width: 78px; }
+
+
+/* =========================================
+   GLASSMORPHISM SEAT SELECTION THEME
+   ========================================= */
+
+/* 1. CONTAINER CHÍNH */
+.seat-selection-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 2. MÀN HÌNH (SCREEN) - Hiệu ứng 3D phát sáng */
+.screen-container {
+    perspective: 800px; /* Tạo độ sâu 3D */
+    margin-bottom: 40px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.screen {
+    width: 150%;
+    height: 20px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
+    transform: rotateX(-30deg) scale(0.9); /* Nghiêng màn hình */
+    box-shadow: 0 30px 50px rgba(255, 255, 255, 0.15); /* Ánh sáng hắt xuống */
+    border-radius: 10px 10px 50px 50px; /* Bo cong cạnh dưới */
+    opacity: 0.6;
+    margin-bottom: 15px;
+}
+
+.screen-text {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+/* 3. SƠ ĐỒ GHẾ (GRID LAYOUT) - QUAN TRỌNG ĐỂ GHẾ NẰM NGANG */
+
+.seat-map {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Khoảng cách giữa các hàng dọc */
+    padding: 20px;
+    /* Tạo nền kính mờ bao quanh khu vực ghế (Optional) */
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Một hàng ghế (Bao gồm Label A,B,C và dãy ghế) */
+.seat-row {
+    display: flex;              /* Xếp Label và Dãy ghế nằm ngang */
+    align-items: center;        /* Căn giữa theo chiều dọc */
+    justify-content: center;    /* Căn giữa màn hình */
+}
+
+/* Nhãn hàng (A, B, C...) */
+.row-label {
+    width: 30px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.4);
+    text-align: right;
+    margin-right: 20px;
+}
+
+/* Container chứa các ghế - QUAN TRỌNG NHẤT */
+.seats-list {
+    display: flex;
+    flex-direction: row;
+    gap: 10px; /* QUAN TRỌNG: Đây là khoảng cách dùng để tính toán */
+    align-items: center;
+    justify-content: center;
+}
+
+/* 4. STYLE TỪNG GHẾ (GLASS STYLE) */
+.seat {
+    width: 36px;
+    height: 36px;
+    
+    /* Hiệu ứng kính */
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
+    
+    /* Hình dáng ghế */
+    border-radius: 8px 8px 4px 4px; /* Bo góc trên nhiều hơn để giống ghế tựa */
+    
+    /* Căn chữ số */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+/* Hiệu ứng Hover: Sáng lên và nổi lên */
+.seat:hover:not(.occupied) {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: translateY(-3px);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    color: #fff;
+    z-index: 10;
+}
+
+/* --- CÁC LOẠI GHẾ (COLORS) --- */
+
+/* Ghế Thường (Normal) - Giữ nguyên màu kính trắng */
+.seat.normal {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Ghế VIP - Viền Vàng Neon */
+.seat.vip {
+    border-color: #F4F169; /* Vàng Neon */
+    box-shadow: 0 0 5px rgba(244, 241, 105, 0.1);
+}
+
+/* Ghế Đôi (Couple) - Viền Hồng Neon & Rộng gấp đôi */
+.seat.couple {
+    /* Công thức: (Width ghế đơn * 2) + gap */
+    /* (36px * 2) + 10px = 82px */
+    width: 82px !important;  /* Thêm !important để chắc chắn nó đè lên các style cũ */
+    
+    border-color: #ff7eb3; /* Hồng Neon */
+    background: rgba(255, 126, 179, 0.05); /* Giữ hiệu ứng kính mờ */
+}
+
+/* Chỉnh lại icon vô cực cho cân đối */
+.seat.couple .icon-couple {
+    letter-spacing: -2px;
+    font-size: 1.2rem; /* Tăng kích thước icon lên chút cho đẹp */
+    font-weight: bold;
+}
+/* --- TRẠNG THÁI GHẾ --- */
+
+/* Ghế Đã chọn (Selected) - Full màu Neon */
+.seat.selected {
+    background: #F4F169; /* Nền vàng đặc */
+    color: #1a1a2e;      /* Chữ tối màu */
+    border-color: #F4F169;
+    box-shadow: 0 0 15px rgba(244, 241, 105, 0.6);
+    transform: scale(1.1);
+    font-weight: bold;
+    z-index: 5;
+}
+
+/* Ghế Đã đặt (Occupied) - Tối và chìm xuống */
+.seat.occupied {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: transparent;
+    color: rgba(255, 255, 255, 0.1);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+.seat.occupied::after {
+    content: 'X';
+    font-size: 1rem;
+    opacity: 0.3;
+}
+
+/* 5. FOOTER & CHÚ THÍCH (LEGEND) */
+
+.seat-footer-panel {
+    margin-top: 30px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2); /* Nền tối hơn chút để tách biệt */
+    border-radius: 15px;
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Chú thích */
+.seat-legend {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Ô vuông nhỏ trong chú thích */
+.legend-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+.legend-box.normal { border: 1px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.1); }
+.legend-box.vip { border: 1px solid #F4F169; }
+.legend-box.couple { border: 1px solid #ff7eb3; width: 30px; } /* Dài hơn chút */
+.legend-box.selected { background: #F4F169; }
+.legend-box.occupied { background: #333; color: #555; display:flex; align-items:center; justify-content:center; }
+.legend-box.occupied::after { content: 'X'; font-size: 10px; }
+
+/* 6. THANH TOÁN & INFO BAR */
+.booking-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05); /* Lớp kính thứ 2 */
+    padding: 15px 25px;
+    border-radius: 50px; /* Bo tròn kiểu viên thuốc */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.timerbox strong {
+    color: #ff7eb3; /* Màu hồng cho thời gian gấp gáp */
+    font-family: monospace;
+    font-size: 1.2rem;
+}
+
+.total-price {
+    color: #F4F169;
+    font-size: 1.3rem;
+    font-weight: 800;
+    text-shadow: 0 0 10px rgba(244, 241, 105, 0.3);
+}
+
+/* Nút thanh toán */
+.btn-booking-confirm {
+    background: linear-gradient(135deg, #F4F169 0%, #d4d140 100%);
+    color: #1a1a2e;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(244, 241, 105, 0.3);
+    transition: 0.3s;
+}
+
+.btn-booking-confirm:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(244, 241, 105, 0.5);
+}
+
+.btn-booking-confirm:disabled {
+    background: #555;
+    color: #888;
+    cursor: not-allowed;
+    box-shadow: none;
+}

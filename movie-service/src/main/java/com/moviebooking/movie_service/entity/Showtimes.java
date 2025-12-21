@@ -20,9 +20,18 @@ public class Showtimes {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-    String movieId;
-    String roomId;
-    @OneToMany(mappedBy = "showtimes")
+
+    @ManyToOne
+    @JoinColumn(name="movie_id", nullable = false)
+    Movie movie;
+
+    @OneToMany(mappedBy = "showtimes", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Booking> bookings;
+
+    @ManyToOne
+    @JoinColumn(name="room_id",  nullable=false)
+    Room room;
+    @OneToMany(mappedBy = "showtimes", cascade = CascadeType.ALL, orphanRemoval = true)
     List<ShowtimeSeat> showtimeSeatList;
 
     LocalDate showtimesDate;

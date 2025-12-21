@@ -351,3 +351,82 @@
 .movie-detail-poster { width: 300px; height: auto; border-radius: 8px; }
 .movie-detail-info { flex: 1; line-height: 1.7; }
 /* ------------------------------------------------------------------ */
+
+/* Payment css*/
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+    align-items: start;
+}
+
+.qr-wrapper {
+    background: white;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.payment-qr-image {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+.memo-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f1f3f5;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.copy-btn {
+    cursor: pointer;
+    color: #007bff;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #F4F169; 
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-decoration: none;
+
+    background: rgba(244, 241, 105, 0.1); 
+    backdrop-filter: blur(10px);         
+    -webkit-backdrop-filter: blur(10px); 
+    
+    /* Border & Shape */
+    border: 1px solid rgba(244, 241, 105, 0.3); 
+    border-radius: 50px; 
+    
+    /* Shadow & Transition */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+    transition: all 0.3s ease-in-out;
+    margin-bottom: 20px; 
+}
+
+/* Hiệu ứng khi di chuột vào (Hover) */
+.btn-back:hover {
+    background: rgba(244, 241, 105, 0.25); 
+    border-color: #F4F169;                 
+    box-shadow: 0 0 20px rgba(244, 241, 105, 0.4); 
+    transform: translateX(-5px);            
+    color: #fff;                           
+}
+
+/* Hiệu ứng khi bấm (Active) */
+.btn-back:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 10px rgba(244, 241, 105, 0.2);
+}

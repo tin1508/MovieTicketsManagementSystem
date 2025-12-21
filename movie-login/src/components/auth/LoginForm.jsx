@@ -1,9 +1,9 @@
 // components/auth/LoginForm.jsx
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-const LoginForm = () => {
+const LoginForm = ({redirectPath = '/'}) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -20,10 +20,11 @@ const LoginForm = () => {
         try {
             const roles = await login(username, password);
 
-            if (roles.includes('ADMIN')) {
+            if (roles && roles.includes('ADMIN')) {
                 navigate('/dashboard');
             } else {
-                navigate('/'); 
+                console.log("Redirecting to: ", redirectPath);
+                navigate(redirectPath); 
             }
         } catch (err) {
             const errMsg = err.message || 'Tên đăng nhập hoặc mật khẩu không đúng';

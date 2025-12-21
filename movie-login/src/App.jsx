@@ -21,7 +21,15 @@ import ProfilePage from './pages/user/ProfilePage';
 import AuthPage from './pages/AuthPage';
 import AboutPage from './pages/user/AboutPage';
 import BannerManagementPage from './pages/admin/BannerManagementPage';
+import ShowtimeListPage from './pages/ShowtimeListPage';
+import SeatTypesListPage from './pages/SeatTypesListPage';
+import RoomsListPage from './pages/RoomsListPage';
 import './styles/App.css';
+import ShowtimesForm from './components/showtimes/ShowtimesForm';
+import RoomsForm from './components/rooms/RoomsForm';
+import SeatTypeForm from './components/rooms/SeatTypeForm';
+import BookingsListPage from './pages/BookingsListPage';
+import PaymentPage from './pages/user/PaymentPage';
 
 function App() {
   return (
@@ -31,6 +39,7 @@ function App() {
           <Route path="/" element={<UserLayout />}>
             <Route index element={<HomePage />} />
             <Route path="phim/:movieId" element={<MovieDetailPage />} />
+            <Route path="payment/:bookingId" element={<PaymentPage />} />
             <Route path="phim/dang-chieu" element={<MovieGridPage />} />
             <Route path="phim/sap-chieu" element={<MovieGridPage />} />
             <Route path="tim-kiem" element={<SearchPage />} />
@@ -58,6 +67,19 @@ function App() {
           <Route path="movies" element={<MovieListPage />} />
           <Route path="users" element={<UserListPage />} />
           <Route path="banners" element={<BannerManagementPage />} />
+          {/*Showtimes */}
+          <Route path="showtimes" element={<ShowtimeListPage/>}/>
+          <Route path="showtimes/add" element={<ShowtimesForm/>}/>
+          <Route path="edit-showtimes/:id" element={<ShowtimesForm/>}/>
+          {/*Rooms */}
+          <Route path="rooms" element={<RoomsListPage/>}/>
+          <Route path="edit-rooms/:id" element={<RoomsForm/>}/>
+          {/*Seat type */}
+          <Route path="seat-types" element={<SeatTypesListPage/>}/>
+          <Route path="edit-seat-types/:id" element={<SeatTypeForm/>}/>
+          {/*Bookings */}
+          <Route path="bookings" element={<BookingsListPage/>}/>
+      
           </Route>
         </Routes>
       </BrowserRouter>

@@ -206,5 +206,9 @@ public class MovieController {
 
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/get_all_movies")
+    public ApiResponse<List<MovieResponse>> getMovies(){
+        return ApiResponse.<List<MovieResponse>>builder().result(movieService.getMovies()).build();
+    }
 }
 

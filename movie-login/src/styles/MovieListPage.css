@@ -189,7 +189,17 @@ tbody tr:hover {
     font-weight: 600;
     transition: all 0.3s;
 }
+.btn-showtimes {
+    background: rgba(23, 162, 184, 0.2); /* Cyan transparent background */
+    color: #17a2b8; /* Cyan text */
+    border: 1px solid rgba(23, 162, 184, 0.3);
+}
 
+.btn-showtimes:hover {
+    background: #17a2b8; /* Solid Cyan on hover */
+    color: white;
+    box-shadow: 0 0 10px rgba(23, 162, 184, 0.4);
+}
 .btn-edit { background: rgba(0, 123, 255, 0.2); color: #4dabf7; border: 1px solid rgba(0, 123, 255, 0.3); }
 .btn-edit:hover { background: #007bff; color: white; }
 

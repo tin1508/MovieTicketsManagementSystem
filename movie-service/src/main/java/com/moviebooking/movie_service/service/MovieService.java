@@ -5,6 +5,7 @@ import com.moviebooking.movie_service.dto.request.MovieCreationRequest;
 import com.moviebooking.movie_service.dto.request.MovieFilterRequest;
 import com.moviebooking.movie_service.dto.request.MovieUpdateRequest;
 import com.moviebooking.movie_service.dto.response.MovieResponse;
+import com.moviebooking.movie_service.dto.response.ShowtimesResponse;
 import com.moviebooking.movie_service.entity.Genre;
 import com.moviebooking.movie_service.entity.Movie;
 import com.moviebooking.movie_service.exception.AppException;
@@ -12,6 +13,7 @@ import com.moviebooking.movie_service.exception.ErrorCode;
 import com.moviebooking.movie_service.mapper.MovieMapper;
 import com.moviebooking.movie_service.repository.GenreRepository;
 import com.moviebooking.movie_service.repository.MovieRepository;
+import com.moviebooking.movie_service.repository.ShowtimesRepository;
 import com.moviebooking.movie_service.specification.MovieSpecification;
 import jakarta.persistence.criteria.JoinType;
 import lombok.AccessLevel;
@@ -37,6 +39,7 @@ public class MovieService {
     MovieRepository movieRepository;
     GenreRepository genreRepository;
     MovieMapper movieMapper;
+    ShowtimesRepository showtimesRepository;
 
     public MovieResponse createMovie(MovieCreationRequest request){
         if(movieRepository.existsMovieByTitle(request.getTitle()))
@@ -71,8 +74,11 @@ public class MovieService {
     public void deleteMovie(String id){
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
-
-        movieRepository.delete(movie);
+        boolean hasShowtimes = showtimesRepository.existsByMovieId(movie.getId());
+        if(!hasShowtimes){
+            movieRepository.deleteById(id);
+        }
+        else throw new AppException(ErrorCode.SHOWTIMES_EXIST);
     }
 
     public MovieResponse updateMovie(String movieId, MovieUpdateRequest request){
@@ -154,6 +160,9 @@ public class MovieService {
         }
 
         return specification;
+    }
+    public List<MovieResponse> getMovies() {
+        return movieRepository.findAll().stream().map(movieMapper::toMovieResponse).toList();
     }
 
 }

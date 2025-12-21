@@ -28,4 +28,6 @@ public interface MovieRepository extends JpaRepository<Movie, String>, JpaSpecif
         LIMIT 12
     """, nativeQuery = true)
     List<Object[]> countByMonth();
+
+
 }

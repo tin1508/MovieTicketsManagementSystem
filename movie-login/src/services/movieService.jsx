@@ -113,3 +113,4 @@ export const deleteMovie = async (id) => {
         throw error;
     }
 }
+export const listMovies = () => axios.get(`${API_URL}/get_all_movies`);

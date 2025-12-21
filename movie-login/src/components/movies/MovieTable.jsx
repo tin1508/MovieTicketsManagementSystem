@@ -1,7 +1,7 @@
 import React from 'react';
 import '../../styles/MovieListPage.css'; // Sẽ tạo file này sau
 
-const MovieTable = ({ movies, onEditClick, onDeleteClick, onUploadClick }) => {
+const MovieTable = ({ movies, onEditClick, onDeleteClick, onUploadClick, onViewShowtimes}) => {
     const statusTranslations = {
         'COMING_SOON': 'Sắp chiếu',
         'NOW_SHOWING': 'Đang chiếu',
@@ -33,6 +33,13 @@ const MovieTable = ({ movies, onEditClick, onDeleteClick, onUploadClick }) => {
                                 </span>
                             </td>
                             <td className="action-buttons">
+                                <button 
+                                    className="btn-showtimes" 
+                                    onClick={() => onViewShowtimes(movie)}
+                                    title="Xem lịch chiếu phim này"
+                                >
+                                    Lịch Chiếu
+                                </button>
                                 <button className="btn-edit" onClick={() => onEditClick(movie)}>Sửa</button>
                                 <button className="btn-upload" onClick={() => onUploadClick(movie)}>Poster</button>
                                 <button className="btn-delete" onClick={() => onDeleteClick(movie)}>Xóa</button>
