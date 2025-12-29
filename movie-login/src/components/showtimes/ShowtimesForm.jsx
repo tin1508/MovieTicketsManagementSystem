@@ -6,6 +6,7 @@ import { listMovies, getMovieById } from '../../services/movieService';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import { useNavigate, useParams , useLocation} from 'react-router-dom';
 import {formatDate, SHOWTIME_STATUSES} from '../../pages/ShowtimeListPage';
+import { TbRuler } from 'react-icons/tb';
 
 const calculateCeilingEndTime = (startTimeStr, durationMinutes) => {
     if (!startTimeStr || !durationMinutes) return "";
@@ -140,6 +141,7 @@ const ShowtimesForm = () => {
         // A. Tạo giờ chẵn (8:00, 9:00...) như cũ
         for (let h = 8; h <= 21; h++) {
             slots.push(`${h.toString().padStart(2, '0')}:00`);
+            slots.push(`${h.toString().padStart(2, '0')}:30`);
         }
 
         // B. THÊM THÔNG MINH: Lấy giờ kết thúc của các suất khác làm giờ bắt đầu gợi ý
@@ -167,7 +169,7 @@ const ShowtimesForm = () => {
         return uniqueSlots;
     }, [filteredShowtimes]);
     // Thay thế hàm isTimeBlocked cũ bằng hàm này:
-    const isTimeBlocked = (slotTimeStr) => {
+    const isRoomBlocked = (slotTimeStr) => {
         const selectedMovie = movies.find(m => m.title === movieName);
         const duration = selectedMovie ? selectedMovie.duration : 120; 
         
@@ -189,6 +191,20 @@ const ShowtimesForm = () => {
         });
     };
 
+    const isSameMovieStartingSameTime = (slotTimeStr) => {
+        const selectedMovie = movies.find(m => m.title === movieName);
+        if(!selectedMovie) return false;
+        return allShowtimes.some(s => {
+            if(s.showtimesDate !== date) return false;
+            if(s.movie?.id !== selectedMovie.id) return false;
+            if(String(s.id) === String(id)) return false;
+
+            const existingStartSimple = s.startTime.substring(0, 5);
+            if(existingStartSimple === slotTimeStr) return true;
+            return false;
+        });
+    }
+
     function saveOrUpdateShowtime(e){
         e.preventDefault();
         setErrorMessage('');
@@ -200,7 +216,7 @@ const ShowtimesForm = () => {
             setErrorMessage("Dữ liệu không hợp lệ.");
             return;
         }
-        if(isTimeBlocked(startTime)) {
+        if(isRoomBlocked(startTime)) {
              setErrorMessage("❌ Lỗi: Khung giờ này bị trùng với suất chiếu khác (do phim quá dài hoặc phòng đã kín).");
              return;
         }
@@ -251,7 +267,10 @@ const ShowtimesForm = () => {
     const handleCancel = () =>{
         navigator(`/dashboard/showtimes?movieId=${movieId}&movieTitle=${encodeURIComponent(movieName)}`);
     }
-    return (
+    const todayObj = new Date();
+    todayObj.setDate(todayObj.getDate() + 1);
+    const tomorrow = todayObj.toISOString().split('T')[0];
+    return ( 
         <div className='container mt-4'>
             <div className='row'>
                 {/* 3. Added 'form-card-dark' class for custom dark theme */}
@@ -297,7 +316,10 @@ const ShowtimesForm = () => {
                                     value={date}
                                     onChange={handleDate}
                                     data-placeholder = "dd/mm/yyyy"
+                                    min={tomorrow}
+                                    title='Vui lòng chọn ngày từ ngày mai trở đi'
                                 />
+
                             </div>
                             
                             <div className='form-group mb-3'>
@@ -308,62 +330,66 @@ const ShowtimesForm = () => {
                                         * Vui lòng chọn <strong>Phòng</strong> và <strong>Ngày</strong> trước để hệ thống tính toán lịch trống.
                                     </div>
                                 ) : (
-                                    <div className="d-flex flex-wrap gap-2 glass-grid-container" style={{maxHeight: '250px', overflowY: 'auto', padding: '10px', backgroundColor: '#222', borderRadius: '5px'}}>
-                                        {timeSlots.filter(slot => !isTimeBlocked(slot)).map(slot =>{
-
-
-                                            const isSelected = startTime === slot;
-                                            return (
-                                                <button
-                                                    key={slot}
-                                                    type="button"
-                                                    onClick={() => setStartTime(slot)}
-                                                    className={`btn glass-time-btn ${isSelected ? 'active' : ''}`}
-                                                    style={{width: '65px'}}
-                                                >
-                                                    {slot}
-                                                </button>
-                                            )
-                                        })}
-                                        {timeSlots.every(t => isTimeBlocked(t)) && (
-                                            <div className="text-danger w-100 text-center py-3">Không có giờ trống cho phim này vào ngày đã chọn.</div>
+                                    <div className="glass-grid-container p-3" style={{backgroundColor: '#2c3e50', borderRadius: '8px', maxHeight: '300px', overflowY: 'auto'}}>
+                                        {filteredShowtimes.length > 0 && (
+                                            <div className="mb-2 text-white small">
+                                                <strong>Lịch phòng {roomName}: </strong>
+                                                {filteredShowtimes.map(s => (
+                                                    <span key={s.id} className="badge bg-danger me-1">
+                                                        {s.startTime.substring(0,5)} - {s.endTime.substring(0,5)}
+                                                    </span>
+                                                ))}
+                                            </div>
                                         )}
+
+                                        <div className="d-flex flex-wrap gap-2">
+                                            {timeSlots.map(slot => {
+                                                // 1. Check phòng bận
+                                                const roomBusy = isRoomBlocked(slot);
+                                                // 2. Check phim trùng giờ ở phòng khác
+                                                const movieDuplicate = isSameMovieStartingSameTime(slot);
+
+                                                // Block nếu 1 trong 2 điều kiện đúng
+                                                const isBlocked = roomBusy || movieDuplicate;
+                                                const isSelected = startTime === slot;
+
+                                                // Tạo tooltip message
+                                                let titleMsg = "Chọn giờ này";
+                                                if (roomBusy) titleMsg = "Phòng này đang bận giờ này";
+                                                else if (movieDuplicate) titleMsg = `Phim ${movieName} đã có suất chiếu lúc ${slot} ở phòng khác`;
+
+                                                return (
+                                                    <button
+                                                        key={slot}
+                                                        type="button"
+                                                        disabled={isBlocked} 
+                                                        onClick={() => setStartTime(slot)}
+                                                        className={`btn btn-sm ${isSelected ? 'btn-primary' : (isBlocked ? 'btn-secondary' : 'btn-outline-light')}`}
+                                                        style={{
+                                                            width: '70px', 
+                                                            opacity: isBlocked ? 0.3 : 1, 
+                                                            textDecoration: isBlocked ? 'line-through' : 'none'
+                                                        }}
+                                                        title={titleMsg}
+                                                    >
+                                                        {slot}
+                                                    </button>
+                                                )
+                                            })}
+                                        </div>
                                     </div>
                                 )}
                             </div>
-                            {/* --- SMART GRID END --- */}
-
-                            {startTime && (
-                                <div className="alert alert-dark d-flex align-items-center gap-2 mb-3 border-secondary">
-                                    <h3 className="mb-0">🕒</h3>
-                                    <div>
-                                        <div>Bắt đầu: <strong>{startTime}</strong> ➜ Kết thúc: <strong className="text-success">{calculatedEndTime}</strong></div>
-                                        {/* <div className="small text-muted">(Phim {movies.find(m=>m.title===movieName)?.duration}p + 30p dọn, làm tròn lên)</div> */}
-                                    </div>
-                                </div>
-                            )}
-                            {/* ADD STATUS INPUT (Only show when ID exists / Updating) */}
-                            {id && (
-                                <div className='form-group mb-3'>
-                                    <label className='form-label'> Trạng Thái: </label>
-                                    <select 
-                                        className='form-select dark-input'
-                                        name='status'
-                                        value={status}
-                                        onChange={handleStatus}
-                                    >
-                                        {SHOWTIME_STATUSES.map(s => (
-                                            <option key={s.value} value={s.value}>
-                                                {s.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
                             
+                            {startTime && (
+                                <div className="alert alert-info">
+                                    Suất chiếu sẽ kết thúc lúc: <strong>{calculatedEndTime}</strong>
+                                </div>
+                            )}
+
                             <div className="d-flex gap-2 justify-content-end mt-4">
-                                <button className='btn btn-secondary' onClick={(e) => { e.preventDefault(); handleCancel(); }}>Hủy</button>
-                                <button className='btn btn-success' onClick={saveOrUpdateShowtime}>Lưu</button>
+                                <button className='btn btn-secondary' onClick={(e) => {e.preventDefault(); handleCancel();}}>Quay lại</button>
+                                <button className='btn btn-success' onClick={saveOrUpdateShowtime}>Lưu Suất Chiếu</button>
                             </div>
                         </form>
                     </div>

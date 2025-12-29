@@ -57,7 +57,9 @@ public enum ErrorCode {
     INVALID_SEAT_STATE(4004, "Seat state is invalid", HttpStatus.BAD_REQUEST ),
     SEAT_NOT_HELD_BY_USER(4005, "Seat has not been held by user", HttpStatus.BAD_REQUEST ),
     SEAT_ERROR(4006, "Seat is available or booked", HttpStatus.BAD_REQUEST),
-    SEAT_HOLD_EXPIRED(4007, "Holding seat is expired", HttpStatus.BAD_REQUEST );
+    SEAT_HOLD_EXPIRED(4007, "Holding seat is expired", HttpStatus.BAD_REQUEST ),
+    PAYMENT_ALREADY_EXISTS(4008, "Payment is already existed", HttpStatus.BAD_REQUEST),
+    TRANSACTION_ALREADY_EXISTED(4009, "Transaction is already existed", HttpStatus.BAD_REQUEST );
 
 
     int code;

@@ -10,6 +10,14 @@ import {
 const formatCurrency = (amount) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
+const getSeatTypeLabel = (type) => {
+  const typeMap = {
+    'NORMAL': 'Ghế thường',
+    'COUPLE': 'Ghế đôi',
+    'VIP': 'Ghế VIP'
+  };
+  return typeMap[type] || 'Ghế thường';
+}
 const BookingInfo = ({ booking }) => {
   if (!booking) return null;
 
@@ -40,12 +48,12 @@ const BookingInfo = ({ booking }) => {
         </h3>
 
         <p>
-          <FaMapMarkerAlt /> {cinema?.name} – Phòng {room?.name}
+          <FaMapMarkerAlt /> {cinema?.name} - Phòng {room?.name}
         </p>
 
         <p>
           <FaClock />{' '}
-          {new Date(showtimes?.showDate).toLocaleDateString('vi-VN')} |{' '}
+          {new Date(showtimes?.showtimesDate).toLocaleDateString('vi-VN')} |{' '}
           {showtimes?.startTime}
         </p>
       </div>
@@ -64,17 +72,23 @@ const BookingInfo = ({ booking }) => {
           </thead>
 
           <tbody>
-            {details.map((detail, index) => (
-              <tr key={index} style={{ borderBottom: '1px solid #333' }}>
-                <td>{detail.showtimeSeat?.seat?.seatNumber}</td>
-                <td>
-                  {detail.showtimeSeat?.seat?.seatType?.name === 'COUPLE'
-                    ? 'Ghế đôi'
-                    : 'Ghế thường'}
-                </td>
-                <td align="right">{formatCurrency(detail.price)}</td>
-              </tr>
-            ))}
+            {details.map((detail, index) => {
+              const nameOfSeat = detail.showtimeSeat?.seat?.seatName;
+              const typeName = detail.showtimeSeat?.seat?.seatType.name;
+              const price = detail.price;
+              return (
+                  <tr key={index} style={{ borderBottom: '1px solid #333' }}>
+                    {/* Tên ghế (VD: A1, B2) */}
+                    <td>{nameOfSeat}</td>
+                    
+                    {/* Loại ghế (Map từ NORMAL/VIP/COUPLE -> Tiếng Việt) */}
+                    <td>{getSeatTypeLabel(typeName)}</td>
+
+                    {/* Giá tiền */}
+                    <td align="right">{formatCurrency(price)}</td>
+                  </tr>
+                );
+            })}
           </tbody>
         </table>
       </div>

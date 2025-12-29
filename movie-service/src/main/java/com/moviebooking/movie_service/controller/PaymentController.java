@@ -17,14 +17,13 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PaymentController {
     PaymentService paymentService;
+    SePayController sePayController;
 
     @PostMapping
     ApiResponse<PaymentResponse> createPayments(@RequestBody PaymentCreationRequest request){
         return ApiResponse.<PaymentResponse>builder().result(paymentService.createPayment(request)).build();
     }
 
-    //    @PostMapping("/payment-callback")
-//    ApiResponse<PaymentResponse> handleBankingPaymentSuccess(@RequestBody )
     @GetMapping
     ApiResponse<List<PaymentResponse>> getPayments(){
         return ApiResponse.<List<PaymentResponse>>builder().result(paymentService.getPayments()).build();

@@ -41,4 +41,8 @@ public class ShowtimeSeatController {
         showtimeSeatService.releaseSeats(showtimeId, request.getSeatIds(), holderId);
         return ApiResponse.<Void>builder().message("Seats are released successfully").build();
     }
+    @GetMapping("/get_all")
+    public ApiResponse<List<ShowtimeSeatResponse>> getShowtimeSeats(){
+        return ApiResponse.<List<ShowtimeSeatResponse>>builder().result(showtimeSeatService.getShowtimeSeats()).build();
+    }
 }

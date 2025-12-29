@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 public class SeatResponse {
     Long id;
     RoomResponse room;
+    String seatName;
     String row;
     Integer seatNumber;
     SeatTypeResponse seatType;

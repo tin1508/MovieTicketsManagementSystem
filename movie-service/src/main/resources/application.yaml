@@ -37,4 +37,10 @@ file:
 
 jwt:
   signerKey: "92f5c84902ace8e29f5c7b38a6b631ee957ff3de1e5b550f2ca837b1923d67ea"
-
+sePay:
+  bank:
+    account: "0764386915"
+    name: "MBBank"
+  template: "compact"
+  api:
+    key: "NKKH29HARK93YOERR7FQZFBXYWEWMWXW35LIS5SB1CNJ1V4ESRBIPIZS8JQO7NN2"

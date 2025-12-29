@@ -155,7 +155,8 @@
     color: transparent !important;
     top: 18px;
 }
-.showtimes-filter-date::before {
+.showtimes-filter-date::before,
+.showtimes-filter-date-bookings::before {
     content: attr(data-date); 
     position: absolute;
     left: 1rem;
@@ -167,15 +168,17 @@
     overflow: hidden;
     white-space: nowrap;
 }
-.showtimes-filter-date[value=""]::before {
-    content: "dd/mm/yyyy";
+.showtimes-filter-date[value=""]::before,
+.showtimes-filter-date-bookings[value=""]::before{
+    content: "dd-mm-yyyy";
     color: #888; 
 }
 .showtimes-filter-date::-webkit-datetime-edit,
 .showtimes-filter-date::-webkit-datetime-edit-fields-wrapper {
     display: none;
 }
-.showtimes-filter-date::-webkit-calendar-picker-indicator {
+.showtimes-filter-date::-webkit-calendar-picker-indicator,
+.showtimes-filter-date-bookings::-webkit-calendar-picker-indicator {
     position: absolute;
     right: 12px;
     top: 50%;
@@ -187,7 +190,11 @@
     padding: 0; /* Remove default padding from icon */
     margin: 0;
 }
-
+.showtimes-filter-date-bookings{
+    position: relative;
+    color: transparent !important;
+    
+}
 /* 5. DATA TABLE (GLASS EFFECT) */
 .table-container {
     /* GLASSMORPHISM BASE */

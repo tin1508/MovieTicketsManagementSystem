@@ -24,6 +24,7 @@ public class Seat {
     Room room;
 
     String seatName;
+
     @Column(name="row_char")
     String row;
 

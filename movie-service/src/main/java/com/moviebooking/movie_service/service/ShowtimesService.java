@@ -54,9 +54,18 @@ public class ShowtimesService {
         Showtimes showtimes = showtimesRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.SHOWTIMES_NOTFOUND));
         showtimesMapper.updateShowtimes(showtimes, request);
-        Movie movie = showtimes.getMovie();
-        LocalTime newEnd = calculateCeilingEndTime(request.getStartTime(), movie.getDuration());
-        showtimes.setEndTime(newEnd);
+        if (request.getStartTime() != null) {
+            Movie movie = showtimes.getMovie(); // Get current movie
+            LocalTime newEnd = calculateCeilingEndTime(request.getStartTime(), movie.getDuration());
+            showtimes.setEndTime(newEnd);
+        }
+
+        if (request.getShowtimesDate() != null) {
+            if (request.getShowtimesDate().isAfter(LocalDate.now())) {
+                showtimes.setStatus(ShowtimeStatus.SCHEDULED);
+            }
+        }
+
         return showtimesMapper.toShowtimesResponse(showtimesRepository.save(showtimes));
     }
 
@@ -73,10 +82,12 @@ public class ShowtimesService {
                 .orElseThrow(() -> new AppException(ErrorCode.SHOWTIMES_NOTFOUND)));
     }
     public List<LocalDate> getDatesByMovie(String movieId){
-        return showtimesRepository.findDistinctShowtimeDatesByMovieId(movieId);
+        return showtimesRepository.findDistinctShowtimeDatesByMovieId(movieId, LocalDate.now());
     }
     public List<ShowtimesResponse> getShowtimesByMovieAnDates(String movieId, LocalDate date){
-        return showtimesRepository.findByMovieIdAndShowtimesDate(movieId, date).stream().map(showtimesMapper::toShowtimesResponse).toList();
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        return showtimesRepository.findByMovieIdAndShowtimesDate(movieId, date, today, now).stream().map(showtimesMapper::toShowtimesResponse).toList();
     }
     private LocalTime calculateCeilingEndTime(LocalTime startTime, Integer duration){
         int totalMinutes = duration + 30;

@@ -19,6 +19,7 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
+
     @OneToOne
     @JoinColumn(name = "booking_id")
     Booking booking;

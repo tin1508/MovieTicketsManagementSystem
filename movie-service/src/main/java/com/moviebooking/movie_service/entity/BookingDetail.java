@@ -22,8 +22,8 @@ public class BookingDetail {
     @JoinColumn(name = "booking_id", nullable = false)
     Booking booking;
 
-    @OneToOne
-    @JoinColumn(name = "showtime_seat_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "showtime_seat_id", nullable = false)
     ShowtimeSeat showtimeSeat;
 
     BigDecimal price;

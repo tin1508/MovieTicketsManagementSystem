@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { fetchSeats, holdSeats, releaseSeats} from '../../services/ShowtimeSeatService';
+import React, { useState, useEffect, useRef} from 'react';
+import { fetchSeats, holdSeats, releaseSeats, releaseSeatsKeepAlive} from '../../services/ShowtimeSeatService';
 import {createBooking} from '../../services/BookingsService';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
@@ -39,6 +39,8 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
   const [countdown, setCountdown] = useState(300);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
+
+  const isProceeding = useRef(false);
 
   const navigator = useNavigate();
   const location = useLocation();
@@ -98,6 +100,7 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
                 } else {
                     // Different showtime, clear data
                     sessionStorage.removeItem("bookingState");
+                    sessionStorage.removeItem("bookingStep1State");
                     setSelectedSeats([]);
                     setCountdown(300);
                 }
@@ -113,6 +116,30 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
     initData();
 
   }, [showtimeId]);
+  useEffect(() => {
+    // Sự kiện tắt Tab/Trình duyệt
+    const handleBeforeUnload = (e) => {
+        if (selectedSeats.length > 0 && !isProceeding.current) {
+            // e.preventDefault(); // Có thể bật dòng này nếu muốn hiện popup hỏi "Bạn có chắc muốn rời đi?"
+            releaseSeatsKeepAlive(showtimeId, selectedSeats.map(s => s.showtimeSeatId));
+        }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Cleanup function: Chạy khi component unmount (User bấm Link khác trong React)
+    return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+        
+        // Nếu unmount mà không phải do bấm nút "Thanh toán" -> Nhả ghế
+        if (selectedSeats.length > 0 && !isProceeding.current) {
+            console.log("Người dùng rời đi -> Tự động nhả ghế");
+            releaseSeatsKeepAlive(showtimeId, selectedSeats.map(s => s.showtimeSeatId));
+            sessionStorage.removeItem("bookingState");
+            sessionStorage.removeItem("bookingStep1State");
+        }
+    };
+  }, [selectedSeats, showtimeId]);
 
   // === EFFECT 2: Timer ===
   useEffect(() => {
@@ -130,6 +157,7 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
       );
       setIsTimerActive(false);
       setSelectedSeats([]);
+      sessionStorage.removeItem("bookingState");
       alert("Đã hết thời gian giữ ghế!");
     }
   }, [countdown]);
@@ -192,6 +220,7 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
       alert(`Vui lòng chọn đủ ${currentTicketQty} ghế. Hiện tại ${currentTicketCount} ghế đã được chọn.`);
       return;
     }
+    isProceeding.current = true;
     const bookingState = {
       selectedSeats: selectedSeats,
       showtimeId: showtimeId,
@@ -204,6 +233,9 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
       const wantToLogin = window.confirm("Bạn cần đăng nhập để tiếp tục thanh toán. Bạn có muốn đăng nhập ngay bây giờ?");
       if(wantToLogin){
         navigator("/login", {state: {from: location}});
+      }
+      else{
+        isProceeding.current = false;
       }
       return;
     }
@@ -219,8 +251,10 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
       const response = await createBooking(bookingRequest);
       const bookingData = response.data.result || response.data;
       sessionStorage.removeItem("bookingState");
+      
       onNext(bookingData.id);
     }catch (err){
+      isProceeding.current = false;
       console.error("Booking error: ", err);
       const errorMessage = err.response?.data?.message || "Không thể tạo đơn hàng. Vui lòng thử lại.";
       alert(errorMessage);
@@ -257,19 +291,33 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
             <div className="seats-list"> 
               {seatsInRow.map(seat => {
                 const isSelected = selectedSeats.some(s => s.id === seat.id);
-                const isOccupied = seat.status === 'OCCUPIED';
                 
-                // Lấy loại ghế từ object seatType (cần check null cho an toàn)
+                // --- BỔ SUNG LOGIC Ở ĐÂY ---
+                const isBooked = seat.status === 'BOOKED';       // Ghế đã bán
+                const isOccupied = seat.status === 'OCCUPIED';   // Ghế đang giữ (bởi người khác)
+                const isDisabled = isBooked || isOccupied;       // Không thể chọn
+                
+                // Lấy tên loại ghế
                 const typeName = seat.seatType?.name?.toLowerCase() || 'normal';
                 
                 return (
                   <div
                     key={seat.id}
-                    className={`seat ${typeName} ${isOccupied ? 'occupied' : ''} ${isSelected ? 'selected' : ''}`}
-                    onClick={() => handleSeatClick(seat)}
+                    // Thêm class 'occupied' nếu bị disable để tận dụng CSS cũ (màu xám)
+                    className={`seat ${typeName} ${isDisabled ? 'occupied' : ''} ${isSelected ? 'selected' : ''}`}
+                    
+                    // Chặn click nếu ghế đã disable
+                    onClick={() => !isDisabled && handleSeatClick(seat)}
+                    
                     title={`${seat.seatName} - ${formatCurrency(seat.seatType.basePrice)}`}
+
+                    // --- THÊM STYLE TRỰC TIẾP ĐỂ LÀM MỜ ---
+                    style={{
+                      opacity: isBooked ? 0.4 : (isOccupied ? 0.7 : 1), // Booked thì mờ hẳn (0.4), Occupied mờ vừa
+                      cursor: isDisabled ? 'not-allowed' : 'pointer',   // Đổi con trỏ chuột thành hình cấm
+                      pointerEvents: isDisabled ? 'none' : 'auto'       // Chặn hoàn toàn sự kiện chuột
+                    }}
                   >
-                    {/* Hiển thị số ghế hoặc icon đôi */}
                     {seat.seatNumber}
                   </div>
                 );

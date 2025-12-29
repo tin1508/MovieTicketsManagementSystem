@@ -26,9 +26,6 @@ public class ShowtimeSeat {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @OneToOne(mappedBy = "showtimeSeat", fetch = FetchType.LAZY)
-    BookingDetail bookingDetail;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "showtime_id", nullable = false)
     Showtimes showtimes;
@@ -39,6 +36,7 @@ public class ShowtimeSeat {
     @ManyToOne
     @JoinColumn(name="seat_id", nullable = false)
     Seat seat;
+
     String holdBy;
     LocalDateTime holdExpiredAt;
 }

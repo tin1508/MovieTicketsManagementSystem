@@ -6,7 +6,7 @@ import com.moviebooking.movie_service.dto.response.BookingsResponse;
 import com.moviebooking.movie_service.entity.Booking;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class, ShowtimesMapper.class})
+@Mapper(componentModel = "spring", uses = {UserMapper.class, ShowtimesMapper.class, BookingDetailMapper.class})
 public interface BookingsMapper {
     Booking toBooking(BookingCreationRequest request);
 

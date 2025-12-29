@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentResponse {
+    String id;
     BookingsResponse booking;
     String transactionId;
     BigDecimal amount;

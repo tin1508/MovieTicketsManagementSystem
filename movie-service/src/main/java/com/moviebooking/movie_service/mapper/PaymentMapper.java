@@ -6,7 +6,7 @@ import com.moviebooking.movie_service.dto.response.PaymentResponse;
 import com.moviebooking.movie_service.entity.Payment;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = {BookingsMapper.class})
+@Mapper(componentModel = "spring")
 public interface PaymentMapper {
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now(java.time.ZoneId.of(\"Asia/Ho_Chi_Minh\")))")
     Payment toPayment(PaymentCreationRequest request);

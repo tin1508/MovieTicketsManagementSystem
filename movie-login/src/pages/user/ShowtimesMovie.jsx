@@ -29,6 +29,7 @@ const ShowtimesMovie = ({movieId, onConfirmSelection,  isDisabled}) => {
   
 
     const handleQuantityChange = (e) => {
+        if(isConfirmed) return;
         const value = e.target.value;
         if(value === ''){
             setTicketQuantity('');
@@ -62,13 +63,23 @@ const ShowtimesMovie = ({movieId, onConfirmSelection,  isDisabled}) => {
             alert("Vui lòng chọn suất chiếu và số lượng vé lớn hơn 0.");
             return;
         }
+        const step1State = {
+            movieId: movieId,
+            selectedDate: selectedDate,
+            selectedShowtime: selectedShowtime,
+            ticketQuantity: ticketQuantity,
+            isConfirmed: true
+        }
+        sessionStorage.setItem("bookingStep1State", JSON.stringify(step1State));
         setIsConfirmed(true);
-        onConfirmSelection(selectedShowtime, ticketQuantity);
+        onConfirmSelection(selectedShowtime, ticketQuantity, selectedDate);
     };
     const handleCancel = () => {
+        sessionStorage.removeItem("bookingStep1State");
+        sessionStorage.removeItem("bookingState");
         setIsConfirmed(false);
         setTicketQuantity(0);
-        onConfirmSelection(null, 0);
+        onConfirmSelection(null, 0, null);
     }
     const handleDecreaseQuantity = () => {
         const currentQty = Number(ticketQuantity) || 0;
@@ -76,6 +87,37 @@ const ShowtimesMovie = ({movieId, onConfirmSelection,  isDisabled}) => {
             setTicketQuantity(currentQty - 1);
         }
     };
+    const handleDateClick = (dateString) => {
+        if(isDisabled || isConfirmed) return;
+        setSelectedDate(dateString);
+    };
+    const handleTimeClick = (show) => {
+        if(isDisabled || isConfirmed) return;
+        setSelectedShowtime(show);
+    }
+
+    // Hàm phụ: Kiểm tra xem giờ suất chiếu có hợp lệ không (chưa qua)
+    const isShowtimeValid = (showtimeDate, startTimeStr) => {
+        const now = new Date();
+        const showDate = new Date(showtimeDate); // yyyy-mm-dd
+        
+        // Nếu ngày chiếu là tương lai -> Hợp lệ
+        if (showDate > now.setHours(0,0,0,0)) return true;
+
+        // Nếu ngày chiếu là hôm nay -> So sánh giờ
+        if (showDate.toDateString() === now.toDateString()) {
+            const [hours, minutes] = startTimeStr.split(':').map(Number);
+            const showTime = new Date();
+            showTime.setHours(hours, minutes, 0, 0);
+            
+            // Chỉ hiện nếu giờ chiếu > giờ hiện tại
+            return showTime > now;
+        }
+
+        // Ngày quá khứ -> Không hợp lệ
+        return false;
+    };
+
     useEffect(() => {
         // Chỉ chạy khi có movieId
         if (movieId) {
@@ -83,41 +125,91 @@ const ShowtimesMovie = ({movieId, onConfirmSelection,  isDisabled}) => {
             setError(null);
             setDates([]); // Xóa ngày cũ
             setSelectedDate(null); // Bỏ chọn ngày
-            setShowtimes([]); // Xóa giờ chiếu cũ
+            setShowtimes([]);
 
             
             getAvailableDateByMovie(movieId)
                 .then(response => {
-                const dateData = response.data.result;
-                setDates(dateData || []);
+                    const dateData = response.data.result;
+                    setDates(dateData || []);
 
-                // Tự động chọn ngày đầu tiên trong danh sách
-                })
+                    // Tự động chọn ngày đầu tiên trong danh sách
+                    const savedJSON = sessionStorage.getItem("bookingStep1State");
+                        if (savedJSON) {
+                            const saved = JSON.parse(savedJSON);
+                            // Chỉ khôi phục nếu đúng phim đang xem
+                            if (saved.movieId == movieId && dateData.includes(saved.selectedDate)) {
+                                setSelectedDate(saved.selectedDate);
+                                setTicketQuantity(saved.ticketQuantity);
+                                // Chưa set isConfirmed vội, đợi load xong giờ chiếu đã
+                            }
+                        }
+                    })
                 .catch(err => {
-                console.error("Lỗi khi tải ngày chiếu:", err);
-                setError("Không thể tải lịch chiếu. Vui lòng thử lại.");
+                    console.error("Lỗi khi tải ngày chiếu:", err);
+                    setError("Không thể tải lịch chiếu. Vui lòng thử lại.");
                 })
                 .finally(() => {
-                setLoadingDates(false);
+                    setLoadingDates(false);
                 });
         }
     }, [movieId]);
     useEffect(() => {
         if (movieId && selectedDate) {
-        setLoadingShowtimes(true);
-        setError(null);
-        setShowtimes([]);
+            setLoadingShowtimes(true);
+            setError(null);
+            setShowtimes([]);
+            setSelectedShowtime(null);
+            setIsConfirmed(false);
         
-        getShowtimesByMovieAndDate(movieId, selectedDate)
+            getShowtimesByMovieAndDate(movieId, selectedDate)
             .then(response => {
-            const showtimeData = response.data.result;
-            if(showtimeData && showtimeData.length > 0){
-                showtimeData.sort((a, b) => a.startTime.localeCompare(b.startTime));
-            }
-            setShowtimes(showtimeData || []); 
-        })
-        .catch(err => console.error("Lỗi tải giờ:", err))
-        .finally(() => setLoadingShowtimes(false));
+                const showtimeData = response.data.result;
+                let validShowtimes = [];
+                
+                if(showtimeData && showtimeData.length > 0){
+                    showtimeData.sort((a, b) => a.startTime.localeCompare(b.startTime));
+                    // Lọc các suất chiếu hợp lệ
+                    validShowtimes = showtimeData.filter(show => 
+                        isShowtimeValid(selectedDate, show.startTime) && show.status === 'SCHEDULED'
+                    );
+                    setShowtimes(validShowtimes);
+                } else {
+                    setShowtimes([]);
+                }
+
+                // --- LOGIC KHÔI PHỤC BẮT ĐẦU TẠI ĐÂY ---
+                const savedJSON = sessionStorage.getItem("bookingStep1State");
+                if (savedJSON) {
+                    const saved = JSON.parse(savedJSON);
+
+                    // Kiểm tra xem dữ liệu lưu có đúng là của phim và ngày này không
+                    if (saved.movieId == movieId && saved.selectedDate === selectedDate && saved.selectedShowtime) {
+                        
+                        // FIX: So sánh ID an toàn hơn (chuyển cả 2 về String để tránh lỗi '1' !== 1)
+                        // Hoặc so sánh startTime nếu ID có vấn đề
+                        const foundShowtime = validShowtimes.find(s => 
+                            String(s.id) === String(saved.selectedShowtime.id) || 
+                            s.startTime === saved.selectedShowtime.startTime
+                        );
+                        
+                        if (foundShowtime) {
+                            console.log("Đã khôi phục suất chiếu:", foundShowtime.startTime);
+                            setSelectedShowtime(foundShowtime);
+                            
+                            // Nếu trạng thái cũ là đã xác nhận -> trigger luôn nút xác nhận
+                            if (saved.isConfirmed) {
+                                setIsConfirmed(true);
+                                onConfirmSelection(foundShowtime, saved.ticketQuantity, selectedDate);
+                            }
+                        } else {
+                            console.log("Không tìm thấy suất chiếu cũ (có thể đã hết giờ hoặc bị hủy)");
+                        }
+                    }
+                }
+            })
+            .catch(err => console.error("Lỗi tải giờ:", err))
+            .finally(() => setLoadingShowtimes(false));
         }
     }, [selectedDate, movieId]);
     return (
@@ -134,8 +226,8 @@ const ShowtimesMovie = ({movieId, onConfirmSelection,  isDisabled}) => {
                     <button
                         key={dateString}
                         className={`date-btn ${selectedDate === dateString ? 'active' : ''}`}
-                        onClick={() => setSelectedDate(dateString)}
-                        disabled={isDisabled}
+                        onClick={() => handleDateClick(dateString)}
+                        disabled={isDisabled || isConfirmed}
                     >
                         {/* Cấu trúc 2 span này là BẮT BUỘC */}
                         <span className="date-day-name">{formattedDate.dayName}</span>
@@ -162,8 +254,8 @@ const ShowtimesMovie = ({movieId, onConfirmSelection,  isDisabled}) => {
                 <div className="time-grid">
                 {showtimes.map(show => (
                     <button key={show.startTime} className={`time-btn ${selectedShowtime?.startTime === show.startTime ? 'active' : ''}`}
-                    onClick={() => setSelectedShowtime(show)}
-                    disabled={isDisabled}
+                    onClick={() => handleTimeClick(show)}
+                    disabled={isDisabled || isConfirmed}
                     >
                     {show.startTime.substring(0,5)}
                     </button>
@@ -180,14 +272,14 @@ const ShowtimesMovie = ({movieId, onConfirmSelection,  isDisabled}) => {
             <>
                 <hr />
                 <div className="section-step slide-down ticket-quantity-selector">
-                {/* Bỏ tiêu đề "Chọn số lượng vé" nếu không cần */}
                 <h5>Chọn số lượng vé</h5>
                 
                 <div className="quantity-controls">
                     <button 
                         className="quantity-btn minus" 
                         onClick={handleDecreaseQuantity}
-                        disabled={isDisabled || ticketQuantity <= 0} // Vô hiệu hóa khi số lượng là 0
+                        // === UPDATE: Disable when confirmed ===
+                        disabled={isDisabled || isConfirmed || ticketQuantity <= 0} 
                     >
                     -
                     </button>
@@ -197,41 +289,56 @@ const ShowtimesMovie = ({movieId, onConfirmSelection,  isDisabled}) => {
                         value={ticketQuantity}
                         onChange={handleQuantityChange}
                         onBlur={handleBlur}
-                        disabled={isDisabled}
+                        // === UPDATE: Disable when confirmed ===
+                        disabled={isDisabled || isConfirmed}
                         min="0"
                         max={maxTickets}
                     />
-                    {/* <span className="quantity-display">{ticketQuantity}</span> */}
                     <button 
                         className="quantity-btn plus" 
                         onClick={handleIncreaseQuantity}
-                        disabled={isDisabled || ticketQuantity >= maxTickets} // Vô hiệu hóa khi số lượng là 10
+                        // === UPDATE: Disable when confirmed ===
+                        disabled={isDisabled || isConfirmed || ticketQuantity >= maxTickets} 
                     >
                         +
                     </button>
                 </div>
+
                 {selectedShowtime?.room?.totalSeats && (
                     <small style={{display: 'block', marginTop: '5px', color: '#888'}}>
                         (Tối đa: {maxTickets} vé)
                     </small>
                 )}
-                {!isConfirmed ? (
-                    <button 
-                    className="btn-continue" 
-                    onClick={handleConfirmedClick}
-                    disabled={isDisabled || !selectedShowtime || ticketQuantity <= 0} // Vô hiệu hóa nếu chưa chọn vé
-                    >
-                    Xác nhận
-                    </button>
-                ) : (
-                    <button className="btn-cancel" onClick={handleCancel}>
-                        Hủy
-                    </button>
-                )}
+
+                <div style={{marginTop: '20px'}}>
+                    {!isConfirmed ? (
+                        <button 
+                        className="btn-continue" 
+                        onClick={handleConfirmedClick}
+                        disabled={isDisabled || !selectedShowtime || ticketQuantity <= 0} 
+                        >
+                        Xác nhận & Chọn ghế
+                        </button>
+                    ) : (
+                        <div style={{display:'flex', alignItems:'center', gap: '10px'}}>
+                             {/* Show visual feedback that it is locked */}
+                             <span style={{color: '#2ecc71', fontWeight: 'bold'}}>✓ Đã xác nhận</span>
+                             
+                            <button 
+                                className="btn-cancel" 
+                                onClick={handleCancel}
+                                style={{background: '#e74c3c', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor:'pointer'}}
+                            >
+                                Thay đổi / Hủy
+                            </button>
+                        </div>
+                    )}
+                </div>
+
                 </div>
             </>
             )}
-        {/* Hiển thị lỗi chung nếu có */}
+        
         {error && <p className="error-message">{error}</p>}
         
         </div>

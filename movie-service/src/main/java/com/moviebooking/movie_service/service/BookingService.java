@@ -30,7 +30,6 @@ public class BookingService {
     ShowtimesRepository showtimesRepository;
     UserRepository userRepository;
     ShowtimeSeatRepository showtimeSeatRepository;
-    BookingDetailRepository bookingDetailRepository;
 
     public BookingsResponse createBookings(BookingCreationRequest request){
 
@@ -49,9 +48,10 @@ public class BookingService {
 
         if(bookings.getStatus() == null) bookings.setStatus(BookingStatus.PENDING);
 
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(15);
+        bookings.setExpiresAt(expirationTime);
         bookings = bookingRepository.save(bookings);
 
-        List<BookingDetail> details = new ArrayList<>();
         List<ShowtimeSeat> seatsToUpdate = new ArrayList<>();
         BigDecimal calculatedTotalPrice = BigDecimal.ZERO;
 
@@ -63,7 +63,7 @@ public class BookingService {
                 throw new AppException(ErrorCode.SEAT_ERROR);
             }
             stSeat.setStatus(ShowtimeSeatStatus.HOLDING);
-            stSeat.setHoldExpiredAt(LocalDateTime.now().plusMinutes(15));
+            stSeat.setHoldExpiredAt(expirationTime);
 
             BookingDetail detail = new BookingDetail();
             detail.setBooking(bookings);
@@ -71,19 +71,16 @@ public class BookingService {
 
             BigDecimal seatPrice = stSeat.getSeat().getBasePrice();
             detail.setPrice(seatPrice);
-            details.add(detail);
+            bookings.getBookingDetails().add(detail);
 
             calculatedTotalPrice = calculatedTotalPrice.add(seatPrice);
             seatsToUpdate.add(stSeat);
             totalSeats += stSeat.getSeat().getSeatType().getName().equals("COUPLE") ? 2 : 1;
         }
 
-        bookingDetailRepository.saveAll(details);
         showtimeSeatRepository.saveAll(seatsToUpdate);
         bookings.setTotalPrice(calculatedTotalPrice);
         bookings.setTicketQuantity(totalSeats);
-        if(bookings.getBookingDetails() == null) bookings.setBookingDetails(new ArrayList<>());
-        bookings.getBookingDetails().addAll(details);
 
 
         return bookingsMapper.toBookingResponse(bookingRepository.save(bookings));
@@ -95,7 +92,7 @@ public class BookingService {
         if(booking.getStatus() != BookingStatus.PENDING){
             throw new AppException(ErrorCode.BOOKING_STATUS_INVALID);
         }
-        if(LocalDateTime.now().isAfter(
+        if(booking.getExpiresAt() != null && LocalDateTime.now().isAfter(
                 booking.getBookingDetails().getFirst().getShowtimeSeat().getHoldExpiredAt())){
             throw new AppException(ErrorCode.SEAT_HOLD_EXPIRED);
         }
@@ -142,10 +139,10 @@ public class BookingService {
     }
 
     public List<BookingsResponse> getBookings(){
-        return bookingRepository.findAll().stream().map(bookingsMapper::toBookingResponse).toList();
+        return bookingRepository.findAllWithShowtimes().stream().map(bookingsMapper::toBookingResponse).toList();
     }
     public BookingsResponse getBookingById(String id) {
-        return bookingsMapper.toBookingResponse(bookingRepository.findById(id)
+        return bookingsMapper.toBookingResponse(bookingRepository.findByIdFullInfo(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOTFOUND)));
     }
     private String generateUniqueBookingCode(){

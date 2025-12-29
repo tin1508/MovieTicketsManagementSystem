@@ -44,3 +44,30 @@ export const releaseSeats = (showtimeId, seatIds) => {
     { headers }
   );
 };
+
+export const releaseSeatsKeepAlive = (showtimeId, seatIds) => {
+  const token = getToken();
+  const guestId = getGuestId();
+  
+  // URL đầy đủ
+  const url = `${API_SHOWTIMESEATS_URL}/${showtimeId}/release`;
+
+  // Chuẩn bị Headers thủ công (vì fetch không tự lấy như axios interceptor)
+  const headers = {
+    'Content-Type': 'application/json', // Bắt buộc với fetch
+    'X-GUEST_ID': guestId
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  // Gọi fetch với keepalive: true
+  // Lưu ý: Không cần return vì thường hàm này gọi khi component unmount
+  fetch(url, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify({ seatIds }), // Fetch yêu cầu body là string
+    keepalive: true // <--- Cờ quan trọng để sống sót khi đóng Tab
+  }).catch(err => console.error("Lỗi nhả ghế background (KeepAlive):", err));
+};

@@ -100,5 +100,8 @@ public class ShowtimeSeatService {
             System.out.println("Đã tự động nhả " + expiredSeats.size() + " ghế hết hạn.");
         }
     }
+    public List<ShowtimeSeatResponse> getShowtimeSeats(){
+        return showtimeSeatRepository.findAll().stream().map(showtimeSeatMapper::toShowtimeSeatResponse).toList();
+    }
 }
 

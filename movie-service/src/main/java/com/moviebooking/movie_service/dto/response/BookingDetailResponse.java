@@ -12,5 +12,6 @@ import java.math.BigDecimal;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingDetailResponse {
     String id;
+    ShowtimeSeatResponse showtimeSeat;
     BigDecimal price;
 }

@@ -9,3 +9,4 @@ export const createBooking = async (bookingData) => {
         headers: { Authorization: `Bearer ${token}` }
     });
 }
+export const cancelBooking = (id) => axios.put(`${API_BOOKINGS_URL}/${id}/cancel-booking`);
