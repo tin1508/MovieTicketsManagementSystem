@@ -42,6 +42,7 @@ import java.util.UUID;
 public class AuthenticationService {
     UserRepository userRepository;
     InvalidatedTokenRepository invalidatedTokenRepository;
+    PasswordEncoder passwordEncoder;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -50,17 +51,38 @@ public class AuthenticationService {
     public IntrospectResponse introspect(IntrospectRequest request)
             throws JOSEException, ParseException {
         var token = request.getToken();
+        boolean isValid = true;
 
-        verifyToken(token);
+        try {
+            SignedJWT signedJWT = verifyToken(token);
+
+            String username = signedJWT.getJWTClaimsSet().getSubject();
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+            if (Boolean.FALSE.equals(user.getIsActive())) {
+                isValid = false;
+            }
+
+            String currenTokenInDb = user.getCurrentAccessToken();
+            if (currenTokenInDb == null || !currenTokenInDb.equals(token)){
+                isValid = false;
+            }
+        } catch (AppException | JOSEException | ParseException exception){
+            isValid = false;
+        }
 
         return IntrospectResponse.builder()
-                .valid(true)
+                .valid(isValid)
                 .build();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+        if (Boolean.FALSE.equals(user.getIsActive())) {
+            throw new AppException(ErrorCode.USER_LOCKED);
+        }
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean authenticated =  passwordEncoder.matches(request.getPassword(),
                 user.getPassword());
@@ -68,6 +90,8 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         var token = generateToken(user);
+        user.setCurrentAccessToken(token);
+        userRepository.save(user);
 
         return AuthenticationResponse.builder()
                 .token((token))
@@ -76,14 +100,26 @@ public class AuthenticationService {
     }
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
-        var signToken = verifyToken(request.getToken());
-        String jit = signToken.getJWTClaimsSet().getJWTID();
-        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
-        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
-                .id(jit)
-                .expiryTime(expiryTime)
-                .build();
-        invalidatedTokenRepository.save(invalidatedToken);
+        try {
+            var signToken = verifyToken(request.getToken());
+            String username = signToken.getJWTClaimsSet().getSubject();
+
+            var user = userRepository.findByUsername(username).orElse(null);
+            if (user != null){
+                user.setCurrentAccessToken(null);
+                userRepository.save(user);
+            }
+            String jit = signToken.getJWTClaimsSet().getJWTID();
+            Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+            InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                    .id(jit)
+                    .expiryTime(expiryTime)
+                    .build();
+            invalidatedTokenRepository.save(invalidatedToken);
+        } catch (AppException exception){
+            log.info("Token already invalid");
+        }
+
     }
 
     private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
@@ -94,6 +130,9 @@ public class AuthenticationService {
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
         var verified = signedJWT.verify(verifier);
+        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
         if (!verified && expiryTime.after(new Date()))
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         return signedJWT;

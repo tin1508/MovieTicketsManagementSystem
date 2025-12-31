@@ -1,53 +1,72 @@
 // context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as authService from '../services/authService';
-import { jwtDecode } from 'jwt-decode'; // Cài bằng: npm install jwt-decode
+import { jwtDecode } from 'jwt-decode';
 
-// 1. Đặt tên key (khóa) LÀ "accessToken"
 const TOKEN_STORAGE_KEY = 'accessToken';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(() => localStorage.getItem(TOKEN_STORAGE_KEY));
-    const [user, setUser] = useState(null); 
+    const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(!!token);
 
+    // --- [MỚI 1] Thêm state để kiểm soát quá trình tải ban đầu ---
+    // Mặc định là true (đang tải) để chặn render
+    const [isInitializing, setIsInitializing] = useState(true);
+
     useEffect(() => {
-        if (token) {
-            try {
-                const decodedToken = jwtDecode(token); 
-                console.log(">>> Token decode:", decodedToken);
-                setUser({
-                    username: decodedToken.sub,
-                    roles: decodedToken.scope.split(' ') 
-                });
-                setIsAuthenticated(true);
-                localStorage.setItem(TOKEN_STORAGE_KEY, token); // Lưu token
-            } catch (error) {
-                console.error("Token không hợp lệ:", error);
-                logout(); 
+        // Hàm xử lý nội bộ để set User
+        const initAuth = () => {
+            if (token) {
+                try {
+                    const decodedToken = jwtDecode(token);
+                    console.log(">>> Token decode (F5/Init):", decodedToken);
+                    
+                    // Kiểm tra thời hạn token (Optional - nên làm)
+                    const currentTime = Date.now() / 1000;
+                    if (decodedToken.exp && decodedToken.exp < currentTime) {
+                         console.warn("Token đã hết hạn");
+                         logout();
+                    } else {
+                        // Token hợp lệ -> Set User
+                        setUser({
+                            username: decodedToken.sub,
+                            roles: decodedToken.scope ? decodedToken.scope.split(' ') : []
+                        });
+                        setIsAuthenticated(true);
+                        // Đảm bảo token nằm trong localStorage
+                        localStorage.setItem(TOKEN_STORAGE_KEY, token); 
+                    }
+                } catch (error) {
+                    console.error("Token không hợp lệ trong useEffect:", error);
+                    logout();
+                }
+            } else {
+                localStorage.removeItem(TOKEN_STORAGE_KEY);
+                setUser(null);
+                setIsAuthenticated(false);
             }
-        } else {
-            localStorage.removeItem(TOKEN_STORAGE_KEY);
-            setUser(null);
-            setIsAuthenticated(false);
-        }
+            
+            // --- [MỚI 2] Báo hiệu đã khởi tạo xong ---
+            setIsInitializing(false);
+        };
+
+        initAuth();
     }, [token]);
 
     const login = async (username, password) => {
         try {
-            // 2. Gọi service (service chỉ trả về data, không lưu)
-            localStorage.removeItem(TOKEN_STORAGE_KEY); 
-            const payload = await authService.loginUser(username, password); 
+            localStorage.removeItem(TOKEN_STORAGE_KEY);
+            const payload = await authService.loginUser(username, password);
             
             const newToken = payload?.token || payload?.accessToken;
 
             if (newToken) {
-                // 3. Context cập nhật state (useEffect sẽ tự động lưu)
-                setToken(newToken); 
-
-                // 4. Giải mã và trả về roles cho LoginPage
+                setToken(newToken);
+                
+                // Giải mã ngay để return cho Login Form dùng chuyển trang
                 const decodedToken = jwtDecode(newToken);
                 const roles = decodedToken.scope ? decodedToken.scope.split(' ') : [];
                 return roles; 
@@ -61,9 +80,39 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        // authService.logoutUser(token); // (Bỏ comment nếu bạn muốn gọi API logout)
-        setToken(null); 
+    // 1. Xóa thông tin xác thực (Token & User)
+    setToken(null);
+    setUser(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+
+    // 2. --- QUAN TRỌNG: Xóa tiến trình đặt vé dở dang ---
+    // Để người sau đăng nhập vào không bị dính vé của người trước
+    sessionStorage.removeItem("bookingState");      // Thông tin ghế đang chọn
+    sessionStorage.removeItem("bookingStep1State"); // Thông tin bước 1 (nếu có)
+    sessionStorage.removeItem("pendingBooking");    // Thông tin chờ thanh toán (nếu có)
+    
+    // (Tùy chọn) Điều hướng về trang chủ hoặc login sau khi thoát
+    // window.location.href = "/login"; 
     };
+
+    // --- [MỚI 3] Chặn hiển thị App cho đến khi xử lý xong Token ---
+    // Nếu đang khởi tạo, hiển thị màn hình trắng hoặc Loading Spinner
+    // Điều này ngăn ProtectedRoute chạy khi user đang là null
+    if (isInitializing) {
+        return (
+            <div style={{ 
+                height: '100vh', 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center',
+                fontSize: '18px',
+                color: '#666'
+            }}>
+                Đang tải dữ liệu người dùng...
+            </div>
+        );
+    }
 
     const value = { token, user, isAuthenticated, login, logout };
 
@@ -74,7 +123,6 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-// Hook (móc) tùy chỉnh
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

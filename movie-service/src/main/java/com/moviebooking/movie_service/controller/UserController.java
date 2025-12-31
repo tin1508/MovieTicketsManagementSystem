@@ -6,6 +6,7 @@ import com.moviebooking.movie_service.dto.request.ProfileUpdateRequest;
 import com.moviebooking.movie_service.dto.request.UserCreationRequest;
 import com.moviebooking.movie_service.dto.request.UserUpdateRequest;
 import com.moviebooking.movie_service.dto.response.ApiResponse;
+import com.moviebooking.movie_service.dto.response.PageResponse;
 import com.moviebooking.movie_service.dto.response.UserResponse;
 import com.moviebooking.movie_service.entity.User;
 import com.moviebooking.movie_service.service.UserService;
@@ -40,14 +41,20 @@ public class UserController {
         return apiResponse;
     }
 
-    @GetMapping
-    ApiResponse<List<UserResponse>> getUsers() {
+    @GetMapping // Đảm bảo có annotation này
+    public ApiResponse<PageResponse<UserResponse>> getUsers(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "") String search
+    ) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Username: {}", authentication.getName());
         authentication.getAuthorities().forEach(grantedAuthority ->
                 log.info(grantedAuthority.getAuthority()));
-        return ApiResponse.<List<UserResponse>>builder()
-                .result(userService.getUsers())
+
+        // Gọi service với tham số page và size
+        return ApiResponse.<PageResponse<UserResponse>>builder()
+                .result(userService.getUsers(page, size, search))
                 .build();
     }
 
@@ -86,6 +93,12 @@ public class UserController {
     String deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);
         return "User has been delete";
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<String> toggleUserStatus(@PathVariable String id){
+        userService.toggleUserStatus(id);
+        return ResponseEntity.ok("User status has been changed");
     }
 
     @PutMapping("/change-password")

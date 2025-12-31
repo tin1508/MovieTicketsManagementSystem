@@ -1,5 +1,8 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useDebounce } from 'use-debounce';
+// 1. Import useNavigate để sửa lỗi
+import { useNavigate } from 'react-router-dom';
+
 import MovieTable from '../components/movies/MovieTable';
 import AddMovieForm from '../components/movies/AddMovieForm';
 import Modal from '../components/common/Modal';
@@ -8,24 +11,32 @@ import * as movieService from '../services/movieService';
 import Pagination from '../components/common/Pagination';
 import MovieFilter from '../components/movies/MovieFilter';
 import UploadPosterForm from '../components/movies/UploadPosterForm';
+// 2. Import Form Suất Chiếu
+import ShowtimesForm from '../components/showtimes/ShowtimesForm'; 
 
 const MovieListPage = () => {
     const [movies, setMovies] = useState([]);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    
+    // State Loading
     const [isAdding, setIsAdding] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     
+    // State Modals
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [currentMovieToEdit, setCurrentMovieToEdit] = useState(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [movieToDelete, setMovieToDelete] = useState(null);
-    
     const [movieToUpload, setMovieToUpload] = useState(null);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    
+    // 3. State cho Modal Suất Chiếu
+    const [isShowtimeModalOpen, setIsShowtimeModalOpen] = useState(false);
+    const [movieToShowtime, setMovieToShowtime] = useState(null);
     
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -36,10 +47,11 @@ const MovieListPage = () => {
         genreIds: [],
     });
 
-    // Debounced fetch để tránh spam API
     const [debouncedFilters] = useDebounce(filters, 500);
 
-    // Hàm fetch được trừu tượng hóa để tái sử dụng
+    // 4. FIX LỖI: Sử dụng useNavigate và đặt tên biến là 'navigate' (tránh trùng navigator)
+    const navigate = useNavigate();
+
     const fetchMovies = useCallback(async (page) => {
         console.log(`Đang tải trang: ${page} với filters:`, debouncedFilters);
         try {
@@ -59,15 +71,14 @@ const MovieListPage = () => {
             setIsLoading(false);
         }
     }, [debouncedFilters]);
-    // useEffect chính để gọi API khi page hoặc filters thay đổi
+
     useEffect(() => {
         fetchMovies(currentPage);
     }, [currentPage, fetchMovies]);
 
-    // Handler cho filter changes
     const handleFilterChange = useCallback((newFilters) => {
         setFilters(newFilters);
-        setCurrentPage(0); // Reset page khi filter thay đổi
+        setCurrentPage(0);
     }, []);
 
     const handleAddMovie = useCallback(async (newMovieData) => {
@@ -75,10 +86,9 @@ const MovieListPage = () => {
             setIsAdding(true);
             setError(null);
             await movieService.createMovie(newMovieData);
-            // Refetch ngay lập tức trang đầu để hiển thị phim mới
             await fetchMovies(0);
             setIsAddModalOpen(false);
-            setCurrentPage(0); // Cập nhật UI pagination về trang đầu
+            setCurrentPage(0);
         } catch (err) {
             setError('Lỗi khi thêm phim mới.');
             console.error(err);
@@ -96,7 +106,7 @@ const MovieListPage = () => {
             setIsUpdating(true);
             setError(null);
             await movieService.updateMovie(updatedMovieData.id, updatedMovieData);
-            await fetchMovies(currentPage); // Refetch trang hiện tại ngay lập tức
+            await fetchMovies(currentPage);
             setIsEditModalOpen(false);
             setCurrentMovieToEdit(null);
         } catch (err) {
@@ -113,16 +123,18 @@ const MovieListPage = () => {
             setIsDeleting(true);
             setError(null);
             await movieService.deleteMovie(movieToDelete.id);
-            // Refetch ngay lập tức trang đầu sau delete
             await fetchMovies(0);
-            setCurrentPage(0); // Reset về trang đầu
+            setCurrentPage(0);
             setIsDeleteModalOpen(false);
             setMovieToDelete(null);
         } catch (err) {
-            setError('Lỗi khi xóa phim.');
-            console.error(err);
+            const serverMessage = err.response?.data?.message || err.message;
+            if(serverMessage !== null){
+                alert("KHÔNG THỂ XÓA: Phim này hiện đang có suất chiếu!!!");
+            }
         } finally {
             setIsDeleting(false);
+            setIsDeleteModalOpen(false);
         }
     }, [movieToDelete, fetchMovies]);
 
@@ -153,22 +165,26 @@ const MovieListPage = () => {
 
     const handleUploadSubmit = async (file) => {
         if (!movieToUpload) return;
-
         setIsUploading(true);
-        setError(null); // Xóa lỗi cũ
+        setError(null);
         try {
             await movieService.uploadPoster(movieToUpload.id, file);
-            
-            // Tải lại dữ liệu trang hiện tại để cập nhật ảnh
             await fetchMovies(currentPage); 
-            
-            handleUploadModalClose(); // Đóng modal
+            handleUploadModalClose();
         } catch (err) {
             setError('Lỗi khi tải poster. Vui lòng thử lại.');
         } finally {
             setIsUploading(false);
         }
     };
+
+    // 5. FIX LOGIC: Hàm này giờ sẽ Mở Modal Add Showtimes thay vì chuyển trang
+    const handleViewShowtimes = useCallback((movie) => {
+        // Cũ: navigator(...) -> Gây lỗi và chuyển trang
+        // Mới: Mở Modal thêm lịch luôn
+        setMovieToShowtime(movie);
+        setIsShowtimeModalOpen(true);
+    }, []);
 
     const renderLoading = () => {
         if (isLoading) {
@@ -183,6 +199,7 @@ const MovieListPage = () => {
                 onEditClick={handleEditClick}
                 onDeleteClick={handleDeleteClick}
                 onUploadClick={handleUploadClick}
+                onViewShowtimes={handleViewShowtimes} // Nút "Lịch chiếu" giờ gọi hàm mở modal
             />
         );
     };
@@ -196,7 +213,6 @@ const MovieListPage = () => {
                 </button>
             </div>
 
-            {/* Thêm MovieFilter */}
             <MovieFilter 
                 filters={filters} 
                 onFilterChange={handleFilterChange} 
@@ -212,70 +228,46 @@ const MovieListPage = () => {
                 />
             )}
 
-            {/* Modals giữ nguyên */}
-            <Modal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                title="Thêm Phim Mới"
-            >
-                <AddMovieForm
-                    onAddMovie={handleAddMovie}
-                    onClose={() => setIsAddModalOpen(false)}
-                    isLoading={isAdding}
-                />
+            {/* Các Modal cũ */}
+            <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} customClass="modal-wide" title="Thêm Phim Mới">
+                <AddMovieForm onAddMovie={handleAddMovie} onClose={() => setIsAddModalOpen(false)} isLoading={isAdding} />
             </Modal>
 
-            <Modal
-                isOpen={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
-                title="Chỉnh Sửa Phim"
-            >
-                <EditMovieForm
-                    movieToEdit={currentMovieToEdit}
-                    onUpdateMovie={handleUpdateMovie}
-                    onClose={() => setIsEditModalOpen(false)}
-                    isLoading={isUpdating}
-                />
+            <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} customClass="modal-wide" title="Chỉnh Sửa Phim">
+                <EditMovieForm movieToEdit={currentMovieToEdit} onUpdateMovie={handleUpdateMovie} onClose={() => setIsEditModalOpen(false)} isLoading={isUpdating} />
             </Modal>
 
-            <Modal
-                isOpen={isUploadModalOpen}
-                onClose={handleUploadModalClose}
-                title="Tải lên Poster"
-            >
-                <UploadPosterForm
-                    movie={movieToUpload}
-                    onClose={handleUploadModalClose}
-                    onUploadSuccess={handleUploadSubmit}
-                    isLoading={isUploading}
-                />
+            <Modal isOpen={isUploadModalOpen} onClose={handleUploadModalClose} title="Tải lên Poster">
+                <UploadPosterForm movie={movieToUpload} onClose={handleUploadModalClose} onUploadSuccess={handleUploadSubmit} isLoading={isUploading} />
             </Modal>
 
+            {/* 6. Thêm Modal Suất Chiếu vào JSX */}
             <Modal
-                isOpen={isDeleteModalOpen}
-                onClose={handleCancelDelete}
-                title="Xác nhận Xóa Phim"
+                isOpen={isShowtimeModalOpen}
+                onClose={() => setIsShowtimeModalOpen(false)}
+                title={`Thêm Suất Chiếu`}
+                customClass="modal-wide"
             >
+                {movieToShowtime && (
+                    <ShowtimesForm 
+                        moviePreSelected={movieToShowtime}
+                        onSuccess={() => setIsShowtimeModalOpen(false)}
+                        onCancel={() => setIsShowtimeModalOpen(false)}
+                    />
+                )}
+            </Modal>
+
+            <Modal isOpen={isDeleteModalOpen} onClose={handleCancelDelete} title="Xác nhận Xóa Phim">
                 <div className="confirm-delete-content">
                     <p>Bạn có chắc chắn muốn xóa bộ phim
                        <strong> "{movieToDelete?.title}"</strong>?
                        <br/>Hành động này không thể hoàn tác.
                     </p>
                     <div className="form-actions">
-                        <button
-                            type="button"
-                            className="btn-cancel"
-                            onClick={handleCancelDelete}
-                            disabled={isDeleting}
-                        >
+                        <button type="button" className="btn-cancel" onClick={handleCancelDelete} disabled={isDeleting}>
                             Hủy
                         </button>
-                        <button
-                            type="button"
-                            className="btn-submit-danger"
-                            onClick={handleConfirmDelete}
-                            disabled={isDeleting}
-                        >
+                        <button type="button" className="btn-submit-danger" onClick={handleConfirmDelete} disabled={isDeleting}>
                             {isDeleting ? 'Đang xóa...' : 'Xác nhận Xóa'}
                         </button>
                     </div>

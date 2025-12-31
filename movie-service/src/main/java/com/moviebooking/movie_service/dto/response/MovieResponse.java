@@ -19,6 +19,7 @@ public class MovieResponse {
     String director;
     String description;
     Integer duration;
+    String actors;
     Double rating;
     LocalDate releaseDate;
     String posterUrl;

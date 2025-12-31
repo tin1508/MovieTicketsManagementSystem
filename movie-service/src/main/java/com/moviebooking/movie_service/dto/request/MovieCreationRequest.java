@@ -30,6 +30,9 @@ public class MovieCreationRequest {
     @Positive(message = "Duration must be a positive number")
     Integer duration;
 
+    @NotNull(message = "Actor is required")
+    String actors;
+
     @NotNull(message = "Release date is required")
     LocalDate releaseDate;
 

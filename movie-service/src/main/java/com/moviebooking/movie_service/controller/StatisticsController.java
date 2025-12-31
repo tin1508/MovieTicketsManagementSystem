@@ -3,6 +3,8 @@ package com.moviebooking.movie_service.controller;
 import com.moviebooking.movie_service.dto.response.ApiResponse;
 import com.moviebooking.movie_service.dto.response.MovieStatisticsResponse;
 import com.moviebooking.movie_service.dto.response.UserStatisticsResponse;
+import com.moviebooking.movie_service.repository.BookingDetailRepository;
+import com.moviebooking.movie_service.repository.BookingRepository;
 import com.moviebooking.movie_service.service.MovieStatisticsService;
 import com.moviebooking.movie_service.service.UserStatisticsService;
 import lombok.AccessLevel;
@@ -23,6 +25,8 @@ import java.util.Map;
 public class StatisticsController {
     MovieStatisticsService movieStatisticsService;
     UserStatisticsService userStatisticsService;
+    BookingDetailRepository bookingDetailRepository;
+    BookingRepository bookingRepository;
 
     @GetMapping
     public ResponseEntity<ApiResponse<Map<String, Object>>> getAllStatistics() {
@@ -51,5 +55,20 @@ public class StatisticsController {
         return ResponseEntity.ok(ApiResponse.<Map<String, Long>>builder()
                 .result(userStatisticsService.getUsersByMonth())
                 .build());
+    }
+
+    @GetMapping("/daily-revenue")
+    public ResponseEntity<?> getDailyRevenue(){
+        return ResponseEntity.ok(bookingRepository.getDailyRevenueStats());
+    }
+
+    @GetMapping("/top-movies")
+    public  ResponseEntity<?> getTopMovies(){
+        return ResponseEntity.ok(bookingRepository.getTopMovieStats());
+    }
+
+    @GetMapping("/movies-revenue")
+    public ResponseEntity<?> getAllMovieStats(){
+        return ResponseEntity.ok(bookingRepository.getAllMovieStats());
     }
 }

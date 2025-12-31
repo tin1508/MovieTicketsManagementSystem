@@ -12,8 +12,11 @@ const Sidebar = () => {
                     {/* Dùng NavLink thay vì thẻ <a> */}
                     <li><NavLink to="/dashboard" end>📊 Tổng quan</NavLink></li>
                     <li><NavLink to="/dashboard/movies">🎟️ Quản lý Phim</NavLink></li>
-                    <li><NavLink to="/dashboard/schedules">🗓️ Quản lý Lịch chiếu</NavLink></li>
+                    <li><NavLink to="/dashboard/showtimes">🗓️ Quản lý Lịch chiếu</NavLink></li>
+                    <li><NavLink to="/dashboard/rooms">🎦 Quản lý phòng chiếu</NavLink></li>
+                    <li><NavLink to="/dashboard/seat-types">🛋️ Quản lý loại ghế</NavLink></li>
                     <li><NavLink to="/dashboard/users">👤 Quản lý Người dùng</NavLink></li>
+                    <li><NavLink to="/dashboard/bookings">🧾Quản lý đặt phim</NavLink></li>
                     <li><NavLink to="/dashboard/banners">🖼️ Quản lý Banner</NavLink></li>
                 </ul>
             </nav>

@@ -1,14 +1,4 @@
-import axios from 'axios';
-
-const API_BASE = "http://localhost:8080/api/v1";
-
-const getAuthToken = () => localStorage.getItem("accessToken");
-
-const getAuthHeaders = () => {
-    const token = getAuthToken();
-    if (!token) throw new Error('Chưa đăng nhập.');
-    return { 'Authorization': `Bearer ${token}` };
-};
+import axios from './customize-axios';
 
 /**
  * Lấy tất cả thống kê cơ bản (Movies + Users)
@@ -16,10 +6,8 @@ const getAuthHeaders = () => {
  */
 export const getAllStats = async () => {
     try {
-        const response = await axios.get(`${API_BASE}/statistics`, {
-            headers: getAuthHeaders()
-        });
-        return response.data.result; // Trả về { movies: {...}, users: {...} }
+        const response = await axios.get('/statistics');
+        return response.result || response; 
     } catch (error) {
         console.error("Lỗi lấy thống kê:", error);
         throw error;
@@ -32,10 +20,8 @@ export const getAllStats = async () => {
  */
 export const getMoviesByMonth = async () => {
     try {
-        const response = await axios.get(`${API_BASE}/statistics/movies/by-month`, {
-            headers: getAuthHeaders()
-        });
-        return response.data.result; // Trả về Map { "JANUARY": 5, ... }
+        const response = await axios.get('/statistics/movies/by-month');
+        return response.result || response; 
     } catch (error) {
         console.error("Lỗi lấy thống kê phim theo tháng:", error);
         throw error;
@@ -48,12 +34,42 @@ export const getMoviesByMonth = async () => {
  */
 export const getUsersByMonth = async () => {
     try {
-        const response = await axios.get(`${API_BASE}/statistics/users/by-month`, {
-            headers: getAuthHeaders()
-        });
-        return response.data.result; // Trả về Map { "JANUARY": 10, ... }
+        const response = await axios.get('/statistics/users/by-month');
+        return response.result || response; 
     } catch (error) {
         console.error("Lỗi lấy thống kê user theo tháng:", error);
         throw error;
+    }
+};
+
+export const getDailyRevenueStats = async () => {
+    try {
+        const response = await axios.get('/statistics/daily-revenue');
+        // Sửa: Dùng logic giống hàm getAllMovieStats
+        return response.result || response; 
+    } catch (error) {
+        console.error("Lỗi lấy doanh thu:", error);
+        return [];
+    }
+};
+
+export const getTopMoviesStats = async () => {
+    try {
+        const response = await axios.get('/statistics/top-movies');
+        // Sửa: Dùng logic giống hàm getAllMovieStats
+        return response.result || response;
+    } catch (error) {
+        console.error("Lỗi lấy top phim:", error);
+        return [];
+    }
+};
+
+export const getAllMovieStats = async () => {
+    try {
+        const response = await axios.get('/statistics/movies-revenue');
+        return response.result || response;
+    } catch (error) {
+        console.error("Lỗi lấy chi tiết phim:", error);
+        return [];
     }
 };

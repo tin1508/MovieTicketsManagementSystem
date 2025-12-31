@@ -39,7 +39,7 @@ const UploadPosterForm = ({ movie, onClose, onUploadSuccess, isLoading }) => {
                 <input 
                     id="file-upload"
                     type="file" 
-                    accept="image/png, image/jpeg" // Chỉ chấp nhận ảnh
+                    accept="image/png, image/jpeg, image/jpg, image/webp" // Chỉ chấp nhận ảnh
                     onChange={handleFileChange} 
                 />
             </div>
