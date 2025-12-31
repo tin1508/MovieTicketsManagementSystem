@@ -6,11 +6,18 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name="showtime_seats")
+@Table(
+        name = "showtime_seats",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"showtime_id", "seat_id"})
+        }
+)
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -19,12 +26,19 @@ public class ShowtimeSeat {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @OneToOne(mappedBy = "showtimeSeat")
+    @OneToOne(mappedBy = "showtimeSeat", fetch = FetchType.LAZY)
     BookingDetail bookingDetail;
-    @ManyToOne
-    @JoinColumn(name = "showtime_id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "showtime_id", nullable = false)
     Showtimes showtimes;
 
-    BigDecimal price;
+    @Enumerated(EnumType.STRING)
     ShowtimeSeatStatus status;
+
+    @ManyToOne
+    @JoinColumn(name="seat_id", nullable = false)
+    Seat seat;
+    String holdBy;
+    LocalDateTime holdExpiredAt;
 }

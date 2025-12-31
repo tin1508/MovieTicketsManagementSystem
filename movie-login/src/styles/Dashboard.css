@@ -507,3 +507,111 @@
         align-items: stretch;
     }
 }
+
+.form-actions {
+    display: flex;
+    justify-content: center; /* Căn giữa nút bấm cho cân đối */
+    gap: 1.5rem; /* Tăng khoảng cách giữa 2 nút cho thoáng */
+    margin-top: 2rem;
+}
+
+/* Nút Hủy (Cancel) - Style Kính mờ xám nhẹ */
+.btn-cancel {
+    padding: 0.8rem 2rem; /* Nút dài ra chút cho đẹp */
+    
+    /* Nền xám trong suốt nhẹ */
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    
+    color: #a9b3c1;
+    border-radius: 50px; /* Bo tròn viên thuốc cho hiện đại */
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.btn-cancel:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* Nút Xóa (Danger) - Gradient Đỏ & Glow */
+.btn-submit-danger {
+    padding: 0.8rem 2rem; /* Nút dài ra chút */
+    border: none;
+    
+    /* Gradient đỏ sang trọng */
+    background: linear-gradient(135deg, #ff6b6b 0%, #e03131 100%);
+    
+    color: white;
+    border-radius: 50px; /* Bo tròn viên thuốc */
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    /* Shadow đỏ nhẹ */
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    font-size: 0.95rem;
+}
+
+.btn-submit-danger:hover {
+    /* Đổi màu gradient khi hover */
+    background: linear-gradient(135deg, #ff8787 0%, #fa5252 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6); /* Sáng rực hơn */
+}
+
+/* Nội dung text trong modal xóa */
+.confirm-delete-content p {
+    font-size: 1.15rem; /* Chữ to hơn xíu */
+    line-height: 1.6;
+    color: #e0e0e0;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.confirm-delete-content strong {
+    color: #ff6b6b; /* Màu đỏ sáng */
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+/* TABLE STYLES */
+.table-responsive {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #e0e0e0;
+}
+
+.stats-table th {
+    text-align: left;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #aaa;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    position: sticky; /* Giữ tiêu đề khi scroll */
+    top: 0;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.stats-table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+}
+
+.stats-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }

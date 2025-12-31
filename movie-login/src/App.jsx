@@ -19,9 +19,19 @@ import MovieGridPage from './pages/user/MovieGridPage';
 import SearchPage from './pages/user/SearchPage';
 import ProfilePage from './pages/user/ProfilePage';
 import AuthPage from './pages/AuthPage';
+import ShowtimeListPage from './pages/ShowtimeListPage';
+import SeatTypesListPage from './pages/SeatTypesListPage';
+import RoomsListPage from './pages/RoomsListPage';
+import ShowtimesForm from './components/showtimes/ShowtimesForm';
+import RoomsForm from './components/rooms/RoomsForm';
+import SeatTypeForm from './components/rooms/SeatTypeForm';
+import BookingsListPage from './pages/BookingsListPage';
+import PaymentPage from './pages/user/PaymentPage';
 import AboutPage from './pages/user/AboutPage';
 import BannerManagementPage from './pages/admin/BannerManagementPage';
 import './styles/App.css';
+import ForgotPasswordPage from './components/auth/ForgotPasswordPage';
+import ResetPasswordPage from './components/auth/ResetPasswordPage';
 
 function App() {
   return (
@@ -33,10 +43,14 @@ function App() {
             <Route path="phim/:movieId" element={<MovieDetailPage />} />
             <Route path="phim/dang-chieu" element={<MovieGridPage />} />
             <Route path="phim/sap-chieu" element={<MovieGridPage />} />
+            <Route path="payment/:bookingId" element={<PaymentPage />} />
             <Route path="tim-kiem" element={<SearchPage />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/register" element={<AuthPage />} />
             <Route path="about" element={<AboutPage />} />
+            <Route path="/movie/:movieId" element={<MovieDetailPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route 
                 path="tai-khoan" // Đường dẫn khớp với Link trong Navbar
                 element={
@@ -58,6 +72,14 @@ function App() {
           <Route path="movies" element={<MovieListPage />} />
           <Route path="users" element={<UserListPage />} />
           <Route path="banners" element={<BannerManagementPage />} />
+          <Route path="showtimes" element={<ShowtimeListPage/>}/>
+          <Route path="showtimes/add" element={<ShowtimesForm/>}/>
+          <Route path="edit-showtimes/:id" element={<ShowtimesForm/>}/>
+          <Route path="rooms" element={<RoomsListPage/>}/>
+          <Route path="edit-rooms/:id" element={<RoomsForm/>}/>
+          <Route path="seat-types" element={<SeatTypesListPage/>}/>
+          <Route path="edit-seat-types/:id" element={<SeatTypeForm/>}/>
+          <Route path="bookings" element={<BookingsListPage/>}/>
           </Route>
         </Routes>
       </BrowserRouter>

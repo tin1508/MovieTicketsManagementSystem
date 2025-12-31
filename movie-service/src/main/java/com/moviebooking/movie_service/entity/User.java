@@ -41,10 +41,22 @@ public class User {
 
     @Column(name = "phone_number", length = 13)
     private String phoneNumber;
-
+    
     @CreationTimestamp
     @Column(name = "create_at", updatable = false)
     LocalDateTime createAt;
 
+    @Column(name = "is_active")
+    Boolean isActive = true;
+
+    @Column(columnDefinition = "TEXT")
+    String currentAccessToken;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
     Set<String> roles;
+
+    String resetPasswordToken;
+    LocalDateTime resetPasswordTokenExpiry;
 }

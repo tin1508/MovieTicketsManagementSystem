@@ -11,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -35,6 +36,9 @@ public class Movie {
 
     @Column(nullable = false)
     Integer duration;
+
+    @Column(columnDefinition = "TEXT")
+    String actors;
 
     Double rating = 0.0;
 
@@ -78,4 +82,7 @@ public class Movie {
             this.createAt = LocalDateTime.now();
         }
     }
+
+    @OneToMany(mappedBy = "movie")
+    List<Showtimes> showtimes;
 }

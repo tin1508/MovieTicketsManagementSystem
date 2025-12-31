@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -63,5 +64,18 @@ public class GlobalException {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ApiResponse> handleDisabledException(DisabledException e) {
+        ApiResponse apiResponse = new ApiResponse();
+
+        // Mã lỗi (Code) để Frontend nhận diện (Ví dụ: 1009 hoặc USER_LOCKED)
+        apiResponse.setCode(1009);
+
+        // Thông báo lỗi
+        apiResponse.setMessage("Tài khoản của bạn đã bị vô hiệu hóa.");
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse); // Trả về 403
     }
 }

@@ -1,13 +1,11 @@
-/* styles/HeroBanner.css */
 
 .hero-banner-container {
     max-width: 1400px;
-    margin: 0 auto 2rem auto; /* Căn giữa và tạo khoảng cách dưới */
+    margin: 0 auto 2rem auto; 
 }
 
-/* Định dạng mỗi slide (ảnh poster) */
 .hero-slide {
-    padding: 0 10px; /* Tạo khoảng cách 2 bên cho mỗi ảnh */
+    padding: 0 10px;
     box-sizing: border-box;
 }
 

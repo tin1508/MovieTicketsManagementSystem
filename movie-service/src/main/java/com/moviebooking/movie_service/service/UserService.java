@@ -3,8 +3,8 @@ package com.moviebooking.movie_service.service;
 import com.moviebooking.movie_service.dto.request.ChangePasswordRequest;
 import com.moviebooking.movie_service.dto.request.ProfileUpdateRequest;
 import com.moviebooking.movie_service.dto.request.UserCreationRequest;
-
 import com.moviebooking.movie_service.dto.request.UserUpdateRequest;
+import com.moviebooking.movie_service.dto.response.PageResponse;
 import com.moviebooking.movie_service.dto.response.UserResponse;
 import com.moviebooking.movie_service.entity.User;
 import com.moviebooking.movie_service.enums.Role;
@@ -17,15 +17,21 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
+
 
 @Slf4j
 @Service
@@ -35,6 +41,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    JavaMailSender mailSender;
 
     public User createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername()))
@@ -91,12 +98,29 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponse> getUsers() {
-        log.info("In method get Users");
-        return userRepository.findAll()
-                .stream()
-                .map(userMapper::toUserResponse).toList();
+    public PageResponse<UserResponse> getUsers(int page, int size, String search) {
+        log.info("In method get Users with pagination and search: {}", search);
+
+        if (page < 1) {
+            page = 1;
+        }
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createAt").descending());
+
+        var pageData = userRepository.searchUsers("ADMIN", search, pageable);
+
+        var userList = pageData.getContent().stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+
+        return PageResponse.<UserResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(pageData.getSize())
+                .totalElements(pageData.getTotalElements())
+                .data(userList)
+                .build();
     }
+
     @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUser(String id) {
         log.info("In method get user by Id");
@@ -130,5 +154,57 @@ public class UserService {
         user.setPassword(hashedPassword);
 
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void toggleUserStatus(String userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        System.out.println("DEBUG: Đang đổi trạng thái cho user: " + user.getUsername());
+        System.out.println("DEBUG: Trạng thái cũ: " + user.getIsActive());
+        boolean currenStatus = Boolean.TRUE.equals(user.getIsActive());
+        user.setIsActive(!currenStatus);
+        userRepository.save(user);
+
+        System.out.println("DEBUG: Trạng thái mới: " + user.getIsActive());
+    }
+
+    public void forgotPassword(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOTEXISTED));
+
+        String token = UUID.randomUUID().toString();
+
+        user.setResetPasswordToken(token);
+        user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(15));
+        userRepository.save(user);
+
+        String resetLink = "http://localhost:5173/reset-password?token=" + token;
+        sendEmail(email, "Reset your password", "Click here to reset your password " + resetLink);
+    }
+
+    public void resetPassword(String token, String newPassword){
+        User user = userRepository.findByResetPasswordToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid token"));
+
+        if (user.getResetPasswordTokenExpiry().isBefore(LocalDateTime.now())){
+            throw new RuntimeException("Token expired");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        user.setResetPasswordToken(null);
+        user.setResetPasswordTokenExpiry(null);
+
+        userRepository.save(user);
+    }
+
+    private void sendEmail(String to, String subject, String text){
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+        mailSender.send(message);
     }
 }   

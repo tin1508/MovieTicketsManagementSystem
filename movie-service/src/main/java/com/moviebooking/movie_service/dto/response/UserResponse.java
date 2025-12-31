@@ -19,5 +19,6 @@ public class UserResponse {
     String email;
     String phoneNumber;
     LocalDate dob;
+    boolean isActive = true;
     Set<String> roles;
 }

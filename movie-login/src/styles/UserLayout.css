@@ -72,195 +72,287 @@
 }
 
 /* =========================================
-   3. TRANG CHI TIẾT PHIM (GLASSMORPHISM)
+   3. TRANG CHI TIẾT PHIM (GLASSMORPHISM - PREMIUM UPGRADE)
    ========================================= */
 
-/* Container chính với hiệu ứng KÍNH MỜ */
+/* Container chính với hiệu ứng KÍNH MỜ CAO CẤP */
 .movie-detail-container {
     position: relative;
     max-width: 1200px;
     margin: 3rem auto;
-    padding: 3rem;
+    padding: 3.5rem;
     
-    /* Hiệu ứng kính mờ (Glassmorphism) */
-    background: rgba(30, 30, 40, 0.6); /* Nền tối bán trong suốt */
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
+    /* NỀN: Làm tối hơn chút để chữ trắng nổi bật */
+    background: linear-gradient(145deg, rgba(20, 20, 25, 0.85), rgba(10, 10, 20, 0.95));
+    -webkit-backdrop-filter: blur(30px);
+    backdrop-filter: blur(30px);
     
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border-radius: 24px;
+    
+    /* Viền sáng nhẹ */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
     overflow: hidden;
-    color: #e0e0e0;
-}
-
-/* Ảnh nền mờ (Backdrop) - Nếu có sử dụng */
-.movie-detail-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    filter: blur(30px) brightness(0.4);
-    z-index: -1;
+    
+    /* MÀU CHỮ CHUNG: Trắng sáng thay vì xám */
+    color: #f8f9fa; 
 }
 
 /* Bố cục nội dung chi tiết */
 .movie-detail-header {
     display: flex;
-    gap: 3rem;
+    gap: 4rem;
     align-items: flex-start;
     position: relative;
     z-index: 2;
 }
 
-/* Poster phim (Mới) */
+/* Poster phim */
 .detail-poster {
-    width: 320px;
+    width: 340px;
     height: auto;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: transform 0.3s ease;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7); /* Bóng đậm hơn */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     object-fit: cover;
+    -webkit-box-reflect: below 10px linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0.2));
 }
+
 .detail-poster:hover {
-    transform: scale(1.02);
+    transform: scale(1.03) translateY(-5px);
+    box-shadow: 0 20px 50px rgba(255, 193, 7, 0.2);
+    border-color: rgba(255, 193, 7, 0.5); /* Viền vàng rõ hơn khi hover */
 }
 
 /* --- Thông tin phim --- */
 .movie-info-content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Tinh chỉnh các dòng thông tin (Đạo diễn, Diễn viên...) */
+.movie-detail-info p {
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    color: #ffffff; /* Nội dung chính màu trắng tinh */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* Đổ bóng chữ nhẹ để nét hơn */
+}
+
+/* Tinh chỉnh các Nhãn (Label) như: Đạo diễn:, Thời lượng: ... */
+.movie-detail-info strong {
+    color: #ffc107; /* Màu vàng thương hiệu */
+    font-weight: 700;
+    margin-right: 8px;
+    letter-spacing: 0.5px;
+    text-shadow: none;
 }
 
 /* Tiêu đề phim */
 .movie-title {
-    font-size: 3rem;
-    font-weight: 800;
-    /* Gradient vàng cho chữ */
-    background: linear-gradient(to right, #ffc107, #ff9800);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text; /* Chuẩn hóa */
-    color: #ffc107; /* Fallback */
+    font-size: 2.25rem;
+    font-weight: 900;
     
-    margin: 0 0 1.5rem 0;
-    text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    line-height: 1.2;
+    /* Màu chữ chính là vàng sáng, không dùng gradient để tối ưu độ tương phản */
+    color: #ffc107; 
+
+    margin: 0 0 1rem 0;
+    line-height: 1.1;
+    letter-spacing: -1px;
+
+    /* Hiệu ứng đổ bóng và phát sáng (Glow) mạnh mẽ để tách chữ khỏi nền */
+    text-shadow: 
+        0 0 10px rgba(255, 193, 7, 0.5), /* Lớp glow gần */
+        0 0 20px rgba(255, 193, 7, 0.3), /* Lớp glow xa hơn */
+        2px 2px 4px rgba(0, 0, 0, 0.8);  /* Bóng đen cứng để tạo khối */
 }
 
 /* Metadata (Ngày, Giờ, Tuổi) */
 .movie-meta {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
-    color: #ccc;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    font-size: 1.15rem;
+    
+    /* Màu chữ metadata sáng hơn (trắng xám) */
+    color: #e9ecef; 
+    font-weight: 500;
+    
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
+
 .meta-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 .meta-item svg {
-    color: #ffc107;
+    color: #ffc107; /* Icon vàng */
+    font-size: 1.3rem;
+    filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.5)); /* Icon phát sáng */
 }
 
 /* Nhãn độ tuổi */
 .age-rating {
-    padding: 4px 12px;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #fff;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 1rem;
+    background: rgba(220, 53, 69, 0.25);
+    border: 1px solid rgba(220, 53, 69, 0.6);
+    color: #ff8787; /* Đỏ sáng hơn để dễ đọc trên nền tối */
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.3);
 }
 
 /* Thể loại (Genres) */
 .movie-genres {
     display: flex;
-    gap: 0.8rem;
+    flex-wrap: wrap;
+    gap: 1rem;
     margin-bottom: 2rem;
 }
+
 .genre-badge {
-    padding: 6px 14px;
+    padding: 8px 18px;
     border-radius: 50px;
-    font-size: 0.9rem;
-    background-color: transparent;
-    border: 1px solid #ffc107;
-    color: #ffc107;
+    font-size: 0.95rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 193, 7, 0.5); /* Viền vàng rõ */
+    color: #ffca2c; /* Vàng sáng */
     transition: all 0.3s ease;
     cursor: default;
+    letter-spacing: 0.5px;
 }
+
 .genre-badge:hover {
     background-color: #ffc107;
-    color: #111;
+    color: #000;
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.6); /* Glow mạnh khi hover */
+    transform: translateY(-2px);
+    border-color: #ffc107;
 }
 
 /* Mô tả phim */
 .movie-description {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     line-height: 1.8;
-    color: #ddd;
-    margin-bottom: 2rem;
-    background: rgba(0,0,0,0.2);
-    padding: 1.5rem;
-    border-radius: 12px;
-    border-left: 4px solid #ffc107;
+    
+    /* Màu chữ trắng xám nhẹ, dễ chịu cho mắt khi đọc đoạn dài */
+    color: #f1f3f5; 
+    margin-bottom: 2.5rem;
+    
+    /* Nền tối hơn nền chính một chút để làm nổi bật khối văn bản */
+    background: rgba(0, 0, 0, 0.3); 
+    padding: 2rem;
+    border-radius: 16px;
+    border-left: 5px solid #ffc107;
+    box-shadow: inset 0 2px 15px rgba(0,0,0,0.3);
 }
 
 /* --- Nút Bấm (Actions) --- */
 .action-buttons {
     display: flex;
     gap: 1.5rem;
-    margin-top: 2rem;
+    margin-top: 1rem;
 }
 
-/* Nút Xem Trailer (Style mới - Trong suốt) */
+/* Nút Xem Trailer */
 .btn-watch-trailer {
-    background: transparent;
-    border: 2px solid #e0e0e0;
-    color: #e0e0e0;
-    padding: 12px 28px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 50px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.3s ease;
-    text-decoration: none; /* Đề phòng dùng thẻ a */
-}
-
-.btn-watch-trailer:hover:not(.disabled) {
-    border-color: #ffc107;
-    color: #ffc107;
-    background: rgba(255, 193, 7, 0.1);
-    transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.2);
-}
-
-/* Nút Đặt Vé */
-.btn-booking {
-    background: linear-gradient(45deg, #ffc107, #ff9800);
-    border: none;
-    color: #111;
-    padding: 12px 35px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.4); /* Viền sáng hơn */
+    color: #ffffff;
+    padding: 14px 32px;
     font-size: 1.1rem;
     font-weight: 700;
     border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 12px;
     transition: all 0.3s ease;
 }
-.btn-booking:hover {
+
+.btn-watch-trailer:hover {
+    background: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.6);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.4); /* Glow trắng */
+}
+
+/* Nút Đặt Vé */
+.btn-booking {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    border: none;
+    color: #000000;
+    padding: 14px 45px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(255, 143, 0, 0.4);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: btn-pulse 2s infinite;
+}
+
+@keyframes btn-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+    70% { box-shadow: 0 0 0 20px rgba(255, 193, 7, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+}
+
+.btn-booking:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(255, 143, 0, 0.7); /* Bóng rực hơn */
+    filter: brightness(1.15);
+    animation: none;
+}
+
+/* ... (Giữ nguyên phần Responsive Mobile ở dưới) ... */
+
+/* Responsive cho Tablet/Mobile giữ nguyên logic cũ nhưng cập nhật spacing */
+@media (max-width: 900px) {
+    .movie-detail-container {
+        padding: 2rem;
+    }
+    .movie-detail-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 2rem;
+    }
+    .detail-poster {
+        width: 100%;
+        max-width: 280px;
+    }
+    .movie-title {
+        font-size: 2.5rem;
+    }
+    .movie-meta {
+        justify-content: center;
+        border-bottom: none;
+    }
+    .movie-genres {
+        justify-content: center;
+    }
+    .action-buttons {
+        justify-content: center;
+        width: 100%;
+    }
+    .btn-booking, .btn-watch-trailer {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* =========================================
@@ -345,9 +437,371 @@
     }
 }
 
-/* --- LEGACY CLASSES (GIỮ LẠI ĐỂ TRÁNH LỖI NẾU HTML CŨ VẪN DÙNG) --- */
-/* Nếu bạn đã cập nhật hoàn toàn JSX sang class mới (detail-poster, movie-header...), bạn có thể xóa đoạn dưới */
 .movie-detail-content { display: flex; gap: 2rem; }
 .movie-detail-poster { width: 300px; height: auto; border-radius: 8px; }
 .movie-detail-info { flex: 1; line-height: 1.7; }
-/* ------------------------------------------------------------------ */
+
+
+
+.quick-booking-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    
+    width: 90%;
+    max-width: 1200px;
+    /* Margin: Cách banner 20px, cách phần dưới 40px */
+    margin: 20px auto 40px; 
+    padding: 25px; 
+    
+    /* NỀN SÁNG: Tạo sự nổi bật trên nền web tối */
+    background: linear-gradient(to bottom, #ffffff, #f0f2f5);
+    
+    /* Viền & Bóng: Tạo độ nổi khối 3D */
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 
+                0 0 0 1px rgba(255, 255, 255, 0.1); 
+    
+    position: relative;
+    z-index: 10;
+}
+
+/* --- Ô Chọn (Select) Cao cấp --- */
+.quick-booking-bar .quick-select {
+    flex: 1;
+    height: 55px; /* Cao hơn để dễ thao tác */
+    padding: 0 20px;
+    
+    /* Typography: To và Đậm */
+    font-size: 1.1rem; 
+    font-weight: 700;   
+    letter-spacing: 0.5px;
+    
+    /* Màu sắc: Đen trên nền Trắng (Tương phản cao) */
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+    
+    /* Viền & Bo góc */
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    
+    cursor: pointer;
+    appearance: none; /* Xóa mũi tên mặc định */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+    /* Mũi tên tùy chỉnh (SVG màu vàng) */
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ffc107%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px top 50%;
+    background-size: 12px auto;
+    
+    transition: all 0.2s ease-in-out;
+}
+
+/* Hiệu ứng Focus/Hover cho Select */
+.quick-booking-bar .quick-select:focus {
+    outline: none;
+    border-color: #ffc107;
+    background-color: #fff !important;
+    box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.15); 
+}
+
+.quick-booking-bar .quick-select:hover {
+    border-color: #bbb;
+    transform: translateY(-1px);
+}
+
+/* --- Nút Mua Vé --- */
+.btn-quick-book {
+    padding: 0 35px;
+    height: 55px; /* Chiều cao bằng với ô select */
+    
+    /* Gradient Vàng Cam */
+    background: linear-gradient(135deg, #ffc107 0%, #f57f17 100%);
+    color: #000;
+    
+    font-weight: 800;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px; /* Đồng bộ bo góc với select */
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(245, 127, 23, 0.3);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-quick-book:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 127, 23, 0.5);
+    filter: brightness(1.1);
+}
+
+/* =========================================
+   7. TIN TỨC & KHUYẾN MÃI
+   ========================================= */
+.promo-section {
+    padding: 20px 0 40px;
+    margin-top: 40px;
+}
+
+.promo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.promo-card {
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.promo-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+    border-color: #ffc107;
+}
+
+.promo-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.promo-card:hover img {
+    transform: scale(1.05);
+}
+
+/* =========================================
+   8. BANNER THÀNH VIÊN (MEMBERSHIP)
+   ========================================= */
+.membership-banner {
+    background: linear-gradient(135deg, rgba(20, 30, 48, 0.9), rgba(36, 59, 85, 0.9));
+    border-radius: 16px;
+    padding: 3rem;
+    margin: 4rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.membership-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,193,7,0.1) 0%, transparent 70%);
+    z-index: 0;
+}
+
+.membership-content {
+    position: relative;
+    z-index: 1;
+}
+
+.membership-content h3 {
+    color: #ffc107;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.membership-content p {
+    color: #e0e0e0;
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.btn-join {
+    padding: 12px 40px;
+    background: transparent;
+    border: 2px solid #ffc107;
+    color: #ffc107;
+    font-weight: 800;
+    font-size: 1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+}
+
+.btn-join:hover {
+    background: #ffc107;
+    color: #111;
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.4);
+    transform: scale(1.05);
+}
+
+/* =========================================
+   9. RESPONSIVE (MOBILE/TABLET)
+   ========================================= */
+@media (max-width: 768px) {
+    .quick-booking-bar {
+        flex-direction: column;
+        width: 95%;
+        margin-top: 0;
+        padding: 20px;
+        gap: 15px;
+    }
+    
+    .quick-booking-bar .quick-select,
+    .btn-quick-book, 
+    .btn-join {
+        width: 100%;
+        height: 50px; /* Mobile thì nút nhỏ hơn xíu cho gọn */
+    }
+    
+    .membership-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .membership-content h3 {
+        font-size: 1.8rem;
+    }
+}
+/* --- Link "Xem tất cả" --- */
+.view-all-link {
+    color: #a9b3c1; /* Màu chữ xám sáng */
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: uppercase; /* Chữ in hoa */
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Khoảng cách giữa chữ và mũi tên */
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid transparent; /* Viền ẩn để giữ chỗ */
+}
+
+/* Hiệu ứng mũi tên */
+.view-all-link span {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+/* Khi di chuột vào (Hover) */
+.view-all-link:hover {
+    color: #ffc107; /* Chuyển màu vàng */
+    border-color: rgba(255, 193, 7, 0.3); /* Hiện viền mờ */
+    background-color: rgba(255, 193, 7, 0.05); /* Nền sáng nhẹ */
+}
+
+/* Mũi tên trượt sang phải khi hover */
+.view-all-link:hover span {
+    transform: translateX(5px); 
+}
+
+.actor-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Quan trọng: Tạo khoảng cách giữa các tên */
+    margin-top: 5px;
+}
+
+.actor-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    
+    /* Hiệu ứng kính mờ nhẹ */
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
+    cursor: default;
+    white-space: nowrap; /* Giữ tên trên 1 dòng */
+}
+
+.actor-badge:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #ffc107; /* Viền vàng khi di chuột */
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+/* Icon người nhỏ bên cạnh tên */
+.actor-badge::before {
+    content: '👤'; 
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+/* Thẻ "..." khi danh sách quá dài */
+.actor-badge.more {
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    font-weight: bold;
+    color: #ffc107;
+}
+.actor-badge.more::before {
+    content: none; /* Không hiện icon người cho thẻ này */
+}
+.promo-grid {
+    display: grid;
+    /* Tự động chia cột, mỗi cột tối thiểu 300px, tối đa chia đều không gian còn lại */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 25px; /* Khoảng cách giữa các hình */
+    padding: 20px 0;
+}
+
+/* 2. Cái khung chứa tấm ảnh */
+.promo-card {
+    /* QUAN TRỌNG: Đặt chiều cao cố định để tất cả các ô bằng nhau */
+    height: 220px; /* Bạn có thể tăng/giảm số này tùy ý (vd: 200px, 250px) */
+    
+    border-radius: 15px; /* Bo tròn góc khung */
+    overflow: hidden; /* QUAN TRỌNG: Cắt bỏ những phần ảnh bị lòi ra ngoài khung tròn */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Đổ bóng nhẹ cho đẹp */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hiệu ứng khi rê chuột vào */
+.promo-card:hover {
+    transform: translateY(-5px); /* Nổi lên nhẹ */
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4); /* Bóng màu vàng */
+}
+
+/* 3. Bản thân tấm ảnh bên trong */
+.promo-card img {
+    /* QUAN TRỌNG NHẤT: Ép ảnh rộng và cao bằng đúng 100% cái khung chứa nó */
+    width: 100%;
+    height: 100%;
+    
+    /* THẦN CHÚ CSS: Giúp ảnh tự động zoom và cắt để lấp đầy khung mà KHÔNG BỊ MÉO */
+    object-fit: cover; 
+    
+    /* Canh giữa trọng tâm ảnh */
+    object-position: center; 
+    display: block; /* Loại bỏ khoảng trắng thừa dưới chân ảnh */
+}

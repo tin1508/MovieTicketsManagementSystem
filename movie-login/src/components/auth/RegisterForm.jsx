@@ -3,43 +3,57 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/authService'; 
 
+// 1. Khai báo trạng thái mặc định ban đầu ở ngoài hoặc trong component
+const initialFormState = {
+    username: '',
+    firstName: '',
+    lastName: '',
+    password: '',
+    confirmPassword: '',
+    email: '',
+    phoneNumber: '',
+    dob: '',
+};
+
 const RegisterForm = () => {
     const navigate = useNavigate();
-     const [form, setForm] = useState({
-        username: '',
-        firstName: '',
-        lastName: '',
-        password: '',
-        confirmPassword: '',
-        email: '',
-        phoneNumber: '',
-        dob: '',
-     });
-     const [isLoading, setIsLoading] = useState(false);
-     const [error, setError] = useState(null);
+    
+    // 2. Sử dụng initialFormState khi khởi tạo
+    const [form, setForm] = useState(initialFormState);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleChange = (e) => {
          const { name, value } = e.target;
          setForm(prev => ({ ...prev, [name]: value }));
-     };
+    };
 
-     const handleSubmit = async (event) => {
+    const handleSubmit = async (event) => {
          event.preventDefault();
-        
+       
         if (form.password !== form.confirmPassword) {
             setError('Mật khẩu xác nhận không khớp.');
             return;
         }
-        
+       
          setIsLoading(true);
          setError(null);
          try {
             const {...payload } = form;
-            payload.dob = form.dob || null;
+            // Xử lý logic dob rỗng
+            if (!payload.dob) {
+                payload.dob = null;
+            }
 
              await registerUser(payload); 
+             
              alert('Đăng ký thành công! Vui lòng đăng nhập.');
-             navigate('/login'); // Chuyển về tab login
+             
+             // 3. Reset form về trạng thái ban đầu (trống)
+             setForm(initialFormState);
+
+             // 4. Chuyển về trang login
+             navigate('/login'); 
 
          } catch (err) {
              const errMsg = err.result?.message || err.message || 'Lỗi không xác định';
@@ -47,16 +61,16 @@ const RegisterForm = () => {
          } finally {
              setIsLoading(false);
          }
-     };
+    };
 
     return (
-        <> {/* Dùng React.Fragment (thẻ rỗng) để bọc */}
+        <> 
             <div className="login-header">
                 <h2>Đăng Ký Tài Khoản</h2>
                 <p>Tạo tài khoản mới của bạn</p>
             </div>
             
-            {error && <div className="error-message">{error}</div>}
+            {error && <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
 
             <form onSubmit={handleSubmit}>
                 <div className="input-group">
@@ -97,7 +111,7 @@ const RegisterForm = () => {
                 <div className="input-group">
                     <label htmlFor="reg-email">Email cá nhân</label>
                     <input
-                        type="text" name="email" id="reg-email"
+                        type="email" name="email" id="reg-email" // Nên để type="email"
                         value={form.email} onChange={handleChange}
                     />
                 </div>

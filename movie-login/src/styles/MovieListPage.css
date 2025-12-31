@@ -1,386 +1,623 @@
+
 /* =========================================== */
 /* MOVIE MANAGEMENT (GLASSMORPHISM THEME)      */
 /* =========================================== */
 
-/* --- 1. PHẦN CHUNG & THANH LỌC (FILTER) --- */
+/* --- 1. PHẦN CHUNG & THANH LỌC --- */
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.btn-add-new { background-color: #ffc107; color: #111; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.2); display: inline-flex; align-items: center; justify-content: center; }
+.btn-add-new:hover { background-color: #ffca2c; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 193, 7, 0.4); }
 
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+.filter-bar { display: flex; gap: 1rem; margin-bottom: 2rem; padding: 1.5rem; background: rgba(255, 255, 255, 0.03); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+.filter-input, .filter-select { font-size: 1rem; padding: 0.75rem; background-color: rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #e0e0e0; transition: all 0.3s ease; }
+.filter-input { flex-grow: 1; }
+.filter-select { min-width: 180px; }
+.filter-select option { background-color: #2c2c2c; color: #fff; }
+
+.btn-filter-apply, .btn-filter-clear { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; transition: all 0.3s ease; }
+.btn-filter-apply { background-color: #ffc107; color: #111; }
+.btn-filter-apply:hover { background-color: #ffca2c; box-shadow: 0 0 15px rgba(255, 193, 7, 0.3); }
+.btn-filter-clear { background: rgba(255, 255, 255, 0.1); color: #e0e0e0; border: 1px solid rgba(255, 255, 255, 0.1); }
+.btn-filter-clear:hover { background: rgba(255, 255, 255, 0.2); color: #fff; }
+.filter-input:focus, .filter-select:focus { outline: none; border-color: #ffc107; background-color: rgba(0, 0, 0, 0.5) !important; box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15); }
+
+/* --- 2. BẢNG DỮ LIỆU --- */
+.table-container { background: rgba(255, 255, 255, 0.03); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1.5rem; overflow-x: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+table { width: 100%; border-collapse: collapse; }
+thead { background-color: transparent; border-bottom: 2px solid rgba(255, 255, 255, 0.1); }
+
+/* QUAN TRỌNG: Căn giữa theo chiều dọc cho toàn bộ ô bảng */
+th, td { 
+    padding: 1.2rem 1rem; 
+    text-align: left; 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+    vertical-align: middle !important;
 }
 
-.btn-add-new {
-    background-color: #ffc107;
-    color: #111;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px; /* Đồng bộ bo góc 8px */
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 700;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-}
+th { font-weight: 800; color: #ffc107; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+td { color: #e0e0e0; }
+tbody tr { transition: background-color 0.2s ease; }
+tbody tr:hover { background-color: rgba(255, 255, 255, 0.05); }
 
-.btn-add-new:hover {
-    background-color: #ffca2c;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.4);
-}
-
-.filter-bar {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    
-    /* GLASSMORPHISM: Thay nền đặc bằng kính mờ */
-    background: rgba(255, 255, 255, 0.03);
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    
-    /* Viền mỏng bán trong suốt */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px; /* Bo góc mềm mại hơn */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.filter-input,
-.filter-select {
-    font-size: 1rem;
-    padding: 0.75rem;
-    
-    /* INPUT: Nền đen mờ 30% */
-    background-color: rgba(0, 0, 0, 0.3) !important; 
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
-    color: #e0e0e0;
-    transition: all 0.3s ease;
-}
-
-.filter-input {
-    flex-grow: 1; 
-}
-
-.filter-select {
-    min-width: 180px;
-}
-
-.filter-select option {
-    background-color: #2c2c2c; /* Option phải đặc để đọc được */
-    color: #fff;
-}
-
-/* Nút Lọc & Xóa */
-.btn-filter-apply,
-.btn-filter-clear {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.btn-filter-apply {
-    background-color: #ffc107; 
-    color: #111;
-}
-.btn-filter-apply:hover {
-    background-color: #ffca2c;
-    box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
-}
-
-.btn-filter-clear {
-    background: rgba(255, 255, 255, 0.1); /* Nền trong suốt nhẹ */
-    color: #e0e0e0;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-.btn-filter-clear:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-}
-
-/* Focus effects */
-.filter-input:focus,
-.filter-select:focus {
-    outline: none;
-    border-color: #ffc107; 
-    background-color: rgba(0, 0, 0, 0.5) !important;
-    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15); 
-}
-
-/* --- 2. BẢNG DỮ LIỆU (TABLE - GLASS) --- */
-
-.table-container {
-    /* GLASSMORPHISM */
-    background: rgba(255, 255, 255, 0.03);
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 1.5rem; /* Tăng padding chút */
-    overflow-x: auto;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-thead {
-    background-color: transparent; /* Xóa nền đặc cũ */
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-th, td {
-    padding: 1.2rem 1rem; /* Thoáng hơn */
-    text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Viền mờ */
-}
-
-th {
-    font-weight: 800;
-    color: #ffc107; /* Header màu Vàng */
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-}
-
-td {
-    color: #e0e0e0;
-}
-
-tbody tr {
-    transition: background-color 0.2s ease;
-}
-
-tbody tr:hover {
-    /* Highlight dòng khi hover bằng màu trắng mờ */
-    background-color: rgba(255, 255, 255, 0.05); 
-}
-
-/* Trạng thái (Status Badges) */
-.status {
-    padding: 6px 12px;
-    border-radius: 50px; /* Bo tròn kiểu viên thuốc */
-    font-size: 0.8rem;
-    font-weight: 700;
-    display: inline-block;
-}
-
+.status { padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 700; display: inline-block; }
 .status.now_showing { background-color: rgba(40, 167, 69, 0.2); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); }
 .status.coming_soon { background-color: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3); }
 .status.ended { background-color: rgba(108, 117, 125, 0.2); color: #adb5bd; border: 1px solid rgba(173, 181, 189, 0.3); }
 
-/* Buttons Action */
+/* ========================================================= */
+/* --- ACTION BUTTONS (PHIÊN BẢN CẢI TIẾN) --- */
+/* ========================================================= */
+
+.action-buttons {
+    display: table-cell !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    white-space: nowrap;
+}
+
+/* Style chung cho tất cả buttons trong action-buttons */
 .action-buttons button {
-    margin-right: 0.5rem;
-    padding: 0.5rem 1rem;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px;
+    
+    margin: 0 4px !important;
+    padding: 0.5rem 0.9rem !important;
+    
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
+    
+    vertical-align: middle !important;
+    float: none !important;
 }
 
-.btn-edit { background: rgba(0, 123, 255, 0.2); color: #4dabf7; border: 1px solid rgba(0, 123, 255, 0.3); }
-.btn-edit:hover { background: #007bff; color: white; }
+/* Style riêng cho từng loại button */
+.btn-edit { 
+    background: rgba(0, 123, 255, 0.2); 
+    color: #4dabf7; 
+    border: 1px solid rgba(0, 123, 255, 0.3); 
+}
 
-.btn-delete { background: rgba(220, 53, 69, 0.2); color: #ff6b6b; border: 1px solid rgba(220, 53, 69, 0.3); }
-.btn-delete:hover { background: #dc3545; color: white; }
+.btn-edit:hover { 
+    background: #007bff; 
+    color: white; 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4);
+}
 
-.action-buttons .btn-upload { background: rgba(40, 167, 69, 0.2); color: #2ecc71; border: 1px solid rgba(40, 167, 69, 0.3); }
-.action-buttons .btn-upload:hover { background: #28a745; color: white; }
+.btn-delete { 
+    background: rgba(220, 53, 69, 0.2); 
+    color: #ff6b6b; 
+    border: 1px solid rgba(220, 53, 69, 0.3); 
+}
 
-/* --- 3. FORM (TRONG MODAL) --- */
+.btn-delete:hover { 
+    background: #dc3545; 
+    color: white; 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4);
+}
+
+.action-buttons .btn-upload { 
+    background: rgba(40, 167, 69, 0.2); 
+    color: #2ecc71; 
+    border: 1px solid rgba(40, 167, 69, 0.3); 
+}
+
+.action-buttons .btn-upload:hover { 
+    background: #28a745; 
+    color: white; 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+}
+
+/* Style cho icons bên trong buttons */
+.action-buttons button svg {
+    width: 14px !important;
+    height: 14px !important;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+/* Hiệu ứng khi hover - icon phóng to nhẹ */
+.action-buttons button:hover svg {
+    transform: scale(1.1);
+}
+
+/* Style cho text trong button */
+.action-buttons button span {
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+/* --- 3. INPUT CƠ BẢN (Dùng chung) --- */
+.add-movie-form label { font-size: 0.85rem; color: #aaa; margin-bottom: 8px; font-weight: 600; letter-spacing: 0.5px; }
+.add-movie-form input, .add-movie-form select, .add-movie-form textarea { 
+    background-color: rgba(0, 0, 0, 0.3) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.15) !important; 
+    color: #fff !important; 
+    padding: 12px 15px; 
+    border-radius: 6px; 
+    width: 100%; 
+    box-sizing: border-box; 
+    font-family: inherit !important;
+    font-size: 1rem; 
+}
+.add-movie-form input:focus, .add-movie-form select:focus, .add-movie-form textarea:focus { 
+    border-color: #ffc107 !important; 
+    background-color: rgba(0, 0, 0, 0.5) !important; 
+    outline: none; 
+}
+.full-height textarea { min-height: 220px; resize: none; }
+
+/* --- 4. BUTTONS & ACTIONS --- */
+.form-actions { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: flex-end; gap: 15px; }
+.btn-submit, .btn-cancel { padding: 0.8rem 1.8rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; transition: all 0.3s ease; }
+.btn-submit { background-color: #ffc107; color: #111; }
+.btn-submit:hover:not(:disabled) { background-color: #ffca2c; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3); }
+.btn-cancel { background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #e0e0e0; }
+.btn-cancel:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); color: #fff; border-color: #fff; }
+
+/* Nút xóa đặc biệt (dùng trong modal confirm delete) */
+.btn-submit-danger { 
+    padding: 0.8rem 1.8rem; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: 700; 
+    font-size: 1rem; 
+    background-color: #dc3545; 
+    color: #fff; 
+    transition: all 0.3s ease; 
+}
+.btn-submit-danger:hover:not(:disabled) { 
+    background-color: #c82333; 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4); 
+}
+
+/* --- 5. DROPDOWN THỂ LOẠI --- */
+.genre-select-trigger { background-color: rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; padding: 12px 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; color: #fff; cursor: pointer; }
+.genre-select-trigger:hover { border-color: #ffc107; }
+.genre-checkbox-group { background: #222; border: 1px solid #555; padding: 15px; margin-top: 10px; border-radius: 6px; max-height: 200px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.genre-checkbox-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+.genre-checkbox-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: #ffc107; margin: 0; background: rgba(0,0,0,0.3); cursor: pointer; }
+.genre-checkbox-item label { cursor: pointer; color: #e0e0e0; font-size: 0.9rem; }
+
+/* --- 6. SEARCH BAR --- */
+.search-bar-container { display: flex; gap: 1rem; margin-bottom: 2rem; padding: 1.5rem; align-items: center; background: rgba(255, 255, 255, 0.03); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+.search-bar-container form { display: flex; gap: 1rem; flex: 1; }
+.search-input { width: 100%; font-size: 1rem; padding: 0.75rem 1rem; background-color: rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #e0e0e0; transition: all 0.3s ease; }
+.search-input:focus { outline: none; border-color: #ffc107; background-color: rgba(0, 0, 0, 0.5) !important; box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15); }
+.btn-search { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; color: #fff; background-color: #0d6efd; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.3s ease; white-space: nowrap; }
+.btn-search:hover { background-color: #0b5ed7; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(13, 110, 253, 0.4); }
+.btn-clear { padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; background: rgba(255, 255, 255, 0.1); color: #e0e0e0; border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; white-space: nowrap; }
+.btn-clear:hover { background: rgba(220, 53, 69, 0.8); color: #fff; border-color: rgba(220, 53, 69, 0.8); box-shadow: 0 0 10px rgba(220, 53, 69, 0.4); }
+
+/* ========================================================= */
+/* --- 7. FIX BOX-IN-BOX (LOẠI BỎ KHUNG VIỀN CỦA FORM) --- */
+/* ========================================================= */
+
+.add-movie-form.wide-form {
+    background: transparent !important; 
+    border: none !important; 
+    box-shadow: none !important; 
+    padding: 0 !important; 
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+/* Layout Grid bên trong Form */
+.form-grid-layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; align-items: start; }
+.form-column { display: flex; flex-direction: column; gap: 15px; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-group { margin-bottom: 15px; }
+.required { color: #ff4d4f; margin-left: 4px; }
+
+@media (max-width: 900px) {
+    .form-grid-layout { grid-template-columns: 1fr; gap: 1rem; }
+}
+
+/* ========================================================= */
+/* --- 8. FIX LỖI DROPDOWN THỂ LOẠI BỊ LỌT/CHE MẤT --- */
+/* ========================================================= */
 
 .add-movie-form .form-group {
     position: relative;
-    margin-bottom: 1.5rem;
+    z-index: 10;
 }
 
-.add-movie-form label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #a9b3c1; 
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.add-movie-form input,
-.add-movie-form select,
-.add-movie-form textarea {
-    width: 100%;
-    padding: 0.8rem;
-    /* FORM INPUT GLASS */
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
-    color: #fff;
-    font-size: 1rem;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
-    transition: all 0.3s ease;
-}
-
-.add-movie-form input:focus,
-.add-movie-form select:focus,
-.add-movie-form textarea:focus {
-    outline: none;
-    border-color: #ffc107; 
-    background-color: rgba(0, 0, 0, 0.5); 
-    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15); 
-}
-
-.add-movie-form textarea {
-    min-height: 120px;
-}
-
-.add-movie-form .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 2rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Nút Submit & Cancel (Đồng bộ style) */
-.add-movie-form .btn-submit,
-.add-movie-form .btn-cancel {
-    padding: 0.8rem 1.8rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.add-movie-form .btn-submit {
-    background-color: #ffc107; 
-    color: #111;
-}
-.add-movie-form .btn-submit:hover:not(:disabled) {
-    background-color: #ffca2c;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
-}
-
-.add-movie-form .btn-cancel {
-    background: transparent; 
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-.add-movie-form .btn-cancel:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border-color: #fff;
-}
-
-/* --- 4. DROPDOWN CHỌN THỂ LOẠI (CUSTOM) --- */
-
-.genre-select-trigger {
-    /* Style đồng bộ với input */
-    width: 100%;
-    padding: 0.8rem;
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
-    color: #fff;
-    font-size: 1rem;
-    box-sizing: border-box;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.3s ease;
-}
-
-.genre-select-trigger:hover {
-    border-color: #ffc107;
-}
-
-.genre-select-trigger:has(span:contains("Chọn")) {
-    color: #888;
+.add-movie-form .form-group:hover,
+.add-movie-form .form-group:focus-within {
+    z-index: 100;
 }
 
 .genre-checkbox-group {
     position: absolute;
-    top: 105%; 
+    top: 105%;
     left: 0;
     right: 0;
-    z-index: 100;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-
-    /* Style Dropdown Glass */
-    background: #1e1e1e; /* Cần nền tối đậm hơn chút để dễ đọc text */
-    border: 1px solid #ffc107; /* Viền vàng để nổi bật khi mở */
-    padding: 15px;
-    border-radius: 8px;
-    
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    width: 100%;
     max-height: 250px;
+    background-color: #222 !important;
+    border: 1px solid #ffc107 !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8) !important;
+    z-index: 9999 !important;
+    border-radius: 8px;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
     overflow-y: auto;
 }
 
-.genre-checkbox-item {
-    flex-basis: 45%;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 0;
-}
-.genre-checkbox-item input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: #ffc107; /* Màu checkbox vàng */
-    margin: 0;
-    background: rgba(0,0,0,0.3);
+.modal-body {
+    padding-bottom: 100px !important;
 }
 
-/* --- 5. MODAL XÁC NHẬN & ERROR --- */
-.confirm-delete-content p {
-    font-size: 1.1rem;
-    color: #e0e0e0;
-    text-align: center;
-}
-.confirm-delete-content strong {
-    color: #ff6b6b; /* Đỏ sáng */
+/* ========================================================= */
+/* --- 9. TỐI ƯU CỘT GENRE TRONG MOVIE TABLE --- */
+/* ========================================================= */
+
+/* Thu nhỏ cột Genre (cột thứ 4) */
+table th:nth-child(4),
+table td:nth-child(4) {
+    width: 180px;
+    max-width: 180px;
+    font-size: 0.85rem;
+    word-wrap: break-word;
+    white-space: normal;
+    line-height: 1.4;
 }
 
-.form-actions .btn-submit-danger {
-    padding: 0.8rem 1.8rem;
-    border: none;
-    border-radius: 8px;
+/* ========================================================= */
+/* --- 10. STYLE CHO NÚT KHÓA/MỞ TRONG USER TABLE --- */
+/* ========================================================= */
+
+/* Nút Khóa (Lock) */
+.btn-lock {
+    background: rgba(220, 53, 69, 0.2);
+    color: #ff6b6b;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
     cursor: pointer;
-    font-weight: 700;
-    color: white;
-    background-color: #dc3545; 
-    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
-}
-.form-actions .btn-submit-danger:hover:not(:disabled) {
-    background-color: #ff4d4d;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(220, 53, 69, 0.4);
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.form-actions .btn-submit:disabled,
-.form-actions .btn-submit-danger:disabled {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #666;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+.btn-lock:hover {
+    background: #dc3545;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4);
+}
+
+.btn-lock:hover svg {
+    transform: scale(1.1);
+}
+
+/* Nút Mở (Unlock) */
+.btn-unlock {
+    background: rgba(40, 167, 69, 0.2);
+    color: #2ecc71;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-unlock:hover {
+    background: #28a745;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+}
+
+.btn-unlock:hover svg {
+    transform: scale(1.1);
+}
+
+/* Badge trạng thái hoạt động */
+.status-active {
+    background-color: rgba(40, 167, 69, 0.2);
+    color: #2ecc71;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Badge trạng thái đã khóa */
+.status-locked {
+    background-color: rgba(220, 53, 69, 0.2);
+    color: #ff6b6b;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Icons trong status badges */
+.status svg,
+.status-active svg,
+.status-locked svg {
+    width: 10px !important;
+    height: 10px !important;
+    flex-shrink: 0;
+}
+
+/* Icons trong lock/unlock buttons */
+.btn-lock svg,
+.btn-unlock svg {
+    width: 14px !important;
+    height: 14px !important;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+/* ========================================= */
+/* --- 11. STYLE CHO BANNER MANAGEMENT --- */
+/* ========================================= */
+
+/* Icon trong nút Add ở header */
+.btn-add-new svg {
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0;
+    margin-right: 8px;
+}
+
+/* Style cho ảnh preview trong bảng (tối ưu hóa) */
+.table-container tbody td img {
+    display: block;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.table-container tbody td img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+/* ========================================================= */
+/* --- 12. FIX CĂN LỀ CỘT VÀ PAGINATION --- */
+/* ========================================================= */
+
+/* Đảm bảo các cột text căn trái, chỉ cột action căn giữa */
+table th,
+table td {
+    text-align: left !important;
+    vertical-align: middle !important;
+}
+
+/* Chỉ cột "Hành động" và "Trạng thái" căn giữa */
+table th:last-child,
+table td:last-child,
+table th:nth-last-child(2),
+table td:nth-last-child(2) {
+    text-align: center !important;
+}
+
+/* Đặc biệt cho cột có class action-buttons */
+td.action-buttons,
+th.action-buttons {
+    text-align: center !important;
+}
+
+/* ========================================================= */
+/* --- PAGINATION STYLES --- */
+/* ========================================================= */
+
+/* ========================================================= */
+/* --- PAGINATION STYLES (FIX HOÀN TOÀN) --- */
+/* ========================================================= */
+
+/* ========================================================= */
+/* --- PAGINATION STYLES (FIX HOÀN TOÀN - VERSION 2) --- */
+/* ========================================================= */
+
+/* ========================================================= */
+/* --- FIX PAGINATION - OVERRIDE BOOTSTRAP & ALL --- */
+/* ========================================================= */
+
+/* Reset tất cả Bootstrap variables */
+/* ========================================================= */
+/* --- FIX PAGINATION - SOLUTION CUỐI CÙNG --- */
+/* ========================================================= */
+
+/* Reset tất cả Bootstrap variables */
+/* ========================================================= */
+/* --- FIX PAGINATION - NUCLEAR OPTION (XÓA HẾT SPACING) --- */
+/* ========================================================= */
+
+/* Container */
+/* ========================================================= */
+/* --- PAGINATION - FINAL FIX (ĐẸP 100%) --- */
+/* ========================================================= */
+
+.pagination {
+    /* Override Bootstrap */
+    --bs-pagination-padding-x: 0 !important;
+    --bs-pagination-padding-y: 0 !important;
+    --bs-pagination-font-size: 0.875rem !important;
+    
+    /* Container */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 2rem auto 0 !important;
+    padding: 0 !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    list-style: none !important;
+    
+    /* Glassmorphism */
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Li - Reset */
+.pagination li,
+.pagination .page-item {
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+/* Button/Link - SIZE VỪA KHÍT */
+.pagination .page-link,
+.pagination .page-item .page-link,
+.pagination button,
+.pagination a {
+    /* Reset mọi thứ NHƯNG GIỮ box-sizing */
+    all: initial !important;
+    box-sizing: border-box !important;
+    
+    /* Layout */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    
+    /* Size - 36x36px CHÍNH XÁC */
+    width: 36px !important;
+    height: 36px !important;
+    
+    /* Spacing = 0 */
+    margin: 0 !important;
+    padding: 0 !important;
+    
+    /* Border */
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 8px !important;
+    
+    /* Background */
+    background: rgba(0, 0, 0, 0.3) !important;
+    
+    /* Text - VỪA ĐỦ */
+    color: #e0e0e0 !important;
+    font-family: 'Segoe UI', sans-serif !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    
+    /* Effects */
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    overflow: hidden !important;
+}
+
+/* Hover */
+.pagination .page-link:hover:not(.disabled):not(.active),
+.pagination .page-item:not(.disabled):not(.active) .page-link:hover,
+.pagination button:hover:not(:disabled):not(.active) {
+    background: rgba(255, 193, 7, 0.2) !important;
+    border-color: #ffc107 !important;
+    color: #ffc107 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3) !important;
+}
+
+/* Active */
+.pagination .page-link.active,
+.pagination .page-item.active .page-link,
+.pagination button.active {
+    background: #ffc107 !important;
+    color: #111 !important;
+    border-color: #ffc107 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.5) !important;
+}
+
+/* Disabled */
+.pagination .page-link.disabled,
+.pagination .page-item.disabled .page-link,
+.pagination button:disabled {
+    opacity: 0.3 !important;
+    cursor: not-allowed !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    pointer-events: none !important;
+}
+
+/* Previous/Next (ký tự đặc biệt) */
+.pagination .page-item:first-child .page-link,
+.pagination .page-item:last-child .page-link {
+    font-size: 1rem !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pagination {
+        gap: 6px !important;
+        padding: 1rem !important;
+    }
+    
+    .pagination .page-link,
+    .pagination button {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+/* Modal mặc định */
+.modal-dialog {
+    max-width: 500px;
+    width: 90%;
+    margin: 1.75rem auto;
+}
+
+/* Modal wide cho Add/Edit Movie/Banner */
+.modal-content.modal-wide {
+    max-width: 1100px !important;
+    min-width: 800px !important;
+    width: 95% !important;
+}
+
+/* Đảm bảo modal-dialog không giới hạn width khi có class modal-wide */
+.modal-dialog:has(.modal-wide) {
+    max-width: 95vw !important;
+    width: auto !important;
+}
+
+/* Form bên trong không tràn */
+.add-movie-form.wide-form,
+.add-banner-form {
+    max-width: 100%;
+    overflow-x: hidden;
+    width: 100%;
 }

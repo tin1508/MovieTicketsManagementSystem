@@ -1,0 +1,216 @@
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+    align-items: start;
+}
+
+.qr-wrapper {
+    background: white;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.payment-qr-image {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+.memo-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f1f3f5;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.copy-btn {
+    cursor: pointer;
+    color: #007bff;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #F4F169; 
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-decoration: none;
+
+    background: rgba(244, 241, 105, 0.1); 
+    backdrop-filter: blur(10px);         
+    -webkit-backdrop-filter: blur(10px); 
+    
+    /* Border & Shape */
+    border: 1px solid rgba(244, 241, 105, 0.3); 
+    border-radius: 50px; 
+    
+    /* Shadow & Transition */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+    transition: all 0.3s ease-in-out;
+    margin-bottom: 20px; 
+}
+
+/* Hiệu ứng khi di chuột vào (Hover) */
+.btn-back:hover {
+    background: rgba(244, 241, 105, 0.25); 
+    border-color: #F4F169;                 
+    box-shadow: 0 0 20px rgba(244, 241, 105, 0.4); 
+    transform: translateX(-5px);            
+    color: #fff;                           
+}
+
+/* Hiệu ứng khi bấm (Active) */
+.btn-back:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 10px rgba(244, 241, 105, 0.2);
+}
+.movie-details-text {
+    display: flex;
+    flex-direction: column; /* QUAN TRỌNG: Xếp các phần tử con theo chiều dọc */
+    gap: 12px;              /* Khoảng cách giữa các dòng */
+    color: #ccc;
+    font-size: 0.95rem;
+}
+
+/* Thêm đoạn này để căn giữa Icon và Text trên từng dòng */
+.movie-details-text span {
+    display: flex;          /* Để icon và chữ nằm ngang hàng trên 1 dòng */
+    align-items: center;    /* Căn giữa theo trục dọc */
+    gap: 10px;              /* Khoảng cách giữa Icon và Chữ */
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner-rotate {
+  animation: spin 1s linear infinite;
+  margin-left: 8px; /* Khoảng cách với chữ */
+}
+
+.status-waiting {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f39c12; /* Màu cam giống hình */
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+.payment-success-overlay {
+    text-align: center;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+/* --- LAYOUT TỔNG --- */
+/* Khi đã thanh toán (isPaid = true): Chuyển sang Flex để căn giữa */
+.checkout-layout.layout-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 50vh; /* Đảm bảo có chiều cao để căn giữa dọc */
+}
+
+/* --- KHUNG THÔNG BÁO THÀNH CÔNG --- */
+.payment-success-card {
+    text-align: center;
+    padding: 50px 50px;
+    background-color: rgba(46, 204, 113, 0.15); /* Nền xanh nhạt */
+    border-radius: 15px;
+    width: 100%;
+    max-width: 600px; /* Giới hạn chiều rộng tối đa */
+    border: 1px solid rgba(46, 204, 113, 0.3); /* Viền xanh nhẹ */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Đổ bóng */
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Icon check */
+.success-icon {
+    margin-bottom: 20px;
+    color: #2ecc71;
+    font-size: 80px; /* Kích thước icon nếu dùng font-size, hoặc giữ prop size trong JS */
+}
+
+/* Tiêu đề */
+.success-title {
+    color: #2ecc71;
+    margin-bottom: 15px;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Dòng chữ chính */
+.success-message {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+/* Dòng chữ phụ */
+.success-note {
+    color: #aaa;
+    font-size: 0.95rem;
+    margin-bottom: 35px;
+}
+
+/* Khu vực nút bấm */
+.success-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+/* Nút Về trang chủ */
+.btn-home-outline {
+    padding: 12px 30px;
+    background: transparent;
+    border: 1px solid #fff;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-home-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Nút Xem vé */
+.btn-view-ticket {
+    padding: 12px 30px;
+    background: #2ecc71;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-view-ticket:hover {
+    background: #27ae60;
+    transform: translateY(-2px);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

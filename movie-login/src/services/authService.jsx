@@ -1,32 +1,25 @@
-import axios from 'axios';
+import axios from './customize-axios';
 
-// SỬA LỖI URL: Thêm /api/v1 vào trước /auth
-const API_AUTH_URL = "http://localhost:8080/api/v1/auth"; 
 
-/**
- * Gọi API để đăng nhập
- */
 export const loginUser = async (username, password) => {
-  try {
-    const res = await axios.post(`${API_AUTH_URL}/token`, { username, password });
+    try {
+        const res = await axios.post("/auth/token", { username, password });
 
-    const payload = res.data?.result || res.data;
+        const data = res.result || res; 
 
-    // LƯU TOKEN VÀO LOCAL STORAGE
-    localStorage.setItem("token", payload.accessToken);
+        if (data.token) {
+            localStorage.setItem("accessToken", data.token);
+        } else if (data.accessToken) {
+            localStorage.setItem("accessToken", data.accessToken);
+        }
 
-    return payload;
-
-  } catch (error) {
-    console.error('Lỗi khi đăng nhập:', error.response?.data || error.message);
-    throw error.response?.data || new Error('Lỗi đăng nhập');
-  }
+        return data;
+    } catch (error) {
+        throw error;
+    }
 };
 
-/**
- * Gọi API để đăng ký
- * (API này cũng phải có /api/v1)
- */
+
 export const registerUser = async (userData) => {
     try {
         // Giả sử API đăng ký nằm ở /api/v1/users
@@ -38,17 +31,22 @@ export const registerUser = async (userData) => {
     }
 };
 
-/**
- * Gọi API Logout
- */
-export const logoutUser = async (token) => {
-    if (!token) return;
-    try {
-        // Gọi đúng endpoint: /api/v1/auth/logout
-        await axios.post(`${API_AUTH_URL}/logout`, {
-            token: token
-        });
-    } catch (error) {
-        console.error('Lỗi khi logout:', error.response?.data || error.message);
-    }
+
+export const logoutUser = () => {
+    localStorage.removeItem("accessToken");
+};
+
+
+export const forgotPassword = (email) => {
+    // 1. Bỏ biến API_URL đi (vì chưa khai báo)
+    // 2. Dùng đường dẫn tương đối (giống loginUser)
+    // 3. Đảm bảo axios từ './customize-axios' đã có baseURL (ví dụ: http://localhost:8080/api/v1)
+    return axios.post("/auth/forgot-password", null, {
+        params: { email } 
+    });
+};
+
+export const resetPassword = (token, newPassword) => {
+    // Tương tự, bỏ API_URL
+    return axios.post("/auth/reset-password", { token, newPassword });
 };

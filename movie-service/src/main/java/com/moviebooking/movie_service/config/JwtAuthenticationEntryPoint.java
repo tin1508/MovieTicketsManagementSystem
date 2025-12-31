@@ -20,8 +20,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         String requestURI = request.getRequestURI();
         if (requestURI.startsWith("/api/v1/movies") ||
                 requestURI.startsWith("/api/v1/genres") ||
-                requestURI.startsWith("/api/v1/public")) {
-            // Đừng xử lý gì, để request đi tiếp
+                requestURI.startsWith("/api/v1/public") ||
+                requestURI.startsWith("/api/v1/rooms")) {
             return;
         }
         ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;

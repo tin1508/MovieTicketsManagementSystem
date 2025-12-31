@@ -1,0 +1,169 @@
+/* src/styles/Auth.css */
+
+/* 1. Container bao quanh toàn màn hình */
+.auth-container {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+
+    /* --- CẬP NHẬT NỀN (Ánh đèn chiếu) --- */
+    /* Gradient: Tỏa sáng từ giữa trên (spotlight) xuống màu đen */
+    background: radial-gradient(circle at 50% 0%, #2c3e50 0%, #000000 100%);
+    /* ------------------------------------ */
+}
+
+/* 2. Hộp chứa form (Giữ nguyên hiệu ứng kính mờ) */
+.auth-form-card {
+    background-color: rgba(30, 41, 59, 0.6); /* Giảm độ đục xuống chút để ăn nhập với nền mới */
+    backdrop-filter: blur(15px); /* Làm mờ nền phía sau form */
+    -webkit-backdrop-filter: blur(15px);
+    
+    padding: 40px 30px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 450px;
+    
+    /* Bóng đổ và viền sáng nhẹ */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    color: #fff;
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* --- CÁC PHẦN DƯỚI GIỮ NGUYÊN --- */
+
+/* Tiêu đề */
+.auth-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #ffc107;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 10px rgba(255, 193, 7, 0.3); /* Thêm chút bóng cho chữ */
+}
+
+.auth-subtitle {
+    color: #e0e0e0; /* Sáng hơn xíu cho dễ đọc trên nền tối */
+    margin-bottom: 30px;
+    font-size: 0.95rem;
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* Input styles */
+.auth-input {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: rgba(0, 0, 0, 0.3); /* Nền input tối và trong suốt hơn */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.auth-input::placeholder {
+    color: #94a3b8;
+}
+
+.auth-input:focus {
+    border-color: #ffc107;
+    background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+}
+
+/* Button styles */
+.auth-btn {
+    width: 100%;
+    padding: 14px;
+    /* Gradient cho nút để nổi bật hơn */
+    background: linear-gradient(45deg, #ffc107, #ff9800);
+    color: #111; /* Chữ đen trên nền vàng */
+    border: none;
+    border-radius: 50px; /* Bo tròn hẳn như nút ở trang chủ */
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+.auth-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
+    filter: brightness(1.1);
+}
+
+.auth-btn:disabled {
+    background: #64748b;
+    cursor: not-allowed;
+    color: #cbd5e1;
+    box-shadow: none;
+}
+
+/* Links */
+.auth-links {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    display: flex;
+    justify-content: center;
+}
+
+.auth-link {
+    color: #ffc107;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.auth-link:hover {
+    color: #ffca2c;
+    text-decoration: underline;
+}
+
+/* Thông báo lỗi / thành công */
+.auth-message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.message-success {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.5);
+}
+
+.message-error {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .auth-form-card {
+        padding: 30px 20px;
+    }
+}

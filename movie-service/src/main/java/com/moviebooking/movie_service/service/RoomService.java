@@ -1,0 +1,75 @@
+package com.moviebooking.movie_service.service;
+
+import com.moviebooking.movie_service.dto.request.RoomCreationRequest;
+import com.moviebooking.movie_service.dto.request.RoomUpdateRequest;
+import com.moviebooking.movie_service.dto.response.RoomResponse;
+import com.moviebooking.movie_service.entity.Cinema;
+import com.moviebooking.movie_service.entity.Room;
+import com.moviebooking.movie_service.entity.Seat;
+import com.moviebooking.movie_service.enums.RoomStatus;
+import com.moviebooking.movie_service.exception.AppException;
+import com.moviebooking.movie_service.exception.ErrorCode;
+import com.moviebooking.movie_service.mapper.RoomMapper;
+import com.moviebooking.movie_service.repository.CinemaRepository;
+import com.moviebooking.movie_service.repository.RoomRepository;
+import com.moviebooking.movie_service.repository.ShowtimesRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class RoomService {
+    RoomRepository roomRepository;
+    RoomMapper roomMapper;
+    CinemaRepository cinemaRepository;
+    SeatService seatService;
+    ShowtimesRepository showtimesRepository;
+
+    public RoomResponse createRoom(RoomCreationRequest request) {
+        Room room = roomMapper.toRoom(request);
+        Cinema cinema = cinemaRepository.findById(request.getCinemaId())
+                .orElseThrow(() -> new AppException(ErrorCode.CINEMA_NOTFOUND));
+        room.setCinema(cinema);
+        cinema.getRooms().add(room);
+        room.setTotalRows(10);
+        room.setSeatsPerRow(12);
+        room.setTotalSeats(room.getTotalRows() * room.getSeatsPerRow());
+        room.setName("R" + cinema.getRooms().size());
+        List<Seat> seats = seatService.generateSeats(room);
+        room.setSeats(seats);
+        room.setStatus(RoomStatus.AVAILABLE);
+        return roomMapper.toRoomResponse(roomRepository.save(room));
+    }
+    public RoomResponse updateRoom(Long id, RoomUpdateRequest request) {
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOTFOUND));
+        roomMapper.updateRoom(room, request);
+        if(request.getStatus() != null){
+            room.setStatus(request.getStatus());
+        }
+        return roomMapper.toRoomResponse(roomRepository.save(room));
+    }
+    public void deleteRoom(Long id) {
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOTFOUND));
+        boolean hasShowtimes = showtimesRepository.existsByRoomId(room.getId());
+        if(!hasShowtimes){
+            roomRepository.deleteById(room.getId());
+        }
+        else throw new AppException(ErrorCode.SHOWTIMES_EXIST);
+    }
+    public RoomResponse getRoom(Long id) {
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOTFOUND));
+        return roomMapper.toRoomResponse(room);
+    }
+    public List<RoomResponse> getAllRooms() {
+        return roomRepository.findAll().stream().map(roomMapper::toRoomResponse).toList();
+    }
+
+}

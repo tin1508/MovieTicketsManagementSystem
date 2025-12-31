@@ -1,53 +1,40 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import * as userService from '../services/userService';
-import UserTable from '../pages/user/UserTable.jsx';
-import Pagination from '../components/common/Pagination';
-import Modal from '../components/common/Modal';
-// TODO: Tạo các component form AddUserForm và EditUserForm
+import * as userService from '../services/userService'; 
+import UserTable from '../pages/user/UserTable';
+import '../styles/MovieListPage.css'; // Đảm bảo bạn đã import file CSS mới
 
 const UserListPage = () => {
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     
+    // Pagination States
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-
-    // TODO: State cho Modals
-    // const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    // const [currentUserToEdit, setCurrentUserToEdit] = useState(null);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [userToDelete, setUserToDelete] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     // Hàm tải danh sách người dùng
-    const fetchUsers = useCallback(async (pageToFetch) => {
+    const fetchUsers = useCallback(async (pageToFetch, keyword = '') => {
         setIsLoading(true);
         setError(null);
         try {
-            // 1. 'data' bây giờ sẽ là MẢNG [...] (vì service đã "mở bọc" result)
-            const data = await userService.getAllUsers(pageToFetch, 10);
+            const response = await userService.getAllUsers(pageToFetch + 1, 10, keyword);
 
-            // 2. SỬA LỖI: Kiểm tra xem 'data' có phải là MẢNG không
-            if (Array.isArray(data)) {
-                setUsers(data);
-                
-                // 3. LƯU Ý VỀ PHÂN TRANG (Pagination):
-                // API của bạn không trả về 'totalPages'.
-                // Chúng ta tạm thời đặt là 1 trang để không bị lỗi.
-                setTotalPages(1); 
-                setCurrentPage(0);
-
+            if (response && response.result) {
+                setUsers(response.result.data || []); 
+                setTotalPages(response.result.totalPages || 0); // Lấy tổng số trang từ API
             } 
-            // 4. (Phòng hờ) Nếu API trả về { content: [...] }
-            else if (data && data.content) {
-                setUsers(data.content);
-                setTotalPages(data.totalPages || 0);
-            } 
-            // 5. Nếu không nhận diện được
+            else if (Array.isArray(response)) {
+                setUsers(response);
+                setTotalPages(1);   
+            }
+            else if (response && response.content) {
+                setUsers(response.content);
+                setTotalPages(response.totalPages || 0);
+            }
             else {
-                console.error("Dữ liệu người dùng không hợp lệ:", data);
-                setUsers([]);
-                setTotalPages(0);
+                console.error("Dữ liệu người dùng không hợp lệ:", response);
+                setUsers([]); 
             }
 
         } catch (err) {
@@ -56,60 +43,55 @@ const UserListPage = () => {
         } finally {
             setIsLoading(false);
         }
-    }, []); // Bỏ 'page' khỏi dependency, vì hàm fetchUsers không đổi
+    }, []);
 
-    // Tải dữ liệu khi component mount hoặc đổi trang
     useEffect(() => {
-        // 'currentPage' chỉ dùng để gọi lại API nếu bạn
-        // muốn phân trang ở backend
-        fetchUsers(currentPage); 
+        fetchUsers(currentPage, searchTerm); 
     }, [currentPage, fetchUsers]);
 
-
-    // Tải dữ liệu khi component mount hoặc đổi trang
-    useEffect(() => {
-        fetchUsers(currentPage);
-    }, [currentPage, fetchUsers]);
-
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
+    const handleSearch = (e) => {
+        e.preventDefault();
+        setCurrentPage(0); 
+        fetchUsers(0, searchTerm); 
     };
 
-    // --- Xử lý Xóa (Ví dụ) ---
-    const handleDeleteClick = (user) => {
-        setUserToDelete(user);
-        setIsDeleteModalOpen(true);
-    };
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setCurrentPage(0);
+        fetchUsers(0, ''); 
+    }
 
-    const handleCancelDelete = () => {
-        setUserToDelete(null);
-        setIsDeleteModalOpen(false);
-    };
-
-    const handleConfirmDelete = async () => {
-        if (!userToDelete) return;
-        try {
-            await userService.deleteUser(userToDelete.id);
-            // Tải lại trang đầu tiên
-            fetchUsers(0); 
-            setCurrentPage(0);
-        } catch (err) {
-            setError('Lỗi khi xóa người dùng.');
-        } finally {
-            setIsDeleteModalOpen(false);
-            setUserToDelete(null);
+    const handlePageChange = (newPage) => {
+        if (newPage >= 0 && newPage < totalPages) {
+            setCurrentPage(newPage);
         }
     };
 
-    // --- TODO: Xử lý Sửa ---
-    const handleEditClick = (user) => {
-        // setCurrentUserToEdit(user);
-        // setIsEditModalOpen(true);
-        alert(`Sửa người dùng: ${user.username}`); // Tạm thời
+    const handleToggleStatus = async (userId, currentStatus) => {
+        const actionName = currentStatus ? "KHÓA" : "MỞ KHÓA";
+        const isConfirmed = window.confirm(`Bạn có chắc chắn muốn ${actionName} tài khoản này không?`);
+        if (!isConfirmed) return;
+
+        try {
+            await userService.toggleUserStatus(userId);
+            setUsers(prevUsers => prevUsers.map(user => {
+                if (user.id === userId) {
+                    if (user.isActive !== undefined) {
+                        return { ...user, isActive: !user.isActive };
+                    } else {
+                        return { ...user, active: !user.active };
+                    }
+                }
+                return user; 
+            }));
+            alert(`Đã ${actionName} tài khoản thành công!`);
+        } catch (err) {
+            console.error(err);
+            alert(`Lỗi: Không thể ${actionName} tài khoản.`);
+            fetchUsers(currentPage); 
+        }
     };
 
-
-    // Render nội dung
     const renderContent = () => {
         if (isLoading) {
             return <p>Đang tải danh sách người dùng...</p>;
@@ -120,8 +102,9 @@ const UserListPage = () => {
         return (
             <UserTable
                 users={users}
-                onEditClick={handleEditClick}
-                onDeleteClick={handleDeleteClick}
+                onToggleStatus={handleToggleStatus} 
+                onEditClick={() => {}} 
+                onDeleteClick={() => {}}
             />
         );
     };
@@ -130,52 +113,99 @@ const UserListPage = () => {
         <div>
             <div className="page-header">
                 <h1>Quản lý Người dùng</h1>
-                {/* <button className="btn-add-new" onClick={() => {}}>
-                    + Thêm Người dùng
-                </button> */}
+            </div>
+
+            <div className="search-bar-container">
+                <form onSubmit={handleSearch}>
+                    <input 
+                        type="text" 
+                        placeholder="🔍 Tìm theo Username, Email hoặc SĐT..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="search-input"
+                    />
+                    <button type="submit" className="btn-search">
+                        Tìm kiếm
+                    </button>
+                </form>
+                
+                {searchTerm && (
+                    <button onClick={handleClearSearch} className="btn-clear">
+                        Xóa lọc
+                    </button>
+                )}
             </div>
 
             {renderContent()}
 
-            {!isLoading && totalPages > 0 && (
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                />
-            )}
+            {/* --- PHẦN PHÂN TRANG (PAGINATION) MỚI --- */}
+            {totalPages > 1 && (
+                <div className="pagination-container">
+                    <nav aria-label="Page navigation">
+                        <ul className="pagination">
+                            
+                            {/* Nút Previous */}
+                            <li className={`page-item ${currentPage === 0 ? 'disabled' : ''}`}>
+                                <button 
+                                    className="page-link" 
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    disabled={currentPage === 0}
+                                    style={{ fontSize: '1.2rem', paddingBottom: '5px' }} // Chỉnh lại chút cho cân
+                                >
+                                    {/* Thay thẻ <i> bằng ký tự này */}
+                                    <span>&laquo;</span> 
+                                </button>
+                            </li>
 
-            {/* Modal Xác nhận Xóa */}
-            <Modal
-                isOpen={isDeleteModalOpen}
-                onClose={handleCancelDelete}
-                title="Xác nhận Xóa Người dùng"
-            >
-                <div className="confirm-delete-content">
-                    <p>Bạn có chắc chắn muốn xóa người dùng
-                        <strong> "{userToDelete?.username}"</strong>?
-                    </p>
-                    <div className="form-actions">
-                        <button
-                            type="button"
-                            className="btn-cancel"
-                            onClick={handleCancelDelete}
-                        >
-                            Hủy
-                        </button>
-                        <button
-                            type="button"
-                            className="btn-submit-danger"
-                            onClick={handleConfirmDelete}
-                        >
-                            Xác nhận Xóa
-                        </button>
-                    </div>
+                            {/* Logic hiển thị số trang */}
+                            {[...Array(totalPages)].map((_, index) => {
+                                // Logic rút gọn: Chỉ hiện trang đầu, cuối, và trang xung quanh hiện tại
+                                // (Để tránh bị dài quá nếu có 100 trang)
+                                if (
+                                    index === 0 || 
+                                    index === totalPages - 1 || 
+                                    (index >= currentPage - 2 && index <= currentPage + 2)
+                                ) {
+                                    return (
+                                        <li key={index} className={`page-item ${currentPage === index ? 'active' : ''}`}>
+                                            <button 
+                                                className="page-link" 
+                                                onClick={() => handlePageChange(index)}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        </li>
+                                    );
+                                }
+                                
+                                // Hiển thị dấu "..."
+                                if (
+                                    index === currentPage - 3 || 
+                                    index === currentPage + 3
+                                ) {
+                                    return <li key={index} className="page-item disabled"><span className="page-link">...</span></li>;
+                                }
+
+                                return null; 
+                            })}
+
+                            {/* Nút Next */}
+                            <li className={`page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}`}>
+                                <button 
+                                    className="page-link" 
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage === totalPages - 1}
+                                    style={{ fontSize: '1.2rem', paddingBottom: '5px' }}
+                                >
+                                    {/* Thay thẻ <i> bằng ký tự này */}
+                                    <span>&raquo;</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
-            </Modal>
-
-            {/* TODO: Thêm Modal Sửa Người dùng (EditUserForm) */}
-
+            )}
+            {/* ------------------------------------------ */}
         </div>
     );
 };
