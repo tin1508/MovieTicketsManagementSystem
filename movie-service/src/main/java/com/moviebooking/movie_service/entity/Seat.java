@@ -40,4 +40,5 @@ public class Seat {
         }
         return this.getSeatType().getBasePrice();
     }
+
 }

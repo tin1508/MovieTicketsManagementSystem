@@ -33,6 +33,7 @@ public class BookingService {
     UserRepository userRepository;
     ShowtimeSeatRepository showtimeSeatRepository;
     BookingDetailRepository bookingDetailRepository;
+    EmailService emailService;
 
     @Transactional
     public BookingsResponse createBookings(BookingCreationRequest request){
@@ -101,9 +102,12 @@ public class BookingService {
         if(booking.getStatus() != BookingStatus.PENDING){
             throw new AppException(ErrorCode.BOOKING_STATUS_INVALID);
         }
-        if(booking.getExpiresAt() != null && LocalDateTime.now().isAfter(
-                booking.getBookingDetails().getFirst().getShowtimeSeat().getHoldExpiredAt())){
-            throw new AppException(ErrorCode.SEAT_HOLD_EXPIRED);
+
+        if(!booking.getBookingDetails().isEmpty()){
+            if(booking.getExpiresAt() != null && LocalDateTime.now().isAfter(
+                    booking.getBookingDetails().getFirst().getShowtimeSeat().getHoldExpiredAt())){
+                throw new AppException(ErrorCode.SEAT_HOLD_EXPIRED);
+            }
         }
 
         booking.setStatus(BookingStatus.CONFIRMED);
@@ -115,8 +119,12 @@ public class BookingService {
         }
 
         showtimeSeatRepository.saveAll(booking.getBookingDetails().stream().map(BookingDetail::getShowtimeSeat).toList());
+        Booking savedBooking = bookingRepository.save(booking);
+        if(savedBooking.getUser() != null && savedBooking.getUser().getEmail() != null){
+            emailService.sendBookingConfirmation(savedBooking.getUser().getEmail(), savedBooking);
+        }
 
-        return  bookingsMapper.toBookingResponse(bookingRepository.save(booking));
+        return  bookingsMapper.toBookingResponse(savedBooking);
     }
 
     public BookingsResponse cancelBooking(String id){

@@ -21,7 +21,7 @@ html body .modal-overlay .modal-content.modal-wide {
 }
 /* 1. Lớp phủ mờ (Overlay) */
 .modal-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;

@@ -174,20 +174,6 @@ const PaymentPage = () => {
             <p>Đang khởi tạo giao dịch...</p>
         </div>
     );
-    const handleCancelPayment = async () => {
-        if(!payment || isPaid){
-            navigator(-1);
-            return;
-        }
-        try{
-            await paymentService.deletePayment(payment.id);
-            console.log("Đã hủy giao dịch!");
-        }catch(error){
-            console.error("Lỗi khi xóa payment: ", error);
-        }finally{
-            navigator(-1);
-        }
-    }
     const handleTimeoutModalClose = () => {
         setShowtimeOutModal(false);
         // Điều hướng về trang chi tiết phim
@@ -216,9 +202,9 @@ const PaymentPage = () => {
 
         try {
             await cancelBooking(bookingId);
-            navigator(-1);
+            navigator('/');
         } catch (error) {
-            navigator(-1);
+            navigator('/');
         }
     }
     if(isLoading) return (
@@ -230,7 +216,7 @@ const PaymentPage = () => {
     if (error) return (
         <div className='error-container'>
             <p className='error-message'>{error}</p>
-            <button className='btn-back' onClick={() => navigator(-1)}>Quay lại</button>
+            <button className='btn-back' onClick={() => navigator('/')}>Quay lại</button>
         </div>
     );
 
@@ -391,7 +377,7 @@ const PaymentPage = () => {
                         <div className="payment-success-card" >
                             <FaCheckCircle className="success-icon" size={80} />                            
                             <h2 className="success-title">Thanh toán thành công!</h2>
-                            <p className='success-message'>Vé của bạn đã được xác nhận.</p>
+                            <p className='success-message'>Vé của bạn đã được xác nhận. Bấm vào nút xem vé và xem vé trong phần lịch sử đặt vé của bạn.</p>
                             
                             <div className="success-actions">
                                 <button 
