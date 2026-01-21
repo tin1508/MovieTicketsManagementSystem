@@ -28,6 +28,23 @@ const MovieDetailPage = () => {
 
     const seatSectionRef = useRef(null);
 
+    const ageDescriptionMap = {
+        'P': 'Phim dành cho mọi lứa tuổi',
+        'K': 'Khán giả dưới 13 tuổi cần có người bảo hộ',
+        'T13': 'Phim dành cho khán giả từ 13 tuổi trở lên',
+        'C13': 'Phim dành cho khán giả từ 13 tuổi trở lên',
+        'T16': 'Phim dành cho khán giả từ 16 tuổi trở lên',
+        'C16': 'Phim dành cho khán giả từ 16 tuổi trở lên',
+        'T18': 'Phim dành cho khán giả từ 18 tuổi trở lên',
+        'C18': 'Phim dành cho khán giả từ 18 tuổi trở lên',
+        // Thêm các mã khác nếu backend của bạn có
+    };
+
+    // Hàm lấy mô tả an toàn (tránh lỗi nếu code lạ)
+    const getAgeDescription = (code) => {
+        return ageDescriptionMap[code] || 'Yêu cầu độ tuổi phù hợp';
+    };
+
     useEffect(() => {
         // Nếu đã có suất chiếu được chọn (do auto-select), cuộn xuống phần ghế
         if (selectedShowtime) {
@@ -112,42 +129,67 @@ const MovieDetailPage = () => {
                     className="movie-detail-poster"
                 />
                 <div className="movie-detail-info">
-                    {embedUrl && (
-                            <button 
-                                className="btn-watch-trailer" 
-                                onClick={() => setIsTrailerOpen(true)}
-                            >
-                                <FaPlay /> Xem Trailer
-                            </button>
-                        )}
-                    <p><strong>Mô tả:</strong> {movie.description}</p>
-                    <p><strong>Đạo diễn:</strong> {movie.director}</p>
-                    <p><strong>Thời lượng:</strong> {movie.duration} phút</p>
-                    <p><strong>Ngày phát hành:</strong> {new Date(movie.releaseDate).toLocaleDateString('vi-VN')}</p>
-                    {mainActors.length > 0 && (
-                                <div style={{marginBottom: '10px'}}>
-                                    <strong style={{color: '#ffc107', display: 'block', marginBottom: '8px'}}>
-                                        Diễn viên chính:
-                                    </strong>
-                                    
-                                    <div className="actor-list">
-                                        {/* Map qua danh sách 3 diễn viên chính */}
-                                        {mainActors.map((actor, index) => (
-                                            <span key={index} className="actor-badge">
-                                                {actor}
-                                            </span>
-                                        ))}
+                
 
-                                        {/* Nếu danh sách gốc dài hơn 3, hiện thêm dấu ... */}
-                                        {hasMoreActors && (
-                                            <span className="actor-badge more" title={movie.actors}>
-                                                +{movie.actors.split(',').length - 3} khác
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-                </div>
+                {/* --- 1. THÊM THỂ LOẠI --- */}
+                <p>
+                    <strong>Thể loại:</strong>{' '}
+                    {movie.genres && movie.genres.length > 0 
+                        ? movie.genres.map(g => g.name).join(', ') // Nối tên các thể loại bằng dấu phẩy
+                        : 'Đang cập nhật'}
+                </p>
+
+                <p>
+                    <strong>Độ tuổi:</strong>
+                    
+                    {/* 1. Badge màu vàng (Nằm cùng dòng) */}
+                    <span style={{ 
+                        backgroundColor: '#ffc107', 
+                        color: '#000', 
+                        fontWeight: 'bold', 
+                        padding: '1px 6px',     // Padding nhỏ lại chút cho gọn dòng
+                        borderRadius: '4px', 
+                        marginLeft: '8px',      // Cách chữ "Độ tuổi:" ra
+                        marginRight: '8px',     // Cách dòng giải thích ra
+                        fontSize: '0.85em',     // Nhỏ hơn chữ thường 1 xíu (85%) để không bị thô
+                        verticalAlign: 'text-bottom' // Căn chỉnh cho thẳng hàng với dòng chữ
+                    }}>
+                        {movie.ageRating || 'T13'}
+                    </span>
+
+                    {/* 2. Dòng giải thích (Kế thừa font size của thẻ <p> cha) */}
+                    <span style={{ color: '#ffffffff', fontWeight: 'normal' }}>
+                        - {getAgeDescription(movie.ageRating)}
+                    </span>
+                </p>
+
+                {/* --- CÁC THÔNG TIN CŨ --- */}
+                <p><strong>Đạo diễn:</strong> {movie.director}</p>
+                <p><strong>Thời lượng:</strong> {movie.duration} phút</p>
+                <p><strong>Ngày phát hành:</strong> {new Date(movie.releaseDate).toLocaleDateString('vi-VN')}</p>
+
+                {/* --- 3. SỬA HIỂN THỊ DIỄN VIÊN (Dạng văn bản thường) --- */}
+                {mainActors.length > 0 && (
+                    <p>
+                        <strong>Diễn viên:</strong>{' '}
+                        {/* Nối mảng 3 tên thành chuỗi, ngăn cách bởi dấu phẩy */}
+                        {mainActors.join(', ')}
+                        
+                        {/* Nếu còn nhiều hơn 3 người thì hiện dấu ... */}
+                        {hasMoreActors && '...'}
+                    </p>
+                )}
+
+                <p style={{marginTop: '15px'}}><strong>Mô tả:</strong> {movie.description}</p>
+                {embedUrl && (
+                    <button 
+                        className="btn-watch-trailer" 
+                        onClick={() => setIsTrailerOpen(true)}
+                    >
+                        <FaPlay /> Xem Trailer
+                    </button>
+                )}
+            </div>
             </div>
         </div>
         {/* ===== BOOKING SECTION ===== */}

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import * as userService from '../services/userService'; 
 import UserTable from '../pages/user/UserTable';
-import '../styles/MovieListPage.css'; // Đảm bảo bạn đã import file CSS mới
+import '../styles/MovieListPage.css'; // File CSS chung
+// Import các icon cho Modal
+import { FaExclamationTriangle, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 const UserListPage = () => {
     const [users, setUsers] = useState([]);
@@ -13,6 +15,16 @@ const UserListPage = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
 
+    // --- 1. STATE QUẢN LÝ THÔNG BÁO (MODAL) ---
+    const [notification, setNotification] = useState({
+        show: false,
+        type: '',       // 'confirm', 'success', 'error'
+        message: '',
+        title: '',
+        dataId: null,   // Lưu ID User cần xử lý
+        dataStatus: null // Lưu trạng thái hiện tại (để biết là đang Khóa hay Mở)
+    });
+
     // Hàm tải danh sách người dùng
     const fetchUsers = useCallback(async (pageToFetch, keyword = '') => {
         setIsLoading(true);
@@ -22,7 +34,7 @@ const UserListPage = () => {
 
             if (response && response.result) {
                 setUsers(response.result.data || []); 
-                setTotalPages(response.result.totalPages || 0); // Lấy tổng số trang từ API
+                setTotalPages(response.result.totalPages || 0);
             } 
             else if (Array.isArray(response)) {
                 setUsers(response);
@@ -33,7 +45,6 @@ const UserListPage = () => {
                 setTotalPages(response.totalPages || 0);
             }
             else {
-                console.error("Dữ liệu người dùng không hợp lệ:", response);
                 setUsers([]); 
             }
 
@@ -67,15 +78,36 @@ const UserListPage = () => {
         }
     };
 
-    const handleToggleStatus = async (userId, currentStatus) => {
+    // --- 2. HÀM MỞ MODAL XÁC NHẬN (Thay vì window.confirm) ---
+    const handleToggleStatus = (userId, currentStatus) => {
         const actionName = currentStatus ? "KHÓA" : "MỞ KHÓA";
-        const isConfirmed = window.confirm(`Bạn có chắc chắn muốn ${actionName} tài khoản này không?`);
-        if (!isConfirmed) return;
+        
+        setNotification({
+            show: true,
+            type: 'confirm',
+            title: `Xác nhận ${actionName}`,
+            message: `Bạn có chắc chắn muốn ${actionName} tài khoản này không?`,
+            dataId: userId,
+            dataStatus: currentStatus // Lưu lại để dùng trong hàm confirm
+        });
+    };
+
+    // --- 3. HÀM THỰC HIỆN HÀNH ĐỘNG (Khi bấm Đồng ý) ---
+    const confirmToggleStatus = async () => {
+        const userId = notification.dataId;
+        const currentStatus = notification.dataStatus;
+        const actionName = currentStatus ? "KHÓA" : "MỞ KHÓA";
+
+        // Đóng modal confirm
+        closeNotification();
 
         try {
             await userService.toggleUserStatus(userId);
+            
+            // Cập nhật lại list local để UI mượt mà
             setUsers(prevUsers => prevUsers.map(user => {
                 if (user.id === userId) {
+                    // Logic update state tùy thuộc vào tên biến API trả về
                     if (user.isActive !== undefined) {
                         return { ...user, isActive: !user.isActive };
                     } else {
@@ -84,21 +116,38 @@ const UserListPage = () => {
                 }
                 return user; 
             }));
-            alert(`Đã ${actionName} tài khoản thành công!`);
+
+            // Hiện thông báo thành công
+            showNotification('success', 'Thành công', `Đã ${actionName} tài khoản thành công!`);
+
         } catch (err) {
             console.error(err);
-            alert(`Lỗi: Không thể ${actionName} tài khoản.`);
+            // Hiện thông báo lỗi
+            showNotification('error', 'Lỗi', `Không thể ${actionName} tài khoản. Vui lòng thử lại.`);
             fetchUsers(currentPage); 
         }
     };
 
+    // Helper hiển thị thông báo nhanh
+    const showNotification = (type, title, message) => {
+        setNotification({
+            show: true,
+            type: type,
+            title: title,
+            message: message,
+            dataId: null,
+            dataStatus: null
+        });
+    }
+
+    const closeNotification = () => {
+        setNotification({ ...notification, show: false });
+    }
+
     const renderContent = () => {
-        if (isLoading) {
-            return <p>Đang tải danh sách người dùng...</p>;
-        }
-        if (error) {
-            return <p className="page-error-message">{error}</p>;
-        }
+        if (isLoading) return <p>Đang tải danh sách người dùng...</p>;
+        if (error) return <p className="page-error-message">{error}</p>;
+        
         return (
             <UserTable
                 users={users}
@@ -138,58 +187,38 @@ const UserListPage = () => {
 
             {renderContent()}
 
-            {/* --- PHẦN PHÂN TRANG (PAGINATION) MỚI --- */}
+            {/* Pagination */}
             {totalPages > 1 && (
                 <div className="pagination-container">
                     <nav aria-label="Page navigation">
                         <ul className="pagination">
-                            
-                            {/* Nút Previous */}
                             <li className={`page-item ${currentPage === 0 ? 'disabled' : ''}`}>
                                 <button 
                                     className="page-link" 
                                     onClick={() => handlePageChange(currentPage - 1)}
                                     disabled={currentPage === 0}
-                                    style={{ fontSize: '1.2rem', paddingBottom: '5px' }} // Chỉnh lại chút cho cân
+                                    style={{ fontSize: '1.2rem', paddingBottom: '5px' }}
                                 >
-                                    {/* Thay thẻ <i> bằng ký tự này */}
                                     <span>&laquo;</span> 
                                 </button>
                             </li>
 
-                            {/* Logic hiển thị số trang */}
                             {[...Array(totalPages)].map((_, index) => {
-                                // Logic rút gọn: Chỉ hiện trang đầu, cuối, và trang xung quanh hiện tại
-                                // (Để tránh bị dài quá nếu có 100 trang)
-                                if (
-                                    index === 0 || 
-                                    index === totalPages - 1 || 
-                                    (index >= currentPage - 2 && index <= currentPage + 2)
-                                ) {
+                                if (index === 0 || index === totalPages - 1 || (index >= currentPage - 2 && index <= currentPage + 2)) {
                                     return (
                                         <li key={index} className={`page-item ${currentPage === index ? 'active' : ''}`}>
-                                            <button 
-                                                className="page-link" 
-                                                onClick={() => handlePageChange(index)}
-                                            >
+                                            <button className="page-link" onClick={() => handlePageChange(index)}>
                                                 {index + 1}
                                             </button>
                                         </li>
                                     );
                                 }
-                                
-                                // Hiển thị dấu "..."
-                                if (
-                                    index === currentPage - 3 || 
-                                    index === currentPage + 3
-                                ) {
+                                if (index === currentPage - 3 || index === currentPage + 3) {
                                     return <li key={index} className="page-item disabled"><span className="page-link">...</span></li>;
                                 }
-
                                 return null; 
                             })}
 
-                            {/* Nút Next */}
                             <li className={`page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}`}>
                                 <button 
                                     className="page-link" 
@@ -197,7 +226,6 @@ const UserListPage = () => {
                                     disabled={currentPage === totalPages - 1}
                                     style={{ fontSize: '1.2rem', paddingBottom: '5px' }}
                                 >
-                                    {/* Thay thẻ <i> bằng ký tự này */}
                                     <span>&raquo;</span>
                                 </button>
                             </li>
@@ -205,7 +233,34 @@ const UserListPage = () => {
                     </nav>
                 </div>
             )}
-            {/* ------------------------------------------ */}
+
+            {/* --- 4. MODAL THÔNG BÁO (THEO STYLE MỚI) --- */}
+            {notification.show && (
+                <div className="modal-overlay">
+                    <div className="modal-box">
+                        <div style={{ fontSize: '3rem', marginBottom: '10px' }}>
+                            {notification.type === 'confirm' && <FaExclamationTriangle color="#f0ad4e" />}
+                            {notification.type === 'success' && <FaCheckCircle color="#28a745" />}
+                            {notification.type === 'error' && <FaTimesCircle color="#dc3545" />}
+                        </div>
+
+                        <h3 className="modal-title">{notification.title}</h3>
+                        <p className="modal-message">{notification.message}</p>
+
+                        <div className="modal-actions">
+                            {notification.type === 'confirm' ? (
+                                <>
+                                    <button className="btn-modal btn-cancel" onClick={closeNotification}>Hủy bỏ</button>
+                                    <button className="btn-modal btn-confirm" onClick={confirmToggleStatus}>Đồng ý</button>
+                                </>
+                            ) : (
+                                // Dùng class 'btn-close-modal' để tránh lỗi CSS Bootstrap
+                                <button className="btn-modal btn-close-modal" onClick={closeNotification}>Đóng</button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

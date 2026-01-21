@@ -145,6 +145,9 @@
     font-weight: 600;
     margin: 0.75rem 0 0 0;
     
+    /* 👇 THÊM DÒNG NÀY ĐỂ CĂN GIỮA 👇 */
+    text-align: center; 
+    
     /* Giới hạn 2 dòng */
     display: -webkit-box;
     -webkit-line-clamp: 2;

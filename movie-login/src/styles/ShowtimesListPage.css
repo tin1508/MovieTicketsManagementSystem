@@ -700,3 +700,142 @@ input[type="date"] {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(67, 160, 71, 0.5);
 }
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Tối hơn chút để làm nổi bật cái bảng thông báo */
+    background-color: rgba(0, 0, 0, 0.75); 
+    /* Thêm hiệu ứng blur cho nền phía sau (rất quan trọng cho Glassmorphism) */
+    backdrop-filter: blur(8px); 
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* Đảm bảo nằm trên cùng */
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* 2. Modal Box - Chiếc bảng thông báo kính tối */
+.modal-box {
+    /* Nền tối bán trong suốt (Dark Blue-Grey) */
+    background: rgba(31, 41, 64, 0.9); 
+    /* Blur nhẹ nội dung bên dưới nó */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    
+    /* Viền mỏng phát sáng nhẹ */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.2); /* Highlight cạnh trên */
+    
+    padding: 30px;
+    border-radius: 16px;
+    width: 420px;
+    max-width: 90%;
+    
+    /* Đổ bóng sâu tạo cảm giác nổi khối 3D */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    
+    text-align: center;
+    color: #e0e0e0; /* Chữ màu sáng */
+    animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 3. Tiêu đề và Nội dung */
+.modal-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    letter-spacing: 0.5px;
+}
+
+.modal-message {
+    margin-bottom: 25px;
+    color: #b0b8c4; /* Màu xám xanh nhạt dễ đọc trên nền tối */
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* 4. Các nút bấm (Buttons) */
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-modal {
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+/* Nút Đồng ý Xóa (Màu đỏ Glass) */
+.btn-confirm {
+    background: rgba(220, 53, 69, 0.2);
+    color: #ff6b6b;
+    border: 1px solid rgba(220, 53, 69, 0.4);
+}
+.btn-confirm:hover {
+    background: rgba(220, 53, 69, 0.8);
+    color: white;
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Nút Hủy bỏ (Màu xám trong suốt) */
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* Nút Đóng (Màu xanh hoặc Vàng tùy chọn - Ở đây dùng Xanh Glass) */
+.btn-close-modal {
+    background: #0d6efd; /* Màu xanh dương sáng (Solid) */
+    color: white;
+    border: none;
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3); /* Đổ bóng xanh */
+}
+
+.btn-close-modal:hover {
+    background: #0b5ed7; /* Xanh đậm hơn khi hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(13, 110, 253, 0.5);
+}
+
+/* Đảm bảo khoảng cách nút không bị dính vào chữ bên trên */
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px; /* Thêm khoảng cách an toàn */
+}
+
+/* 5. Animation mượt mà hơn */
+@keyframes fadeIn { 
+    from { opacity: 0; } 
+    to { opacity: 1; } 
+}
+
+@keyframes slideUpFade { 
+    from { 
+        opacity: 0; 
+        transform: translateY(20px) scale(0.95); 
+    } 
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    } 
+}
