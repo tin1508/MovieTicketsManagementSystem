@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import { listShowtimes, deleteShowtime } from '../services/ShowtimesService';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/ShowtimesListPage.css';
-import { FaEdit, FaTrash } from 'react-icons/fa';
-
+// IMPORT THÊM CÁC ICON CẦN THIẾT
+import { FaEdit, FaTrash, FaExclamationTriangle, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 export const SHOWTIME_STATUSES = [
     {value: 'SCHEDULED', label: 'Đã lên lịch'},
@@ -11,20 +11,31 @@ export const SHOWTIME_STATUSES = [
     {value: 'ENDED', label: 'Đã kết thúc'},
     {value: 'CANCELLED', label: 'Đã hủy'}
 ]
+
 export const formatDate = (isDate) => {
     if(!isDate) return '';
     const [year, month, day] = isDate.split('-');
     return `${day}-${month}-${year}`;
 };
+
 const ShowtimeListPage = () =>{
-    const [allShowtimes, setAllShowtimes] = useState([]); // Original, unfiltered data
-    const [filteredShowtimes, setFilteredShowtimes] = useState([]); // Data displayed in the table
-    const [uniqueRooms, setUniqueRooms] = useState([]); // List of unique Room IDs for the dropdown
+    const [allShowtimes, setAllShowtimes] = useState([]); 
+    const [filteredShowtimes, setFilteredShowtimes] = useState([]); 
+    const [uniqueRooms, setUniqueRooms] = useState([]); 
     const [filters, setFilters] = useState({
-        keyword: '', // Movie Name search
-        status: '',  // Status dropdown value
-        roomName: '',  // Room dropdown value
+        keyword: '', 
+        status: '',  
+        roomName: '',  
         date: '', 
+    });
+
+    // --- 1. STATE QUẢN LÝ THÔNG BÁO (MODAL) ---
+    const [notification, setNotification] = useState({
+        show: false,
+        type: '',       // 'confirm', 'success', 'error'
+        message: '',
+        title: '',
+        dataId: null    // Lưu ID suất chiếu cần xóa
     });
 
     const navigator = useNavigate();
@@ -38,7 +49,7 @@ const ShowtimeListPage = () =>{
             const data = response.data.result;
             if(data){
                 setAllShowtimes(data);
-                setFilteredShowtimes(data); // Reset filter on fresh fetch
+                setFilteredShowtimes(data); 
                 const rooms = [...new Set(data.map(item => item.room.name).filter(Boolean))].sort();
                 setUniqueRooms(rooms);
             }
@@ -46,28 +57,21 @@ const ShowtimeListPage = () =>{
         }).catch(error => {
             console.error("Error fetching showtimes:", error);
             setAllShowtimes([]);
-            setLoading(false);
         })
     };
 
     useEffect(()=>{
         fetchShowtimes();
-        
     }, [])
+
     useEffect(() => {
         if (movieId) {
-            setFilters(prev => ({
-                ...prev,
-                keyword: movieTitle
-            }));
-        }
-        else{
-            setFilters(prev => ({
-                ...prev,
-                keyword: ''
-            }));
+            setFilters(prev => ({ ...prev, keyword: movieTitle }));
+        } else{
+            setFilters(prev => ({ ...prev, keyword: '' }));
         }
     }, [movieTitle]);
+
     useEffect(() => {
         let currentFilteredData = allShowtimes.filter(showtime => {
             const movieTitle = showtime.movie?.title?.toLowerCase() || "";
@@ -75,31 +79,22 @@ const ShowtimeListPage = () =>{
             const showtimeRoomName = showtime.room?.name || "";
             const showtimeDate = showtime.showtimesDate || "";
 
-            // 1. Keyword Filter (Movie Name)
             const keywordMatch = !filters.keyword || movieTitle.includes(filters.keyword.toLowerCase());
-
-            // 2. Status Filter
             const statusMatch = !filters.status || showtimeStatus === filters.status;
-
-            // 3. Room ID Filter
-           const roomMatch = !filters.roomName || showtimeRoomName === filters.roomName;
-
-            //4. date filter
-            const dateMatch = !filters.date ||showtimeDate === filters.date;
+            const roomMatch = !filters.roomName || showtimeRoomName === filters.roomName;
+            const dateMatch = !filters.date || showtimeDate === filters.date;
+            
             return keywordMatch && statusMatch && roomMatch && dateMatch;
         });
 
         setFilteredShowtimes(currentFilteredData);
     }, [filters, allShowtimes]);
-    //handle filter changes
+
     const handleFilterChange = (event) => {
         const {name, value} = event.target;
-        setFilters(prevFilters => ({
-            ...prevFilters,
-            [name]: value
-        }));
+        setFilters(prevFilters => ({ ...prevFilters, [name]: value }));
     }
-    //clear filters
+
     const handleClearFilters = () => {
         setFilters({
             keyword: '',
@@ -108,48 +103,76 @@ const ShowtimeListPage = () =>{
             date: '',
         })
     }
+
     function addNewShowtime(){
         navigator(`/dashboard/showtimes/add?movieId=${movieId}&movieTitle=${encodeURIComponent(movieTitle)}`);
     }
+
     function updateShowtime(id){
         navigator(`/dashboard/edit-showtimes/${id}`)
     }
-    function removeShowtime(id){
-        const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa suất chiếu này không?");
-        if(!isConfirmed) return;
-        deleteShowtime(id).then((response) => {
-            fetchShowtimes();
-            alert("Xóa suất chiếu thành công!!!")
-        }).catch(error =>{
-            console.log(error);
-            alert("Có lỗi xảy ra!")
-        })
+
+    // --- 2. HÀM HELPER ĐỂ HIỆN THÔNG BÁO ---
+    const showNotification = (type, title, message) => {
+        setNotification({
+            show: true,
+            type: type,
+            title: title,
+            message: message,
+            dataId: null
+        });
     }
+
+    const closeNotification = () => {
+        setNotification({ ...notification, show: false });
+    }
+
+    // --- 3. SỬA HÀM XÓA: MỞ MODAL XÁC NHẬN ---
+    function removeShowtime(id){
+        setNotification({
+            show: true,
+            type: 'confirm',
+            title: 'Xác nhận xóa',
+            message: 'Bạn có chắc chắn muốn xóa suất chiếu này không? Hành động này không thể hoàn tác.',
+            dataId: id // Lưu ID để xóa sau khi bấm Đồng ý
+        });
+    }
+
+    // --- 4. HÀM THỰC HIỆN XÓA (KHI BẤM ĐỒNG Ý TRONG MODAL) ---
+    const confirmDelete = () => {
+        const idToDelete = notification.dataId;
+        closeNotification(); // Đóng modal xác nhận
+
+        if (idToDelete) {
+            deleteShowtime(idToDelete).then((response) => {
+                fetchShowtimes();
+                // Hiện thông báo thành công
+                showNotification('success', 'Thành công', 'Đã xóa suất chiếu khỏi hệ thống!');
+            }).catch(error =>{
+                console.log(error);
+                // Hiện thông báo lỗi
+                const errorMsg = error.response?.data?.message || "Có lỗi xảy ra khi xóa!";
+                showNotification('error', 'Lỗi', errorMsg);
+            })
+        }
+    };
+
     const renderStatusBadge = (status) => {
         const statusConfig = SHOWTIME_STATUSES.find(s => s.value === status);
         const label = statusConfig ? statusConfig.label : status;
-
         let badgeClass = 'status-badge';
         
         switch (status) {
-            case 'SCHEDULED':
-                badgeClass += ' status-scheduled'; // Blue/Info
-                break;
-            case 'NOW_SHOWING':
-                badgeClass += ' status-showing';   // Green/Success
-                break;
-            case 'ENDED':
-                badgeClass += ' status-ended';     // Grey/Secondary
-                break;
-            case 'CANCELLED':
-                badgeClass += ' status-cancelled'; // Red/Danger
-                break;
-            default:
-                badgeClass += ' status-default';
+            case 'SCHEDULED': badgeClass += ' status-scheduled'; break;
+            case 'NOW_SHOWING': badgeClass += ' status-showing'; break;
+            case 'ENDED': badgeClass += ' status-ended'; break;
+            case 'CANCELLED': badgeClass += ' status-cancelled'; break;
+            default: badgeClass += ' status-default';
         }
 
         return <span className={badgeClass}>{label}</span>;
     };
+
     return (
         <div className='container'>
             {movieId && movieTitle && (
@@ -163,11 +186,13 @@ const ShowtimeListPage = () =>{
                     <h2>Quản lý Lịch Chiếu </h2>
                 </div>
             )}
+            
+            {/* --- Filter Section --- */}
             <div className='showtimes-filter-bar-container'>
                 <div className='showtimes-filer-bar'>
                     {!movieId && (<input placeholder='Tìm theo tên phim...' className='showtimes-filter-input' type='text' name='keyword'
                     value={filters.keyword} onChange={handleFilterChange}/> )}
-                    {/*select room ID */}
+                    
                     <select name='roomName' className='showtimes-filter-select' value={filters.roomName} onChange={handleFilterChange} style={{marginLeft: '10px'}}>
                         <option value=''>Tất cả phòng</option>
                         {uniqueRooms.map(room => (
@@ -187,20 +212,15 @@ const ShowtimeListPage = () =>{
                             onChange={handleFilterChange}
                             data-date={formatDate(filters.date)}
                             title="Chọn ngày chiếu"
-                            data-placeholder="dd/mm/yyyy"
                             style={{marginLeft: '10px'}}
                     />
-                    {/*nút xóa filter*/}
-                    <button
-                        type='button'
-                        className='showtimes-clear-filter-button'
-                        onClick={handleClearFilters}
-                        style={{marginLeft: '15px'}}
-                    >
+                    <button type='button' className='showtimes-clear-filter-button' onClick={handleClearFilters} style={{marginLeft: '15px'}}>
                         Bỏ lọc
                     </button>
                 </div>
             </div>
+
+            {/* --- Table Section --- */}
             <div>
                 <table className='table-container'>
                     <thead>
@@ -215,8 +235,7 @@ const ShowtimeListPage = () =>{
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            filteredShowtimes?.map(showtime =>
+                        {filteredShowtimes?.map(showtime =>
                                 <tr key={showtime.id}>
                                     <td>{showtime.room?.name || "N/A"}</td>
                                     <td>{showtime.movie?.title || "N/A"}</td>
@@ -251,6 +270,32 @@ const ShowtimeListPage = () =>{
                     <p style={{textAlign: 'center', color: '#999', padding: '20px'}}>Không tìm thấy suất chiếu</p>
                 )}
             </div>
+
+            {/* --- 5. RENDER MODAL THÔNG BÁO --- */}
+            {notification.show && (
+                <div className="modal-overlay">
+                    <div className="modal-box">
+                        <div style={{ fontSize: '3rem', marginBottom: '10px' }}>
+                            {notification.type === 'confirm' && <FaExclamationTriangle color="#f0ad4e" />}
+                            {notification.type === 'success' && <FaCheckCircle color="#28a745" />}
+                            {notification.type === 'error' && <FaTimesCircle color="#dc3545" />}
+                        </div>
+
+                        <h3 className="modal-title">{notification.title}</h3>
+                        <p className="modal-message">{notification.message}</p>
+
+                        <div className="modal-actions">
+                            {notification.type === 'confirm' ? (
+                                <>
+                                    <button className="btn-modal btn-cancel" onClick={closeNotification}>Hủy bỏ</button>
+                                    <button className="btn-modal btn-confirm" onClick={confirmDelete}>Đồng ý xóa</button>
+                                </>
+                            ) : (
+                            <button className="btn-modal btn-close-modal" onClick={closeNotification}>Đóng</button>)}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
