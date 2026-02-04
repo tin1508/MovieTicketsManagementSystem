@@ -62,7 +62,8 @@ public enum ErrorCode {
     SEAT_ERROR(4006, "Seat is available or booked", HttpStatus.BAD_REQUEST),
     SEAT_HOLD_EXPIRED(4007, "Holding seat is expired", HttpStatus.BAD_REQUEST ),
     PAYMENT_ALREADY_EXISTS(4008, "Payment is already existed", HttpStatus.BAD_REQUEST),
-    TRANSACTION_ALREADY_EXISTED(4009, "Transaction is already existed", HttpStatus.BAD_REQUEST );
+    TRANSACTION_ALREADY_EXISTED(4009, "Transaction is already existed", HttpStatus.BAD_REQUEST ),
+    SHOWTIMES_BOOKED(4010, "Showtime has already been booked", HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final String message;

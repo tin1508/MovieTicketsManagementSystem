@@ -5,7 +5,7 @@ import {cancelBooking} from '../../services/BookingsService';
 import '../../styles/PaymentPage.css';
 import BookingInfo from './BookingInfo';
 import { FaArrowLeft, FaSpinner, FaCopy, 
-    FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+    FaCheckCircle, FaExclamationTriangle, FaTimesCircle } from 'react-icons/fa';
 
 const BANK_INFO = {
     bankName: "MB Bank",
@@ -39,13 +39,57 @@ const PaymentPage = () => {
     const [isExpired, setIsExpired] = useState(false);
     const [showtimeOutModal, setShowtimeOutModal] = useState(false);
 
+    const [notification, setNotification] = useState({
+        show: false,
+        type: '',       // 'confirm', 'success', 'error'
+        message: '',
+        title: '',
+        action: null    // Lưu hành động cần thực hiện khi bấm "Đồng ý"
+    });
+    const isPaidRef = useRef(false);
     const intervalRef = useRef(null);
     const timerRef = useRef(null);
     const hasCancelledRef = useRef(false);
 
+    const showNotification = (type, title, message, action = null) => {
+        setNotification({
+            show: true,
+            type,
+            title,
+            message,
+            action
+        });
+    };
+    const closeNotification = () => {
+        setNotification(prev => ({ ...prev, show: false }));
+    };
+    const sendSilentCancelRequest = () => {
+        // Lưu ý: Thay đổi URL này cho đúng với API của bạn
+        const API_URL = `http://localhost:8080/api/v1/bookings/${bookingId}/cancel-booking`; 
+        const token = localStorage.getItem('token');
+        
+        // Sử dụng fetch với keepalive: true -> Chìa khóa để request sống sót
+        fetch(API_URL, {
+            method: 'POST', 
+            keepalive: true, 
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        }).catch(err => console.error("Lỗi gửi hủy ngầm:", err));
+    };
     useEffect(() => {
+        isPaidRef.current = isPaid;
+    }, [isPaid]);
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (!isPaidRef.current && !hasCancelledRef.current && bookingId) {
+                sendSilentCancelRequest();
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
         if (!bookingId) {
-            setError("Không tìm thấy thông tin đặt vé.");
+            showNotification('error', 'Lỗi', 'Không tìm thấy thông tin đặt vé.');
             setIsLoading(false);
             return;
         }
@@ -81,10 +125,9 @@ const PaymentPage = () => {
                 console.error("Lỗi khi tạo thanh toán:", err);
                 // Xử lý thông báo lỗi đẹp hơn tùy vào mã lỗi backend trả về
                 if (err.response?.data?.code === 1009) { // Ví dụ mã lỗi BOOKING_PAID
-                    alert("Đơn hàng này đã được thanh toán!");
-                    navigator('/tai-khoan');
+                    showNotification('success', 'Đã thanh toán', 'Đơn hàng này đã được thanh toán!', () => navigator('/tai-khoan'));
                 } else {
-                    setError("Không thể khởi tạo thanh toán. Vui lòng thử lại.");
+                    showNotification('error', 'Lỗi khởi tạo', 'Không thể khởi tạo thanh toán. Vui lòng thử lại.');
                 }
             } finally {
                 setIsLoading(false);
@@ -96,6 +139,10 @@ const PaymentPage = () => {
         return () => {
             stopPolling();
             if(timerRef.current) clearInterval(timerRef.current);
+            if(!isPaidRef.current && !hasCancelledRef.current){
+                console.log("Component bị hủy (Back) -> Auto Cancel");
+                sendSilentCancelRequest(); // Dùng fetch keepalive thay vì cancelBooking()
+            }
         }
     }, [bookingId]);
 
@@ -166,7 +213,7 @@ const PaymentPage = () => {
     }
     const handleCopy = (text) => {
         window.navigator.clipboard.writeText(text);
-        alert("Đã sao chép nội dung!");
+        showNotification('success', 'Đã sao chép', 'Đã lưu nội dung vào bộ nhớ tạm.');
     }
     if (isLoading) return (
         <div className='loading-container'>
@@ -191,20 +238,41 @@ const PaymentPage = () => {
             navigator('/');
             return;
         }
-
-        // Nếu chưa thanh toán -> Giữ logic hủy cũ
         if (!payment) {
             navigator(-1);
             return;
         }
-        const confirmCancel = window.confirm("Bạn có chắc muốn hủy giao dịch này?");
-        if (!confirmCancel) return;
-
+        // Hiện Modal xác nhận
+        showNotification(
+            'confirm', 
+            'Hủy giao dịch?', 
+            'Bạn có chắc muốn hủy giao dịch này? Ghế sẽ được nhả ra.',
+            performCancelBooking // Truyền hàm thực thi
+        );
+    }
+    const performCancelBooking = async () => {
         try {
+            closeNotification(); // Đóng modal trước
+            setIsLoading(true);
+            hasCancelledRef.current = true;
+
+            console.log("Đang hủy booking...", bookingId);
             await cancelBooking(bookingId);
+            
+            console.log("Đã hủy thành công!");
             navigator('/');
         } catch (error) {
-            navigator('/');
+            console.error("Lỗi khi hủy vé:", error);
+            showNotification('error', 'Lỗi hệ thống', 'Hệ thống đang bận, nhưng bạn sẽ được chuyển về trang chủ.', () => navigator('/'));
+        } finally {
+            setIsLoading(false);
+        }
+    }
+    const handleModalConfirm = () => {
+        if (notification.action) {
+            notification.action(); // Chạy hàm được truyền vào (performCancelBooking)
+        } else {
+            closeNotification();
         }
     }
     if(isLoading) return (
@@ -392,7 +460,31 @@ const PaymentPage = () => {
                     
                 </div>
             </div>
+            {notification.show && (
+                <div className="modal-overlay">
+                    <div className="modal-box">
+                        <div style={{ fontSize: '3rem', marginBottom: '10px' }}>
+                            {notification.type === 'confirm' && <FaExclamationTriangle color="#f0ad4e" />}
+                            {notification.type === 'success' && <FaCheckCircle color="#28a745" />}
+                            {notification.type === 'error' && <FaTimesCircle color="#dc3545" />}
+                        </div>
+                        <h3 className="modal-title">{notification.title}</h3>
+                        <p className="modal-message">{notification.message}</p>
+                        <div className="modal-actions">
+                            {notification.type === 'confirm' ? (
+                                <>
+                                    <button className="btn-modal btn-cancel" onClick={closeNotification}>Hủy bỏ</button>
+                                    <button className="btn-modal btn-confirm" onClick={handleModalConfirm}>Đồng ý</button>
+                                </>
+                            ) : (
+                                <button className="btn-modal btn-close-modal" onClick={handleModalConfirm}>Đóng</button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
+        
     );
 };
 

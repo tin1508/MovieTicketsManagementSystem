@@ -80,4 +80,6 @@ public interface BookingRepository  extends JpaRepository<Booking, String> {
         LIMIT 5
         """, nativeQuery = true)
     List<MovieStatsDTO> getTopMovieStats();
+
+    boolean existsByShowtimesIdAndStatus(String showtimesId, BookingStatus status);
 }

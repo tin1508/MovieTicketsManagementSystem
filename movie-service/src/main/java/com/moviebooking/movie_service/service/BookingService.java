@@ -43,6 +43,45 @@ public class BookingService {
         Showtimes showtime = showtimesRepository.findById(request.getShowtimeId())
                 .orElseThrow(() -> new AppException(ErrorCode.SHOWTIMES_NOTFOUND));
 
+        List<BookingDetail> existingDetails = bookingDetailRepository.findAllByShowtimeSeatIdIn(request.getShowtimeSeatIds());
+        if (!existingDetails.isEmpty()) {
+            // Lấy ra đơn hàng cũ liên quan đến ghế này (chỉ cần lấy cái đầu tiên tìm thấy)
+            Booking existingBooking = existingDetails.getFirst().getBooking();
+
+            // A. Nếu ghế đã bán (CONFIRMED) -> Lỗi
+            if (existingBooking.getStatus() == BookingStatus.CONFIRMED) {
+                throw new AppException(ErrorCode.SEAT_ERROR);
+            }
+
+            // B. Nếu ghế đang giữ (PENDING)
+            if (existingBooking.getStatus() == BookingStatus.PENDING) {
+                boolean isMyBooking = existingBooking.getUser().getId().equals(user.getId());
+                boolean isExpired = existingBooking.getExpiresAt().isBefore(LocalDateTime.now());
+
+                if (isExpired) {
+                    // ==> HẾT HẠN: Xóa đơn cũ để nhả ghế cho người mới đặt (Dọn rác tại chỗ)
+                    // Cần reset trạng thái ghế về AVAILABLE trước khi xóa booking để tránh lỗi ràng buộc nếu có
+                    for (BookingDetail detail : existingBooking.getBookingDetails()) {
+                        ShowtimeSeat seat = detail.getShowtimeSeat();
+                        seat.setStatus(ShowtimeSeatStatus.AVAILABLE);
+                        seat.setHoldExpiredAt(null);
+                        showtimeSeatRepository.save(seat);
+                    }
+                    bookingRepository.delete(existingBooking);
+                    bookingRepository.flush(); // Đẩy lệnh xóa xuống DB ngay lập tức
+                    // Sau đó code sẽ chạy tiếp xuống dưới để tạo mới như bình thường
+                }
+                else if (isMyBooking) {
+                    // ==> CỦA MÌNH + CHƯA HẾT HẠN:
+                    // Trả về luôn đơn cũ để thanh toán tiếp (Không tạo mới -> Tránh Duplicate Entry)
+                    return bookingsMapper.toBookingResponse(existingBooking);
+                }
+                else {
+                    // ==> CỦA NGƯỜI KHÁC + CHƯA HẾT HẠN:
+                    throw new AppException(ErrorCode.SEAT_ERROR); // Báo ghế đang được người khác giữ
+                }
+            }
+        }
         Booking bookings = bookingsMapper.toBooking(request);
 
         bookings.setUser(user);
@@ -130,13 +169,26 @@ public class BookingService {
     public BookingsResponse cancelBooking(String id){
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOTFOUND));
-        if(booking.getStatus() != BookingStatus.CONFIRMED){
+        if(booking.getStatus() == BookingStatus.CONFIRMED || booking.getStatus() == BookingStatus.CANCELLED){
             throw new AppException(ErrorCode.BOOKING_STATUS_INVALID);
         }
         if(LocalDateTime.now().isAfter(booking.getExpiresAt())){
             throw new AppException(ErrorCode.BOOKING_EXPIRED);
         }
         booking.setStatus(BookingStatus.CANCELLED);
+        if(!booking.getBookingDetails().isEmpty()){
+            //release seats
+            List<ShowtimeSeat> seatsToRelease = new ArrayList<>();
+            for(BookingDetail detail : booking.getBookingDetails()) {
+                ShowtimeSeat seat = detail.getShowtimeSeat();
+                seat.setStatus(ShowtimeSeatStatus.AVAILABLE);
+                seat.setHoldExpiredAt(null);
+                seatsToRelease.add(seat);
+            }
+            showtimeSeatRepository.saveAll(seatsToRelease);
+            bookingDetailRepository.deleteByBookingId(booking.getId());
+            booking.getBookingDetails().clear();
+        }
         return bookingsMapper.toBookingResponse(bookingRepository.save(booking));
     }
 

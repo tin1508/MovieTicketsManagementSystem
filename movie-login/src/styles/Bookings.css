@@ -532,3 +532,77 @@ input.quantity-input {
     cursor: not-allowed;
     box-shadow: none;
 } 
+/* =========================================
+   GRID CHỌN PHÒNG (ROOM SELECTION)
+   ========================================= */
+
+.room-grid {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+/* Style cơ bản cho nút Phòng (Giống nút Giờ chưa chọn) */
+.room-btn {
+    min-width: 100px;
+    height: 50px;
+    padding: 0 20px;
+    border-radius: 12px; /* Bo góc mềm mại */
+    
+    /* Màu nền tối mờ (Glass effect) */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+    
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Căn chỉnh nội dung bên trong */
+    display: flex;
+    flex-direction: column; /* Để xếp tên phòng và số ghế dọc */
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hiệu ứng khi di chuột vào (Hover) */
+.room-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* --- TRẠNG THÁI ĐANG CHỌN (ACTIVE) --- */
+/* Đây là phần làm cho nút sáng rực màu vàng giống trong ảnh */
+.room-btn.active {
+    background-color: #F4F169;  /* Nền vàng rực */
+    color: #1f2940;             /* Chữ màu đen/xanh đậm để tương phản */
+    border-color: #F4F169;
+    font-weight: 700;
+    
+    /* Hiệu ứng phát sáng (Glow) */
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+    transform: scale(1.05);     /* Phóng to nhẹ */
+}
+
+/* Style cho icon bên trong nút */
+.room-btn i {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+}
+
+/* Style cho dòng chữ nhỏ hiển thị số ghế (nếu có) */
+.room-seats-info {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    font-weight: normal;
+}
+
+/* Ẩn số ghế khi đã chọn để nhìn cho gọn (Option) */
+.room-btn.active .room-seats-info {
+    display: none; 
+}

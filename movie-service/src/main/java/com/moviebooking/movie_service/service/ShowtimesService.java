@@ -6,10 +6,12 @@ import com.moviebooking.movie_service.dto.response.ShowtimesResponse;
 import com.moviebooking.movie_service.entity.Movie;
 import com.moviebooking.movie_service.entity.Room;
 import com.moviebooking.movie_service.entity.Showtimes;
+import com.moviebooking.movie_service.enums.BookingStatus;
 import com.moviebooking.movie_service.enums.ShowtimeStatus;
 import com.moviebooking.movie_service.exception.AppException;
 import com.moviebooking.movie_service.exception.ErrorCode;
 import com.moviebooking.movie_service.mapper.ShowtimesMapper;
+import com.moviebooking.movie_service.repository.BookingRepository;
 import com.moviebooking.movie_service.repository.MovieRepository;
 import com.moviebooking.movie_service.repository.RoomRepository;
 import com.moviebooking.movie_service.repository.ShowtimesRepository;
@@ -32,6 +34,7 @@ public class ShowtimesService {
     MovieRepository movieRepository;
     RoomRepository roomRepository;
     ShowtimeSeatService showtimeSeatService;
+    BookingRepository bookingRepository;
 
     public ShowtimesResponse createShowtimes(ShowtimesCreationRequest request){
         Showtimes showtimes = showtimesMapper.toShowtimes(request);
@@ -69,7 +72,12 @@ public class ShowtimesService {
         return showtimesMapper.toShowtimesResponse(showtimesRepository.save(showtimes));
     }
 
+
     public void deleteShowtimes(String id){
+        boolean hasSuccessBookings = bookingRepository.existsByShowtimesIdAndStatus(id, BookingStatus.CONFIRMED);
+        if(hasSuccessBookings){
+            throw new AppException(ErrorCode.SHOWTIMES_BOOKED);
+        }
         Showtimes showtimes = showtimesRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.SHOWTIMES_NOTFOUND));
         showtimesRepository.deleteById(showtimes.getId());

@@ -363,12 +363,97 @@
 
 /* 9. MODAL DARK THEME OVERRIDES */
 .form-card-dark {
-    background-color: #1f2940 !important; /* Solid dark for modal (easier to read) */
+    /* Kích thước & Vị trí */
+    width: 100%;
+    max-width: 800px;       /* Giới hạn chiều rộng cho màn hình to (22 inch) */
+    margin: 0 auto;         /* Căn giữa ngang */
+    
+    /* Flexbox: Để chia 3 phần (Đầu, Thân, Chân) */
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column; 
+    
+    /* Giao diện Dark Mode */
+    background-color: #1f2940 !important;
     color: white !important;
-    border: 1px solid #2d364c !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    overflow: hidden; /* Bo góc mượt mà */
+}
+.form-card-dark .card-body {
+    /* Flex: 1 giúp phần này chiếm toàn bộ khoảng trống còn lại */
+    flex: 1;
+    
+    /* QUAN TRỌNG: Cho phép cuộn dọc nội dung bên trong */
+    overflow-y: auto; 
+    overflow-x: hidden;
+    
+    padding: 25px; /* Khoảng cách lề trong rộng rãi hơn */
 }
 
+/* 3. Tinh chỉnh thanh cuộn (Scrollbar) cho đẹp và gọn */
+.form-card-dark .card-body::-webkit-scrollbar {
+    width: 8px;
+}
+.form-card-dark .card-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1); /* Nền track mờ */
+    margin-bottom: 10px; /* Tránh dính sát đáy */
+}
+.form-card-dark .card-body::-webkit-scrollbar-thumb {
+    background: #546e7a; /* Màu thanh cuộn */
+    border-radius: 4px;
+}
+.form-card-dark .card-body::-webkit-scrollbar-thumb:hover {
+    background: #78909c;
+}
+
+/* 4. Tạo khoảng trống an toàn dưới cùng form */
+/* Giúp nút không bị dính sát đáy khi cuộn hết cỡ */
+.form-card-dark form {
+    padding-bottom: 15px;
+}
+/* 2. Phần Thân cuộn được (Body) */
+.form-scrollable-body {
+    flex: 1;              /* Chiếm toàn bộ khoảng trống còn lại */
+    overflow-y: auto;     /* Hiện thanh cuộn nếu nội dung dài */
+    overflow-x: hidden;
+    padding: 20px;        /* Khoảng cách lề bên trong */
+}
+
+/* Tùy chỉnh thanh cuộn cho đẹp (Chrome/Edge/Safari) */
+.form-scrollable-body::-webkit-scrollbar {
+    width: 8px;
+}
+.form-scrollable-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+.form-scrollable-body::-webkit-scrollbar-thumb {
+    background: #546e7a;
+    border-radius: 4px;
+}
+
+/* 3. Phần Chân chứa nút (Footer) - Luôn hiển thị */
+.form-fixed-footer {
+    flex-shrink: 0;       /* Không bao giờ bị co lại */
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: #1f2940; /* Cùng màu nền với card */
+    display: flex;
+    justify-content: flex-end; /* Nút nằm bên phải */
+    gap: 10px;
+    z-index: 10;
+}
+
+/* 4. Phần Đầu (Header) - Luôn hiển thị */
+.form-fixed-header {
+    flex-shrink: 0;
+    padding: 20px 20px 0 20px; /* Padding trên/trái/phải */
+    background-color: #1f2940;
+}
+.form-card-dark form {
+    padding-bottom: 10px;
+}
 .dark-input {
     background-color: #141b2d !important;
     color: white !important;
@@ -467,7 +552,13 @@
 /* =========================================
    MODAL & HEADER STYLES
    ========================================= */
-
+.modal-diaglog {
+    max-width: 800px !important;
+    display: flex !important;
+    align-items: center !important;
+    min-height: calc(100% - 3.5rem) !important; /* Đảm bảo modal không bị quá cao */
+    margin: 1.75rem auto !important;
+}
 /* 1. Căn giữa tiêu đề Modal "THÊM SUẤT CHIẾU" */
 .modal-header {
     display: flex !important;
@@ -511,6 +602,7 @@
 .modal-header button.close:hover span {
     color: #fff; /* Hover thành màu trắng */
 }
+
 
 /* 2. Container chính của Form */
 .form-card-dark {
@@ -838,4 +930,21 @@ input[type="date"] {
         opacity: 1; 
         transform: translateY(0) scale(1); 
     } 
+}
+/* =========================================
+   10. CONTAINER CĂN GIỮA MÀN HÌNH (NEW)
+   ========================================= */
+
+.showtimes-fullscreen-container {
+    min-height: 100vh;      /* Chiều cao bằng 100% màn hình */
+    width: 100%;
+    
+    /* Flexbox để căn giữa Form vào chính giữa màn hình */
+    display: flex;
+    align-items: center;    /* Căn giữa dọc */
+    justify-content: center;/* Căn giữa ngang */
+    
+    /* Padding để trên điện thoại không bị dính sát mép */
+    padding: 15px;
+    box-sizing: border-box;
 }

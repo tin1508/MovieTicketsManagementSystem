@@ -5,6 +5,7 @@ import { listRooms } from '../../services/RoomsService';
 import { getMovieById } from '../../services/movieService'; 
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import { useNavigate, useParams , useLocation} from 'react-router-dom';
+import { FaCheckCircle, FaTimesCircle, FaExclamationTriangle } from 'react-icons/fa';
 
 // --- CÁC HÀM HỖ TRỢ ---
 const calculateCeilingEndTime = (startTimeStr, durationMinutes) => {
@@ -44,6 +45,13 @@ const ShowtimesForm = ({ moviePreSelected, onSuccess, onCancel }) => {
     const [calculatedEndTime, setCalculatedEndTime] = useState('');
     const [filteredShowtimes, setFilteredShowtimes] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
+
+    const [notification, setNotification] = useState({
+        show: false,
+        type: '',       // 'success', 'error', 'confirm'
+        message: '',
+        title: ''
+    });
 
     // Router
     const {id} = useParams();
@@ -140,6 +148,23 @@ const ShowtimesForm = ({ moviePreSelected, onSuccess, onCancel }) => {
         }
     }, [startTime, currentMovie]);
 
+    const showNotification = (type, title, message) => {
+        console.log("Trigger Notification:", type, title);
+        setNotification({
+            show: true,
+            type: type,
+            title: title,
+            message: message
+        });
+    }
+    const closeNotification = () => {
+        const currentType = notification.type;
+        setNotification({...notification, show: false });
+        if(currentType === 'success'){
+            if(onSuccess) onSuccess();
+            else navigator('/dashboard/movies');
+        }
+    }
     // 6. Time Slots
     const timeSlots = useMemo(() => {
         const slots = [];
@@ -203,12 +228,11 @@ const ShowtimesForm = ({ moviePreSelected, onSuccess, onCancel }) => {
 
         const apiCall = id ? patchShowtime(id, showtimeData) : createShowtimes(showtimeData);
         apiCall.then(() => {
-            alert("Thành công!");
-            if (onSuccess) onSuccess();
-            else navigator('/dashboard/movies'); 
+            showNotification('success', 'Thành công', 'Đã lưu lịch chiếu vào hệ thống!');
         }).catch(err => {
-            setErrorMessage("Có lỗi xảy ra khi lưu.");
             console.error(err);
+            const msg = err.response?.data?.message || "Có lỗi xảy ra khi lưu dữ liệu.";
+            showNotification('error', 'Lỗi hệ thống', msg);
         });
     }
 
@@ -333,6 +357,26 @@ const ShowtimesForm = ({ moviePreSelected, onSuccess, onCancel }) => {
                     </div>
                 </div>
             </div>
+            {notification.show && (
+                <div className="modal-overlay">
+                    <div className="modal-box">
+                        <div style={{ fontSize: '3rem', marginBottom: '10px' }}>
+                            {notification.type === 'confirm' && <FaExclamationTriangle color="#f0ad4e" />}
+                            {notification.type === 'success' && <FaCheckCircle color="#28a745" />}
+                            {notification.type === 'error' && <FaTimesCircle color="#dc3545" />}
+                        </div>
+
+                        <h3 className="modal-title">{notification.title}</h3>
+                        <p className="modal-message">{notification.message}</p>
+
+                        <div className="modal-actions">
+                            <button className="btn-modal btn-close-modal" onClick={closeNotification}>
+                                {notification.type === 'success' ? 'Hoàn tất' : 'Đóng'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

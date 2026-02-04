@@ -111,7 +111,7 @@ const BookingsListPage = () => {
     return (
         <div className='container'>
             <div className='showtimes-page-header'>
-                <h1> Quản lý đặt vé </h1>
+                <h1> Quản lý đặt phim </h1>
             </div>
             <div className='showtimes-filter-bar-container'>
                 <div className='showtimes-filer-bar' style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>

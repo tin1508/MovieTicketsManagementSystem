@@ -34,7 +34,18 @@ const RoomsListPage = () => {
     const fetchRooms = () => {
         listRooms().then((response) => {
             const data = response.data.result;
-            setRooms(data ? data : []);
+            if (data && Array.isArray(data)) {
+                // Sắp xếp dữ liệu trước khi set vào State
+                const sortedData = data.sort((a, b) => {
+                    // Logic trích xuất số từ tên phòng (Ví dụ: "R12" -> 12)
+                    const numA = parseInt(a.name.replace(/\D/g, ''), 10) || 0;
+                    const numB = parseInt(b.name.replace(/\D/g, ''), 10) || 0;
+                    return numA - numB; // Sắp xếp tăng dần theo số
+                });
+                setRooms(sortedData);
+            } else {
+                setRooms([]);
+            }
         }).catch(error => {
             console.error(error);
             setRooms([]);

@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 // 1. THÊM IMPORT getShowtimeById
 import {getAvailableDateByMovie, getShowtimesByMovieAndDate, getShowtimeById} from '../../services/ShowtimesService';
 import '../../styles/Bookings.css';
+import { useMap } from 'react-use';
 
 const formatDate = (dateString) => {
     const dateObj = new Date(`${dateString}T00:00:00`);
@@ -21,12 +22,22 @@ const ShowtimesMovie = ({movieId, onConfirmSelection, isDisabled, preSelectedSho
     const [loadingShowtimes, setLoadingShowtimes] = useState(false);
     const [error, setError] = useState(null);
 
+    const [selectedTimeStr, setSelectedTimeStr] = useState(null);
     const [selectedShowtime, setSelectedShowtime] = useState(null);
     const [ticketQuantity, setTicketQuantity] = useState(0);
     const [isConfirmed, setIsConfirmed] = useState(false);
 
     const maxTickets = selectedShowtime?.room?.totalSeats ? Math.max(10, selectedShowtime.room.totalSeats) : 10;
 
+    const uniqueTimes = useMemo(() => {
+        if(!showtimes || showtimes.length === 0) return [];
+        const times = showtimes.map(show => show.startTime.substring(0,5));
+        return [...new Set(times)]; 
+    }, [showtimes]);
+    const availableRoomsForTime = useMemo(() => {
+        if(!selectedTimeStr || showtimes.length === 0) return [];
+        return showtimes.filter(show => show.startTime.substring(0,5) === selectedTimeStr);
+    }, [showtimes, selectedTimeStr]);
     // --- LOGIC MỚI: TỰ ĐỘNG CHỌN NGÀY VÀ GIỜ TỪ QUICK BOOKING ---
     useEffect(() => {
         const autoSelect = async () => {
@@ -126,13 +137,23 @@ const ShowtimesMovie = ({movieId, onConfirmSelection, isDisabled, preSelectedSho
             setTicketQuantity(currentQty - 1);
         }
     };
-    const handleDateClick = (dateString) => {
+     const handleDateClick = (dateString) => {
         if(isDisabled || isConfirmed) return;
         setSelectedDate(dateString);
+        setSelectedShowtime(null);
+        setSelectedTimeStr(null);
+        setTicketQuantity(0);
     };
-    const handleTimeClick = (show) => {
+    const handleTimeClick = (timeStr) => {
         if(isDisabled || isConfirmed) return;
-        setSelectedShowtime(show);
+        setSelectedShowtime(null);
+        setSelectedTimeStr(timeStr);
+        setTicketQuantity(0);
+    }
+    const handleRoomClick = (showtime) => {
+        if(isDisabled || isConfirmed) return;
+        setSelectedShowtime(showtime);
+        setTicketQuantity(0);
     }
 
     const isShowtimeValid = (showtimeDate, startTimeStr) => {
@@ -157,39 +178,43 @@ const ShowtimesMovie = ({movieId, onConfirmSelection, isDisabled, preSelectedSho
             setDates([]); 
             setSelectedDate(null); 
             setShowtimes([]);
+            setSelectedTimeStr(null);
 
             getAvailableDateByMovie(movieId)
                 .then(response => {
-                    const dateData = response.data.result || response.result || []; // Fix cho chắc ăn
+                    const dateData = response.data.result || response.result || [];
                     setDates(dateData);
 
-                    // Logic khôi phục SessionStorage (giữ nguyên)
+                    // Restore Date from Session
                     const savedJSON = sessionStorage.getItem("bookingStep1State");
-                        if (savedJSON) {
-                            const saved = JSON.parse(savedJSON);
-                            if (saved.movieId == movieId && dateData.includes(saved.selectedDate)) {
-                                setSelectedDate(saved.selectedDate);
-                                setTicketQuantity(saved.ticketQuantity);
-                            }
+                    if (savedJSON) {
+                        const saved = JSON.parse(savedJSON);
+                        if (saved.movieId == movieId && dateData.includes(saved.selectedDate)) {
+                            setSelectedDate(saved.selectedDate);
+                            // Lưu ý: Chỉ set Date ở đây, phần còn lại để useEffect dưới lo
                         }
-                    })
+                    }
+                })
                 .catch(err => {
                     console.error("Lỗi khi tải ngày chiếu:", err);
                     setError("Không thể tải lịch chiếu. Vui lòng thử lại.");
                 })
-                .finally(() => {
-                    setLoadingDates(false);
-                });
+                .finally(() => setLoadingDates(false));
         }
     }, [movieId]);
 
+    // --- LOAD SHOWTIMES & RESTORE FULL STATE ---
     useEffect(() => {
         if (movieId && selectedDate) {
             setLoadingShowtimes(true);
             setError(null);
             setShowtimes([]);
-            setSelectedShowtime(null);
-            setIsConfirmed(false);
+            // Không reset vội nếu đang có session, để logic dưới xử lý
+            if (!sessionStorage.getItem("bookingStep1State")) {
+                setSelectedShowtime(null);
+                setIsConfirmed(false);
+                setSelectedTimeStr(null);
+            }
         
             getShowtimesByMovieAndDate(movieId, selectedDate)
             .then(response => {
@@ -206,22 +231,39 @@ const ShowtimesMovie = ({movieId, onConfirmSelection, isDisabled, preSelectedSho
                     setShowtimes([]);
                 }
 
+                // === LOGIC KHÔI PHỤC TRẠNG THÁI (FIXED) ===
                 const savedJSON = sessionStorage.getItem("bookingStep1State");
                 if (savedJSON) {
                     const saved = JSON.parse(savedJSON);
-                    if (saved.movieId == movieId && saved.selectedDate === selectedDate && saved.selectedShowtime) {
-                        const foundShowtime = validShowtimes.find(s => 
-                            String(s.id) === String(saved.selectedShowtime.id) || 
-                            s.startTime === saved.selectedShowtime.startTime
-                        );
+                    
+                    // Kiểm tra xem dữ liệu lưu có khớp với phim và ngày hiện tại không
+                    if (saved.movieId == movieId && saved.selectedDate === selectedDate) {
                         
-                        if (foundShowtime) {
-                            setSelectedShowtime(foundShowtime);
-                            if (saved.isConfirmed) {
-                                setIsConfirmed(true);
-                                onConfirmSelection(foundShowtime, saved.ticketQuantity, selectedDate);
+                        // 1. Khôi phục Giờ (QUAN TRỌNG)
+                        if (saved.selectedTimeStr) {
+                            setSelectedTimeStr(saved.selectedTimeStr);
+                        } else if (saved.selectedShowtime) {
+                            // Fallback nếu trong session cũ ko có selectedTimeStr
+                            setSelectedTimeStr(saved.selectedShowtime.startTime.substring(0, 5));
+                        }
+
+                        // 2. Khôi phục Suất chiếu (Phòng)
+                        if (saved.selectedShowtime) {
+                            const foundShowtime = validShowtimes.find(s => 
+                                String(s.id) === String(saved.selectedShowtime.id)
+                            );
+                            
+                            if (foundShowtime) {
+                                setSelectedShowtime(foundShowtime);
+                                setTicketQuantity(saved.ticketQuantity);
+                                
+                                // 3. Khôi phục trạng thái Xác nhận
+                                if (saved.isConfirmed) {
+                                    setIsConfirmed(true);
+                                    onConfirmSelection(foundShowtime, saved.ticketQuantity, selectedDate);
+                                }
                             }
-                        } 
+                        }
                     }
                 }
             })
@@ -229,62 +271,96 @@ const ShowtimesMovie = ({movieId, onConfirmSelection, isDisabled, preSelectedSho
             .finally(() => setLoadingShowtimes(false));
         }
     }, [selectedDate, movieId]);
-
-    return (
+     return (
         <div className={`showtimes-container ${isDisabled ? 'disabled' : ''}`}>
-        <div className="section-step fade-in">
-            <h5>Chọn ngày</h5>
-            {loadingDates && <p>Đang tải lịch chiếu...</p>}
-            {!loadingDates && dates.length > 0 && (
-            <div className="date-list">
-                {dates.map(dateString => {
-                    const formattedDate = formatDate(dateString);
-                    return (
-                    <button
-                        key={dateString}
-                        className={`date-btn ${selectedDate === dateString ? 'active' : ''}`}
-                        onClick={() => handleDateClick(dateString)}
-                        disabled={isDisabled || isConfirmed}
-                    >
-                        <span className="date-day-name">{formattedDate.dayName}</span>
-                        <span className="date-day-number">{formattedDate.dayNumber}</span>
-                    </button>
-                    );
-                })}
-                </div>
-            )}
-            {!loadingDates && dates.length === 0 && !error && (
-            <p>Phim này hiện chưa có lịch chiếu.</p>
-            )}
-        </div>
-
-        <hr />
-
-        {selectedDate && (
-            <div className="section-step slide-down">
-            <h5>Giờ chiếu ngày {formatDate(selectedDate).dayNumber}</h5>
-            {loadingShowtimes && <p>Đang tải suất chiếu...</p>}
-            
-            {!loadingShowtimes && showtimes.length > 0 && (
-                <div className="time-grid">
-                {showtimes.map(show => (
-                    <button key={show.startTime} 
-                        className={`time-btn ${selectedShowtime?.id === show.id ? 'active' : ''}`} // Fix so sánh theo ID
-                        onClick={() => handleTimeClick(show)}
-                        disabled={isDisabled || isConfirmed}
-                    >
-                    {show.startTime.substring(0,5)}
-                    </button>
-                ))}
-                </div>
-            )}
-            
-            {!loadingShowtimes && showtimes.length === 0 && !error && (
-                <p>Không có suất chiếu cho ngày này.</p>
-            )}
+            <div className="section-step fade-in">
+                <h5>Chọn ngày</h5>
+                {loadingDates && <p>Đang tải lịch chiếu...</p>}
+                {!loadingDates && dates.length > 0 && (
+                <div className="date-list">
+                    {dates.map(dateString => {
+                        const formattedDate = formatDate(dateString);
+                        return (
+                        <button
+                            key={dateString}
+                            className={`date-btn ${selectedDate === dateString ? 'active' : ''}`}
+                            onClick={() => handleDateClick(dateString)}
+                            disabled={isDisabled || isConfirmed}
+                        >
+                            <span className="date-day-name">{formattedDate.dayName}</span>
+                            <span className="date-day-number">{formattedDate.dayNumber}</span>
+                        </button>
+                        );
+                    })}
+                    </div>
+                )}
+                {!loadingDates && dates.length === 0 && !error && (
+                <p>Phim này hiện chưa có lịch chiếu.</p>
+                )}
             </div>
-        )}
-        {selectedDate && selectedShowtime && ( 
+
+            <hr />
+
+            {selectedDate && (
+                <div className="section-step slide-down">
+                    <h5>Giờ chiếu ngày {formatDate(selectedDate).dayNumber}</h5>
+                    {loadingShowtimes && <p>Đang tải suất chiếu...</p>}
+                    
+                    {!loadingShowtimes && uniqueTimes.length > 0 && (
+                        <div className="time-grid">
+                            {uniqueTimes.map(timeStr => (
+                                <button 
+                                    key={timeStr} 
+                                    className={`time-btn ${selectedTimeStr === timeStr ? 'active' : ''}`}
+                                    onClick={() => handleTimeClick(timeStr)}
+                                    disabled={isDisabled || isConfirmed}
+                                >
+                                    {timeStr}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                    
+                    {!loadingShowtimes && showtimes.length === 0 && !error && (
+                        <p>Không có suất chiếu cho ngày này.</p>
+                    )}
+                </div>
+            )}
+            {selectedDate && selectedTimeStr && (
+                 <div className="section-step slide-down" style={{marginTop: '20px'}}>
+                    <h5 style={{fontSize: '0.9rem', color: '#aaa', marginBottom: '10px'}}>
+                        Chọn phòng chiếu lúc {selectedTimeStr}:
+                    </h5>
+                    
+                    {/* Sử dụng class room-grid từ CSS */}
+                    <div className="room-grid">
+                        {availableRoomsForTime.map(show => {
+                             const isSelected = selectedShowtime?.id === show.id;
+                             
+                             return (
+                                <button 
+                                    key={show.id}
+                                    // Class 'active' sẽ được CSS xử lý đổi màu vàng
+                                    className={`room-btn ${isSelected ? 'active' : ''}`}
+                                    onClick={() => handleRoomClick(show)}
+                                    disabled={isDisabled || isConfirmed}
+                                >
+                                    {/* Icon thay đổi tùy trạng thái */}
+                                    <i className={`bi ${isSelected ? 'bi-check-circle-fill' : 'bi-projector-fill'}`}></i>
+                                    
+                                    <span>{show.room?.name}</span>
+                                    
+                                    {/* Hiển thị số ghế (CSS sẽ tự ẩn khi active nếu bạn muốn) */}
+                                    
+                                </button>
+                             )
+                        })}
+                    </div>
+                 </div>
+            )}
+
+            {/* 4. CHỌN SỐ LƯỢNG VÉ */}
+            {selectedDate && selectedTimeStr && selectedShowtime && ( 
             <>
                 <hr />
                 <div className="section-step slide-down ticket-quantity-selector">

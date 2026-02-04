@@ -58,4 +58,5 @@ public class ShowtimesController {
                 .result(showtimesService.getShowtimesByMovieAnDates(movieId, date))
                 .build();
     }
+
 }

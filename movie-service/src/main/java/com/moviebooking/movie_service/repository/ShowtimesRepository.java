@@ -25,7 +25,6 @@ public interface ShowtimesRepository extends JpaRepository<Showtimes, String> {
             "order by s.startTime asc")
     List<Showtimes> findByMovieIdAndShowtimesDate(@Param("movieId") String movieId, LocalDate date, @Param("today") LocalDate today, @Param("currentTime") LocalTime currentTime);
 
-    boolean existsByMovieId(String movieId);
     boolean existsByRoomId(Long roomId);
 
     @Modifying

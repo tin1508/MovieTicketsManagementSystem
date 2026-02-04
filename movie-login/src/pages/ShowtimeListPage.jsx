@@ -235,7 +235,10 @@ const ShowtimeListPage = () =>{
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredShowtimes?.map(showtime =>
+                        {filteredShowtimes?.map(showtime => {
+                            const allowAction = showtime.status === 'SCHEDULED' || showtime.status === 'ENDED' || showtime.status === 'CANCELLED';
+                            
+                            return (
                                 <tr key={showtime.id}>
                                     <td>{showtime.room?.name || "N/A"}</td>
                                     <td>{showtime.movie?.title || "N/A"}</td>
@@ -245,17 +248,30 @@ const ShowtimeListPage = () =>{
                                     <td>{formatDate(showtime.showtimesDate)}</td>
                                     <td className="showtimes-action-cell">
                                         <div className="showtimes-action-buttons">
+                                            {/* Nút SỬA */}
                                             <button 
-                                                className="showtimes-btn-icon showtimes-btn-edit" 
-                                                title="Cập nhật"
-                                                onClick={() => updateShowtime(showtime.id)} 
+                                                className={`showtimes-btn-icon showtimes-btn-edit`} 
+                                                title={allowAction ? "Cập nhật" : "Không thể sửa suất đang chiếu"}
+                                                disabled={!allowAction} // Disable nếu không được phép
+                                                style={{
+                                                    opacity: allowAction ? 1 : 0.3, 
+                                                    cursor: allowAction ? 'pointer' : 'not-allowed'
+                                                }}
+                                                onClick={() => allowAction && updateShowtime(showtime.id)} 
                                             >
                                                 <FaEdit />
                                             </button>
+
+                                            {/* Nút XÓA */}
                                             <button 
-                                                className="showtimes-btn-icon showtimes-btn-delete" 
-                                                title="Xóa"
-                                                onClick={() => removeShowtime(showtime.id)} 
+                                                className={`showtimes-btn-icon showtimes-btn-delete`} 
+                                                title={allowAction ? "Xóa" : "Không thể xóa suất đang chiếu"}
+                                                disabled={!allowAction} // Disable nếu không được phép
+                                                style={{
+                                                    opacity: allowAction ? 1 : 0.3, 
+                                                    cursor: allowAction ? 'pointer' : 'not-allowed'
+                                                }}
+                                                onClick={() => allowAction && removeShowtime(showtime.id)} 
                                             >
                                                 <FaTrash />
                                             </button>
@@ -263,7 +279,7 @@ const ShowtimeListPage = () =>{
                                     </td>
                                 </tr>
                             )
-                        }
+                        })}
                     </tbody>
                 </table>
                 {filteredShowtimes.length === 0 && (

@@ -39,6 +39,7 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
   const [countdown, setCountdown] = useState(300);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
+  const selectedSeatsRef = useRef([]);
 
   // Dùng Ref để xác định xem component unmount do chuyển trang có chủ đích hay do tắt tab
   const isProceeding = useRef(false);
@@ -130,13 +131,16 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
 
   }, [showtimeId]);
 
+  useEffect(() => {
+    selectedSeatsRef.current = selectedSeats;
+  }, [selectedSeats]);
   // === EFFECT: Xử lý khi rời khỏi trang (Cleanup) ===
   useEffect(() => {
     // 1. Sự kiện tắt Tab/Trình duyệt
     const handleBeforeUnload = (e) => {
-        if (selectedSeats.length > 0 && !isProceeding.current) {
+        if (selectedSeatsRef.current.length > 0 && !isProceeding.current) {
             // Gọi API keep-alive hoặc release tùy logic server
-            releaseSeatsKeepAlive(showtimeId, selectedSeats.map(s => s.showtimeSeatId));
+            releaseSeatsKeepAlive(showtimeId, selectedSeatsRef.current.map(s => s.id));
         }
     };
 
@@ -147,14 +151,14 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
         
         // Nếu unmount mà KHÔNG PHẢI do bấm nút "Thanh toán/Đăng nhập" -> Nhả ghế
-        if (selectedSeats.length > 0 && !isProceeding.current) {
+        if (selectedSeatsRef.current.length > 0 && !isProceeding.current) {
             console.log("👋 Người dùng hủy chọn -> Tự động nhả ghế");
-            releaseSeats(showtimeId, selectedSeats.map(s => s.showtimeSeatId)); // Dùng releaseSeats thay vì keepAlive để nhả luôn
+            releaseSeats(showtimeId, selectedSeatsRef.current.map(s => s.id)); // Dùng releaseSeats thay vì keepAlive để nhả luôn
             sessionStorage.removeItem("bookingState");
             // sessionStorage.removeItem("bookingStep1State"); // Tùy chọn: có muốn xóa step 1 không
         }
     };
-  }, [selectedSeats, showtimeId]);
+  }, [showtimeId]);
 
   // === EFFECT 2: Timer đếm ngược ===
   useEffect(() => {
@@ -168,7 +172,7 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
     if (countdown === 0 && isTimerActive && selectedSeats.length > 0) {
       releaseSeats(
         showtimeId,
-        selectedSeats.map((s) => s.showtimeSeatId)
+        selectedSeats.map((s) => s.id)
       );
       setIsTimerActive(false);
       setSelectedSeats([]);
@@ -184,6 +188,7 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
       setCountdown(300);
     }
   }, [selectedSeats]);
+
 
   const getSeatTicketValue = (seat) => {
       return seat.seatType?.name === 'COUPLE' ? 2 : 1;
@@ -201,6 +206,10 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
           return;
         }
         // Có thể thêm check cho OCCUPIED nếu muốn
+      }
+      if(seat.status === "HOLDING"){
+        alert("Ghế này đang được giữ bởi người khác. Vui lòng chọn ghế khác!");
+        return;
       }
     }   
 
@@ -333,7 +342,8 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
               {seatsInRow.map(seat => {
                 const isSelected = selectedSeats.some(s => s.id === seat.id);
                 const isBooked = seat.status === 'BOOKED';       
-                const isOccupied = seat.status === 'OCCUPIED';   
+                const isOccupied = seat.status === 'OCCUPIED';
+                const isHeld = seat.status === 'HOLDING';   
                 const isDisabled = isBooked || isOccupied;       
                 const typeName = seat.seatType?.name?.toLowerCase() || 'normal';
                 
@@ -344,7 +354,7 @@ const SeatSelection = ({ showtimeId, ticketQuantity, onNext }) => {
                     onClick={() => !isDisabled && handleSeatClick(seat)}
                     title={`${seat.seatName} - ${formatCurrency(seat.seatType.basePrice)}`}
                     style={{
-                      opacity: isBooked ? 0.4 : (isOccupied ? 0.7 : 1),
+                      oopacity: isBooked ? 0.4 : (isOccupied ? 0.7 :1),
                       cursor: isDisabled ? 'not-allowed' : 'pointer',
                       pointerEvents: isDisabled ? 'none' : 'auto'
                     }}

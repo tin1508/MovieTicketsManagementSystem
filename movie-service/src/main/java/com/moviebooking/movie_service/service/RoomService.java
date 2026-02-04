@@ -18,7 +18,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -39,12 +41,14 @@ public class RoomService {
         room.setTotalRows(10);
         room.setSeatsPerRow(12);
         room.setTotalSeats(room.getTotalRows() * room.getSeatsPerRow());
-        room.setName("R" + cinema.getRooms().size());
+        String nextName = generateNextRoomName(cinema.getRooms());
+        room.setName(nextName);
         List<Seat> seats = seatService.generateSeats(room);
         room.setSeats(seats);
         room.setStatus(RoomStatus.AVAILABLE);
         return roomMapper.toRoomResponse(roomRepository.save(room));
     }
+
     public RoomResponse updateRoom(Long id, RoomUpdateRequest request) {
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOTFOUND));
@@ -60,6 +64,8 @@ public class RoomService {
         boolean hasShowtimes = showtimesRepository.existsByRoomId(room.getId());
         if(!hasShowtimes){
             roomRepository.deleteById(room.getId());
+            Cinema cinema = room.getCinema();
+            cinema.getRooms().remove(room);
         }
         else throw new AppException(ErrorCode.SHOWTIMES_EXIST);
     }
@@ -68,8 +74,28 @@ public class RoomService {
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOTFOUND));
         return roomMapper.toRoomResponse(room);
     }
+
     public List<RoomResponse> getAllRooms() {
         return roomRepository.findAll().stream().map(roomMapper::toRoomResponse).toList();
     }
+    private String generateNextRoomName(List<Room> rooms){
+        Set<Integer> existingNumbers = new HashSet<>();
+        for (Room r : rooms){
+            if(r.getName() != null && r.getName().matches("^R\\d+$")){
+                try{
+                    int currentNumber = Integer.parseInt(r.getName().substring(1));
+                    existingNumbers.add(currentNumber);
+                }catch (NumberFormatException e){
 
+                }
+            }
+        }
+        int nextNumber = 1;
+        while(true){
+            if(!existingNumbers.contains(nextNumber)){
+                return "R" + nextNumber;
+            }
+            nextNumber++;
+        }
+    }
 }
