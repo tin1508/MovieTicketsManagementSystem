@@ -26,7 +26,14 @@ const toMinutes = (timeStr) => {
     const [h, m] = timeStr.split(':').map(Number);
     return h * 60 + m;
 };
-
+const getTomorrowDate = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
 // 1. NHẬN PROPS TỪ MOVIELISTPAGE
 const ShowtimesForm = ({ moviePreSelected, onSuccess, onCancel }) => {
     
@@ -34,6 +41,7 @@ const ShowtimesForm = ({ moviePreSelected, onSuccess, onCancel }) => {
     const [allShowtimes, setAllShowtimes] = useState([])
     const [rooms, setRooms] = useState([])
     const [currentMovie, setCurrentMovie] = useState(null); 
+    const [isReadOnly, setIsReadOnly] = useState(false);
     
     // Form States
     const [roomName, setRoomName] = useState('')
@@ -117,6 +125,13 @@ const ShowtimesForm = ({ moviePreSelected, onSuccess, onCancel }) => {
                     setDate(showtime.showtimesDate);
                     setStatus(showtime.status || 'SCHEDULED');
                     if (showtime.movie) setCurrentMovie(showtime.movie);
+                    const today = getTodayDate();
+                    if(showtime.showtimesDate < today){
+                        setIsReadOnly(true);
+                        setErrorMessage("⚠️ Lịch chiếu này đã qua, chỉ cho phép xem.");
+                    }else{
+                        setIsReadOnly(false);
+                    }
                 }
             }).catch(err => console.error(err));
         }
@@ -203,6 +218,13 @@ const ShowtimesForm = ({ moviePreSelected, onSuccess, onCancel }) => {
     function saveOrUpdateShowtime(e){
         e.preventDefault();
         setErrorMessage('');
+        if(isReadOnly){ return; }
+        const tomorrow = getTomorrowDate();
+        if(date < tomorrow){
+            setErrorMessage("❌ Lỗi: Ngày chiếu không được trước ngày hiện tại.");
+            return;
+        }
+
         const selectedRoom = rooms.find(r => r.name === roomName);
         
         if(!currentMovie) {
@@ -287,7 +309,8 @@ const ShowtimesForm = ({ moviePreSelected, onSuccess, onCancel }) => {
                                     type='date' 
                                     value={date}
                                     onChange={handleDate}
-                                    min={new Date().toISOString().split('T')[0]}
+                                    min={getTomorrowDate()}
+                                    disabled={isReadOnly}
                                 />
                             </div>
                             
@@ -348,10 +371,12 @@ const ShowtimesForm = ({ moviePreSelected, onSuccess, onCancel }) => {
                                 <button type="button" className='btn btn-secondary' onClick={handleCancelAction}>
                                     Đóng
                                 </button>
-                                <button type="button" className='btn btn-success' onClick={saveOrUpdateShowtime}>
-                                    <i className="bi bi-check-lg me-2"></i>
-                                    Lưu Lịch Chiếu
-                                </button>
+                                {!isReadOnly && (
+                                    <button type="button" className='btn btn-success' onClick={saveOrUpdateShowtime}>
+                                        <i className="bi bi-check-lg me-2"></i>
+                                        Lưu Lịch Chiếu
+                                    </button>
+                                )}
                             </div>
                         </form>
                     </div>

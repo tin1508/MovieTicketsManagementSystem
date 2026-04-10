@@ -263,7 +263,7 @@ const PaymentPage = () => {
             navigator('/');
         } catch (error) {
             console.error("Lỗi khi hủy vé:", error);
-            showNotification('error', 'Lỗi hệ thống', 'Hệ thống đang bận, nhưng bạn sẽ được chuyển về trang chủ.', () => navigator('/'));
+            navigator('/')
         } finally {
             setIsLoading(false);
         }

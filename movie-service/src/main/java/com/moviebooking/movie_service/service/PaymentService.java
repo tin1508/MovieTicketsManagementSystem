@@ -115,27 +115,51 @@ public class PaymentService {
                 template
         );
     }
-    public void processSePayWebhook(SePayWebhookRequest request){
+    public void processSePayWebhook(SePayWebhookRequest request) {
+        // 1. Tách chuỗi
         String[] contents = request.getContent().trim().split("[\\s-]+");
-        String transactionId = contents[1];
-        Payment payment = paymentRepository.findByTransactionId(transactionId)
-                .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOTFOUND));
+
+        Payment payment = null;
+
+        // 2. Duyệt qua từng từ trong nội dung tin nhắn để tìm mã khớp trong DB
+        for (String token : contents) {
+            // Bỏ qua các từ quá ngắn hoặc từ thông dụng để đỡ tốn query DB (Optional)
+            if (token.length() < 4 || token.equalsIgnoreCase("Ma") || token.equalsIgnoreCase("giao")) {
+                continue;
+            }
+
+            Optional<Payment> paymentOptional = paymentRepository.findByTransactionId(token);
+            if (paymentOptional.isPresent()) {
+                payment = paymentOptional.get();
+                break; // Tìm thấy rồi thì dừng lại
+            }
+        }
+
+        // 3. Nếu chạy hết vòng lặp mà vẫn không thấy payment đâu
+        if (payment == null) {
+            // Lưu ý: Với Webhook, ném lỗi có thể khiến SePay gửi lại nhiều lần.
+            // Bạn có thể cân nhắc log lỗi và return success để SePay không retry nữa, tùy logic của bạn.
+            throw new AppException(ErrorCode.PAYMENT_NOTFOUND);
+        }
+
+        // 4. Logic xử lý thành công cũ của bạn giữ nguyên
         if (payment.getPaymentStatus() == PaymentStatus.SUCCESSFUL) {
             return;
         }
-        if(request.getTransferAmount().compareTo(payment.getAmount()) >= 0){
+
+        if (request.getTransferAmount().compareTo(payment.getAmount()) >= 0) {
             payment.setPaymentStatus(PaymentStatus.SUCCESSFUL);
-            try{
+            try {
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 LocalDateTime paidTime = LocalDateTime.parse(request.getTransactionDate(), dtf);
                 payment.setProcessAt(paidTime);
-            } catch(Exception e){
+            } catch (Exception e) {
                 payment.setProcessAt(LocalDateTime.now());
             }
 
             paymentRepository.save(payment);
             Booking booking = payment.getBooking();
-            if(booking != null){
+            if (booking != null) {
                 bookingService.confirmBooking(booking.getId());
             }
         }

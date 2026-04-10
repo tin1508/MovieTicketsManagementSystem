@@ -79,23 +79,19 @@ public class RoomService {
         return roomRepository.findAll().stream().map(roomMapper::toRoomResponse).toList();
     }
     private String generateNextRoomName(List<Room> rooms){
-        Set<Integer> existingNumbers = new HashSet<>();
+        int maxNumber = 0;
         for (Room r : rooms){
             if(r.getName() != null && r.getName().matches("^R\\d+$")){
                 try{
                     int currentNumber = Integer.parseInt(r.getName().substring(1));
-                    existingNumbers.add(currentNumber);
+                    if(currentNumber > maxNumber){
+                        maxNumber = currentNumber;
+                    }
                 }catch (NumberFormatException e){
-
+                    continue;
                 }
             }
         }
-        int nextNumber = 1;
-        while(true){
-            if(!existingNumbers.contains(nextNumber)){
-                return "R" + nextNumber;
-            }
-            nextNumber++;
-        }
+        return "R" + (maxNumber + 1);
     }
 }
