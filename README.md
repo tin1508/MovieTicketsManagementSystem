@@ -1,5 +1,5 @@
 # MovieTicketsManagementSystem 🎬
-A website will serve users in booking movie ticket the most conveniently. 
+A website serve users in booking movie tickets the most conveniently. 
 
 ## 📌 Table of Contents
 - [Features](#-features)
