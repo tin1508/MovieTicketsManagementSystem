@@ -91,4 +91,7 @@ Integrated the **SePay** payment gateway to automate the confirmation process.
 ## 👥 Contributors
 This project was a collaborative effort by:
 * **Nguyen Minh Hoang** 
-* **Chu Hong Anh** 
+* **Chu Hong Anh**
+  
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
