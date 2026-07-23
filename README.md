@@ -7,7 +7,6 @@ A movie ticket booking management website is designed to handle high-traffic tic
 - [Technical Deep Dive](#-technical-deep-dive)
 - [Getting Started](#-getting-started)
 - [Contributors](#-contributors)
-- [License](#-license)
 
 ## 🚀 Key Features
 * **Real-time Ticket Booking:** Dynamic seat selection with specialized concurrency handling.
