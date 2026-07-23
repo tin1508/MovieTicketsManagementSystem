@@ -6,6 +6,7 @@ A movie ticket booking management website is designed to handle high-traffic tic
 - [Tech Stack](#-tech-stack)
 - [Technical Deep Dive](#-technical-deep-dive)
 - [Getting Started](#-getting-started)
+- [Contributors](#-contributors)
 - [License](#-license)
 
 ## 🚀 Key Features
